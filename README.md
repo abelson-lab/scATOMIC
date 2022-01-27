@@ -1,2 +1,2 @@
-# PC-SCC
-Pan-Cancer Single Cell Classifier
+# scATOMIC
+Single Cell Annotation of TumOur Microenvironments In pan-Cancer settings
