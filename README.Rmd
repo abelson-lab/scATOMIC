@@ -14,7 +14,9 @@ knitr::opts_chunk$set(echo = TRUE)
 <!-- badges: start -->
 <!-- badges: end -->
 
+
 ![](img/scATOMIC_pipeline.png)
+
 
 Single Cell Annotation of TumOur Microenvironments In pan-Cancer settings
 
@@ -56,6 +58,7 @@ For more information visit https://rdrr.io/cran/Rmagic/f/README.md#installation
 ## Tutorial for scATOMIC
 ### Applications
 scATOMIC is designed to classify cells within the pan cancer TME hierarchy:
+
 ![](img/hierarchy.png)
 
 We have validated scATOMIC in external datasets of bladder, brain, breast, colorectal, kidney, liver, lung, neuroblastoma, ovarian, pancreatic, prostate, sarcoma, and skin cancers. 
