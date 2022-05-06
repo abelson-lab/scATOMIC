@@ -63,7 +63,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_3_MDC"){
-    if (is.na(layer_predictions)== TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
