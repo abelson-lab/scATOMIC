@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -6,6 +5,8 @@
 
 <!-- badges: start -->
 <!-- badges: end -->
+
+![](img/scATOMIC_pipeline.png)
 
 Single Cell Annotation of TumOur Microenvironments In pan-Cancer
 settings
@@ -50,6 +51,9 @@ For more information visit
 
 ### Applications
 
+scATOMIC is designed to classify cells within the pan cancer TME
+hierarchy: ![](img/hierarchy.png)
+
 We have validated scATOMIC in external datasets of bladder, brain,
 breast, colorectal, kidney, liver, lung, neuroblastoma, ovarian,
 pancreatic, prostate, sarcoma, and skin cancers. Additionally, one can
@@ -57,7 +61,7 @@ apply scATOMIC to bile duct, bone, endometrial, esophageal, gallbladder,
 and gastric cancer, however, we have not validated these classes in
 external datasets and they may be misclassified as other related
 cancers. For a full list of subtypes included in scATOMIC’s reference
-see Table S2 in the manuscript. (insert link)
+see Table S2 in the manuscript.
 
 ### Loading dependencies
 
@@ -178,74 +182,74 @@ head(cell_predictions[["layer_1"]])
 
     ##                     ASDC B cell Bile Duct Cancer Bladder Cancer Bone Cancer
     ## AAACCTGAGACCGGAT-1 0.006  0.004            0.002          0.006       0.006
-    ## AAACCTGCAGTCACTA-1 0.002  0.024            0.002          0.008       0.004
-    ## AAACCTGGTAAGTAGT-1 0.008  0.000            0.000          0.008       0.000
-    ## AAACCTGTCGAATGCT-1 0.000  0.000            0.064          0.076       0.004
-    ## AAACCTGTCTGAGGGA-1 0.004  0.036            0.004          0.004       0.004
-    ## AAACGGGAGTAGATGT-1 0.000  0.000            0.062          0.078       0.000
+    ## AAACCTGCAGTCACTA-1 0.002  0.024            0.002          0.010       0.004
+    ## AAACCTGGTAAGTAGT-1 0.008  0.000            0.000          0.010       0.000
+    ## AAACCTGTCGAATGCT-1 0.000  0.000            0.060          0.072       0.004
+    ## AAACCTGTCTGAGGGA-1 0.002  0.038            0.006          0.004       0.004
+    ## AAACGGGAGTAGATGT-1 0.000  0.000            0.066          0.074       0.004
     ##                    Brain Cancer Breast Cancer CD4+ T cell CD8+ T cell   cDC
-    ## AAACCTGAGACCGGAT-1        0.002         0.004       0.002       0.004 0.488
-    ## AAACCTGCAGTCACTA-1        0.016         0.028       0.580       0.074 0.022
-    ## AAACCTGGTAAGTAGT-1        0.006         0.014       0.000       0.000 0.548
-    ## AAACCTGTCGAATGCT-1        0.026         0.120       0.000       0.000 0.002
-    ## AAACCTGTCTGAGGGA-1        0.040         0.036       0.018       0.028 0.172
-    ## AAACGGGAGTAGATGT-1        0.024         0.084       0.006       0.000 0.002
+    ## AAACCTGAGACCGGAT-1        0.002         0.004       0.002       0.004 0.484
+    ## AAACCTGCAGTCACTA-1        0.014         0.030       0.572       0.072 0.026
+    ## AAACCTGGTAAGTAGT-1        0.004         0.014       0.000       0.000 0.560
+    ## AAACCTGTCGAATGCT-1        0.024         0.124       0.002       0.000 0.002
+    ## AAACCTGTCTGAGGGA-1        0.036         0.030       0.014       0.030 0.170
+    ## AAACGGGAGTAGATGT-1        0.016         0.080       0.004       0.000 0.002
     ##                    Colon/Colorectal Cancer Endometrial/Uterine Cancer
-    ## AAACCTGAGACCGGAT-1                   0.012                      0.004
+    ## AAACCTGAGACCGGAT-1                   0.010                      0.004
     ## AAACCTGCAGTCACTA-1                   0.010                      0.004
     ## AAACCTGGTAAGTAGT-1                   0.010                      0.004
-    ## AAACCTGTCGAATGCT-1                   0.052                      0.016
-    ## AAACCTGTCTGAGGGA-1                   0.012                      0.018
-    ## AAACGGGAGTAGATGT-1                   0.044                      0.034
+    ## AAACCTGTCGAATGCT-1                   0.054                      0.016
+    ## AAACCTGTCTGAGGGA-1                   0.008                      0.014
+    ## AAACGGGAGTAGATGT-1                   0.048                      0.026
     ##                    Endothelial Cells Esophageal Cancer Fibroblasts
     ## AAACCTGAGACCGGAT-1             0.014             0.002       0.018
-    ## AAACCTGCAGTCACTA-1             0.002             0.004       0.002
-    ## AAACCTGGTAAGTAGT-1             0.020             0.004       0.016
-    ## AAACCTGTCGAATGCT-1             0.028             0.038       0.006
-    ## AAACCTGTCTGAGGGA-1             0.026             0.000       0.018
-    ## AAACGGGAGTAGATGT-1             0.022             0.056       0.004
+    ## AAACCTGCAGTCACTA-1             0.000             0.006       0.002
+    ## AAACCTGGTAAGTAGT-1             0.022             0.002       0.016
+    ## AAACCTGTCGAATGCT-1             0.024             0.038       0.006
+    ## AAACCTGTCTGAGGGA-1             0.032             0.002       0.020
+    ## AAACGGGAGTAGATGT-1             0.028             0.056       0.006
     ##                    Gallbladder Cancer Gastric Cancer Glial Cells  HSPC
     ## AAACCTGAGACCGGAT-1              0.000          0.000       0.000 0.008
-    ## AAACCTGCAGTCACTA-1              0.000          0.006       0.000 0.028
+    ## AAACCTGCAGTCACTA-1              0.000          0.004       0.000 0.026
     ## AAACCTGGTAAGTAGT-1              0.000          0.006       0.002 0.008
     ## AAACCTGTCGAATGCT-1              0.006          0.054       0.000 0.008
     ## AAACCTGTCTGAGGGA-1              0.000          0.006       0.008 0.178
-    ## AAACGGGAGTAGATGT-1              0.012          0.036       0.000 0.006
+    ## AAACGGGAGTAGATGT-1              0.014          0.034       0.000 0.006
     ##                    Kidney Cancer Liver Cancer Lung Cancer Macrophage
-    ## AAACCTGAGACCGGAT-1         0.006        0.006       0.010      0.304
-    ## AAACCTGCAGTCACTA-1         0.010        0.014       0.016      0.010
-    ## AAACCTGGTAAGTAGT-1         0.010        0.016       0.010      0.206
-    ## AAACCTGTCGAATGCT-1         0.012        0.036       0.196      0.000
-    ## AAACCTGTCTGAGGGA-1         0.010        0.024       0.026      0.094
-    ## AAACGGGAGTAGATGT-1         0.014        0.036       0.242      0.000
+    ## AAACCTGAGACCGGAT-1         0.006        0.006       0.010      0.308
+    ## AAACCTGCAGTCACTA-1         0.012        0.018       0.020      0.006
+    ## AAACCTGGTAAGTAGT-1         0.012        0.014       0.006      0.206
+    ## AAACCTGTCGAATGCT-1         0.012        0.034       0.194      0.000
+    ## AAACCTGTCTGAGGGA-1         0.010        0.030       0.032      0.092
+    ## AAACGGGAGTAGATGT-1         0.014        0.034       0.246      0.000
     ##                    Myofibroblasts Natural killer cell Neuroblastoma
     ## AAACCTGAGACCGGAT-1          0.026               0.004         0.000
-    ## AAACCTGCAGTCACTA-1          0.004               0.024         0.000
-    ## AAACCTGGTAAGTAGT-1          0.012               0.006         0.002
+    ## AAACCTGCAGTCACTA-1          0.004               0.026         0.000
+    ## AAACCTGGTAAGTAGT-1          0.014               0.006         0.002
     ## AAACCTGTCGAATGCT-1          0.010               0.000         0.008
-    ## AAACCTGTCTGAGGGA-1          0.014               0.034         0.010
-    ## AAACGGGAGTAGATGT-1          0.010               0.000         0.002
+    ## AAACCTGTCTGAGGGA-1          0.014               0.036         0.010
+    ## AAACGGGAGTAGATGT-1          0.012               0.000         0.004
     ##                    Oligodendrocytes Ovarian Cancer Pancreatic Cancer   pDC
-    ## AAACCTGAGACCGGAT-1            0.000          0.004             0.008 0.010
-    ## AAACCTGCAGTCACTA-1            0.000          0.016             0.018 0.004
-    ## AAACCTGGTAAGTAGT-1            0.002          0.010             0.008 0.004
-    ## AAACCTGTCGAATGCT-1            0.000          0.060             0.140 0.000
+    ## AAACCTGAGACCGGAT-1            0.000          0.004             0.012 0.012
+    ## AAACCTGCAGTCACTA-1            0.000          0.012             0.020 0.004
+    ## AAACCTGGTAAGTAGT-1            0.002          0.008             0.006 0.004
+    ## AAACCTGTCGAATGCT-1            0.000          0.062             0.144 0.000
     ## AAACCTGTCTGAGGGA-1            0.004          0.020             0.030 0.034
-    ## AAACGGGAGTAGATGT-1            0.000          0.040             0.138 0.000
+    ## AAACGGGAGTAGATGT-1            0.000          0.042             0.138 0.000
     ##                    Plasmablast Prostate Cancer Sarcoma Skin Cancer
-    ## AAACCTGAGACCGGAT-1       0.002           0.002   0.002       0.020
-    ## AAACCTGCAGTCACTA-1       0.038           0.004   0.008       0.008
-    ## AAACCTGGTAAGTAGT-1       0.004           0.000   0.006       0.036
-    ## AAACCTGTCGAATGCT-1       0.000           0.014   0.006       0.016
-    ## AAACCTGTCTGAGGGA-1       0.008           0.008   0.014       0.036
-    ## AAACGGGAGTAGATGT-1       0.000           0.008   0.008       0.026
+    ## AAACCTGAGACCGGAT-1       0.002           0.002   0.002       0.016
+    ## AAACCTGCAGTCACTA-1       0.040           0.004   0.006       0.010
+    ## AAACCTGGTAAGTAGT-1       0.004           0.000   0.004       0.032
+    ## AAACCTGTCGAATGCT-1       0.000           0.014   0.006       0.018
+    ## AAACCTGTCTGAGGGA-1       0.012           0.010   0.012       0.032
+    ## AAACGGGAGTAGATGT-1       0.000           0.010   0.006       0.024
     ##                    Smooth Muscle Cells cancer_normal_stromal_score blood_score
-    ## AAACCTGAGACCGGAT-1               0.014                       0.168       0.832
-    ## AAACCTGCAGTCACTA-1               0.010                       0.194       0.806
-    ## AAACCTGGTAAGTAGT-1               0.014                       0.216       0.784
-    ## AAACCTGTCGAATGCT-1               0.002                       0.990       0.010
-    ## AAACCTGTCTGAGGGA-1               0.022                       0.394       0.606
-    ## AAACGGGAGTAGATGT-1               0.006                       0.986       0.014
+    ## AAACCTGAGACCGGAT-1               0.014                       0.166       0.834
+    ## AAACCTGCAGTCACTA-1               0.010                       0.202       0.798
+    ## AAACCTGGTAAGTAGT-1               0.014                       0.204       0.796
+    ## AAACCTGTCGAATGCT-1               0.004                       0.988       0.012
+    ## AAACCTGTCTGAGGGA-1               0.020                       0.394       0.606
+    ## AAACGGGAGTAGATGT-1               0.006                       0.988       0.012
     ##                                 predicted_class predicted_tissue_with_cutoff
     ## AAACCTGAGACCGGAT-1                   Blood_Cell                   Blood_Cell
     ## AAACCTGCAGTCACTA-1                   Blood_Cell                   Blood_Cell
@@ -323,34 +327,41 @@ head(results_lung)
     ## AAACCTGTCGAATGCT-1 Tissue_Cell_Normal_or_Cancer             Non Stromal Cell
     ## AAACCTGTCTGAGGGA-1        unclassified_any_cell        unclassified_any_cell
     ## AAACGGGAGTAGATGT-1 Tissue_Cell_Normal_or_Cancer             Non Stromal Cell
-    ##                                   layer_3                   layer_4
-    ## AAACCTGAGACCGGAT-1             Macrophage                Macrophage
-    ## AAACCTGCAGTCACTA-1      CD4 or CD8 T cell               CD4+ T cell
-    ## AAACCTGGTAAGTAGT-1             Macrophage                Macrophage
-    ## AAACCTGTCGAATGCT-1 Non GI Epithelial Cell Breast/Lung/Prostate Cell
-    ## AAACCTGTCTGAGGGA-1  unclassified_any_cell     unclassified_any_cell
-    ## AAACGGGAGTAGATGT-1 Non GI Epithelial Cell Breast/Lung/Prostate Cell
-    ##                                  layer_5          layer_6    scATOMIC_pred
-    ## AAACCTGAGACCGGAT-1            Macrophage       Macrophage       Macrophage
-    ## AAACCTGCAGTCACTA-1           CD4+ T cell      CD4+ T cell      CD4+ T cell
-    ## AAACCTGGTAAGTAGT-1            Macrophage       Macrophage       Macrophage
-    ## AAACCTGTCGAATGCT-1      Lung Cancer Cell Lung Cancer Cell Lung Cancer Cell
-    ## AAACCTGTCTGAGGGA-1 unclassified_any_cell         Any Cell         Any Cell
-    ## AAACGGGAGTAGATGT-1      Lung Cancer Cell Lung Cancer Cell Lung Cancer Cell
-    ##                         S.Score    G2M.Score Phase     old.ident
-    ## AAACCTGAGACCGGAT-1 -0.006630921 -0.047453336    G1 SeuratProject
-    ## AAACCTGCAGTCACTA-1 -0.046677709 -0.006673286    G1 SeuratProject
-    ## AAACCTGGTAAGTAGT-1  0.015462403  0.063293498   G2M SeuratProject
-    ## AAACCTGTCGAATGCT-1 -0.049247934 -0.064310971    G1 SeuratProject
-    ## AAACCTGTCTGAGGGA-1 -0.025618571 -0.023923499    G1 SeuratProject
-    ## AAACGGGAGTAGATGT-1 -0.038660836 -0.129262025    G1 SeuratProject
-    ##                    RNA_snn_res.0.2 seurat_clusters pan_cancer_cluster
-    ## AAACCTGAGACCGGAT-1               2               2             Normal
-    ## AAACCTGCAGTCACTA-1               0               0             Normal
-    ## AAACCTGGTAAGTAGT-1               2               2             Normal
-    ## AAACCTGTCGAATGCT-1               1               1             Cancer
-    ## AAACCTGTCTGAGGGA-1               9               9             Normal
-    ## AAACGGGAGTAGATGT-1               1               1             Cancer
+    ##                                          layer_3                       layer_4
+    ## AAACCTGAGACCGGAT-1                    Macrophage                    Macrophage
+    ## AAACCTGCAGTCACTA-1             CD4 or CD8 T cell                   CD4+ T cell
+    ## AAACCTGGTAAGTAGT-1 unclassified_macrophage_or_DC unclassified_macrophage_or_DC
+    ## AAACCTGTCGAATGCT-1        Non GI Epithelial Cell     Breast/Lung/Prostate Cell
+    ## AAACCTGTCTGAGGGA-1         unclassified_any_cell         unclassified_any_cell
+    ## AAACGGGAGTAGATGT-1        Non GI Epithelial Cell     Breast/Lung/Prostate Cell
+    ##                                          layer_5                      layer_6
+    ## AAACCTGAGACCGGAT-1                    Macrophage                   Macrophage
+    ## AAACCTGCAGTCACTA-1                   CD4+ T cell                  CD4+ T cell
+    ## AAACCTGGTAAGTAGT-1 unclassified_macrophage_or_DC Macrophage or Dendritic Cell
+    ## AAACCTGTCGAATGCT-1              Lung Cancer Cell             Lung Cancer Cell
+    ## AAACCTGTCTGAGGGA-1         unclassified_any_cell                     Any Cell
+    ## AAACGGGAGTAGATGT-1              Lung Cancer Cell             Lung Cancer Cell
+    ##                                   scATOMIC_pred      S.Score    G2M.Score Phase
+    ## AAACCTGAGACCGGAT-1                   Macrophage -0.006630921 -0.047453336    G1
+    ## AAACCTGCAGTCACTA-1                  CD4+ T cell -0.046677709 -0.006673286    G1
+    ## AAACCTGGTAAGTAGT-1 Macrophage or Dendritic Cell  0.015462403  0.063293498   G2M
+    ## AAACCTGTCGAATGCT-1             Lung Cancer Cell -0.049247934 -0.064310971    G1
+    ## AAACCTGTCTGAGGGA-1                     Any Cell -0.025618571 -0.023923499    G1
+    ## AAACGGGAGTAGATGT-1             Lung Cancer Cell -0.038660836 -0.129262025    G1
+    ##                        old.ident RNA_snn_res.0.2 seurat_clusters
+    ## AAACCTGAGACCGGAT-1 SeuratProject               2               2
+    ## AAACCTGCAGTCACTA-1 SeuratProject               0               0
+    ## AAACCTGGTAAGTAGT-1 SeuratProject               2               2
+    ## AAACCTGTCGAATGCT-1 SeuratProject               1               1
+    ## AAACCTGTCTGAGGGA-1 SeuratProject               9               9
+    ## AAACGGGAGTAGATGT-1 SeuratProject               1               1
+    ##                    pan_cancer_cluster
+    ## AAACCTGAGACCGGAT-1             Normal
+    ## AAACCTGCAGTCACTA-1             Normal
+    ## AAACCTGGTAAGTAGT-1             Normal
+    ## AAACCTGTCGAATGCT-1             Cancer
+    ## AAACCTGTCTGAGGGA-1             Normal
+    ## AAACGGGAGTAGATGT-1             Cancer
 
 ## scATOMIC CNV mode
 
@@ -379,9 +390,10 @@ This produces an interactive tree for the results. Click on nodes to
 expand and reveal subgroups. Hover your mouse over dots to get metrics
 (in RStudio Viewer or can save the tree to HTML via the save\_results
 argument)  
-Github .md files do not allow the interactive mode to be seen but can be
-visualized in the R console or by opening the saved file in a web
-browser.
+Github .md files do not allow the interactive html file to be embedded
+but it can be visualized in the R console or by opening the saved file
+in a web browser. This gif demonstrates the interactive mode:
+![](img/interactive_tree.gif)
 
 By setting the collapsed argument to FALSE we can generate an
 interactive tree that is fully open
@@ -407,7 +419,7 @@ tree_results_non_interactive <- scATOMICTree(predictions_list = cell_predictions
 tree_results_non_interactive
 ```
 
-![](https://github.com/abelson-lab/scATOMIC/tutorial_tree_non_interactive.png)
+![](img/tutorial_tree_non_interactive.png)
 
 ## Adding Results to Seurat object
 
@@ -452,7 +464,11 @@ Given scATOMIC’s modular design, we allow users to add new
 subclassification layers for any additional cell type including blood,
 cancer, and stromal cells. We provide functions to both train new layers
 and to run these subclassifications. As an example we will add a breast
-cancer subclassification layer. Here we use [Wu et
+cancer subclassification layer.
+
+![](img/breast_extension.png)
+
+Here we use [Wu et
 al](https://www.nature.com/articles/s41588-021-00911-1) as a training
 dataset, and a sample from [Pal et
 al](https://www.embopress.org/doi/full/10.15252/embj.2020107333) as a
@@ -556,9 +572,6 @@ predictions_Pal_0125 <- run_scATOMIC(Pal_0125)
     ## [1] "Done Layer 2 Blood"
     ## [1] "Starting Layer 3 TNK"
     ## [1] "Done Layer 3 TNK"
-    ## [1] "Starting Layer 4 CD4 CD8"
-    ## [1] "nothing to score in this layer"
-    ## [1] "Done Layer 4 CD4 CD8"
     ## [1] "Starting Layer 4 CD8 NK"
     ## [1] "nothing to score in this layer"
     ## [1] "Done Layer 4 CD8 NK"
@@ -580,14 +593,14 @@ table(results_Pal_0125$scATOMIC_pred)
 ```
 
     ## 
-    ##            Any Cell          Blood Cell  Breast Cancer Cell         CD4+ T cell 
-    ##                  16                   4                3736                   2 
-    ##    CD8 T or NK cell         CD8+ T cell                 cDC   Endothelial Cells 
-    ##                   1                  78                  59                  16 
-    ##         Fibroblasts      Non Blood Cell    Non Stromal Cell  Normal Tissue Cell 
-    ##                 172                   3                   4                 116 
-    ## Smooth Muscle Cells        Stromal Cell 
-    ##                  24                   6
+    ##            Any Cell          Blood Cell  Breast Cancer Cell    CD8 T or NK cell 
+    ##                  15                   5                3735                   2 
+    ##         CD8+ T cell                 cDC   Endothelial Cells         Fibroblasts 
+    ##                  79                  54                   6                 171 
+    ##      Non Blood Cell    Non Stromal Cell  Normal Tissue Cell Smooth Muscle Cells 
+    ##                   7                   2                 122                  24 
+    ##        Stromal Cell 
+    ##                  15
 
 We now want to use our new subclassification layer to further subtype
 the breast cancer cells identified. We do this with the
@@ -606,7 +619,7 @@ table(breast_subclassifications$predicted_tissue_with_cutoff)
 
     ## 
     ##  ER+ 
-    ## 3736
+    ## 3735
 
 ``` r
 #add new classifications to results matrix
@@ -616,14 +629,14 @@ table(results_Pal_0125$scATOMIC_pred)
 ```
 
     ## 
-    ##            Any Cell          Blood Cell         CD4+ T cell    CD8 T or NK cell 
-    ##                  16                   4                   2                   1 
-    ##         CD8+ T cell                 cDC   Endothelial Cells                 ER+ 
-    ##                  78                  59                  16                3736 
-    ##         Fibroblasts      Non Blood Cell    Non Stromal Cell  Normal Tissue Cell 
-    ##                 172                   3                   4                 116 
-    ## Smooth Muscle Cells        Stromal Cell 
-    ##                  24                   6
+    ##            Any Cell          Blood Cell    CD8 T or NK cell         CD8+ T cell 
+    ##                  15                   5                   2                  79 
+    ##                 cDC   Endothelial Cells                 ER+         Fibroblasts 
+    ##                  54                   6                3735                 171 
+    ##      Non Blood Cell    Non Stromal Cell  Normal Tissue Cell Smooth Muscle Cells 
+    ##                   7                   2                 122                  24 
+    ##        Stromal Cell 
+    ##                  15
 
 The breast cancer cells are now classified as ER+ cells.
 
@@ -720,7 +733,3 @@ sessionInfo()
     ## [121] class_7.3-18          rmarkdown_2.8         Rtsne_0.15           
     ## [124] bbmle_1.0.23.1        pROC_1.17.0.1         numDeriv_2016.8-1.1  
     ## [127] shiny_1.6.0           lubridate_1.7.10
-=======
-# scATOMIC
-Single Cell Annotation of TumOur Microenvironments In pan-Cancer settings
->>>>>>> a1cb3f18e9a747ce041e5e6b496bfbba60233932

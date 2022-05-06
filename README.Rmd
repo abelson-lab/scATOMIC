@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 <!-- badges: start -->
 <!-- badges: end -->
 
+![](img/scATOMIC_pipeline.png)
+
 Single Cell Annotation of TumOur Microenvironments In pan-Cancer settings
 
 ## Installation
@@ -53,9 +55,13 @@ For more information visit https://rdrr.io/cran/Rmagic/f/README.md#installation
 
 ## Tutorial for scATOMIC
 ### Applications
+scATOMIC is designed to classify cells within the pan cancer TME hierarchy:
+![](img/hierarchy.png)
+
 We have validated scATOMIC in external datasets of bladder, brain, breast, colorectal, kidney, liver, lung, neuroblastoma, ovarian, pancreatic, prostate, sarcoma, and skin cancers. 
 Additionally, one can apply scATOMIC to bile duct, bone, endometrial, esophageal, gallbladder, and gastric cancer, however, we have not validated these classes in external datasets and they may be misclassified as other related cancers. 
-For a full list of subtypes included in scATOMIC's reference see Table S2 in the manuscript. (insert link)
+For a full list of subtypes included in scATOMIC's reference see Table S2 in the manuscript.
+
 
 
 ### Loading dependencies
@@ -177,7 +183,11 @@ tree_results_lung <- scATOMICTree(predictions_list = cell_predictions, summary_m
 This produces an interactive tree for the results. 
 Click on nodes to expand and reveal subgroups.
 Hover your mouse over dots to get metrics (in RStudio Viewer or can save the tree to HTML via the save_results argument)  
-Github .md files do not allow the interactive mode to be seen but can be visualized in the R console or by opening the saved file in a web browser.
+Github .md files do not allow the interactive html file to be embedded but it can be visualized in the R console or by opening the saved file in a web browser.
+This gif demonstrates the interactive mode:
+![](img/interactive_tree.gif)
+
+
 
 By setting the collapsed argument to FALSE we can generate an interactive tree that is fully open
 
@@ -198,7 +208,7 @@ tree_results_non_interactive <- scATOMICTree(predictions_list = cell_predictions
 ```{r, eval=FALSE}
 tree_results_non_interactive
 ```
-![](https://github.com/abelson-lab/scATOMIC/tutorial_tree_non_interactive.png)
+![](img/tutorial_tree_non_interactive.png)
 
 
 
@@ -240,6 +250,9 @@ DimPlot(lung_seurat, group.by = "scATOMIC_pred", ) + ggtitle("Lung Demo Dataset"
 Given scATOMIC's modular design, we allow users to add new subclassification layers for any additional cell type including blood, cancer, and stromal cells. 
 We provide functions to both train new layers and to run these subclassifications. 
 As an example we will add a breast cancer subclassification layer.
+
+![](img/breast_extension.png)
+
 Here we use [Wu et al](https://www.nature.com/articles/s41588-021-00911-1) as a training dataset, and a sample from [Pal et al](https://www.embopress.org/doi/full/10.15252/embj.2020107333) as a testing dataset. 
 
 Download training data at [GSE176078_Wu_etal_2021_BRCA_scRNASeq.tar.gz](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE176078)
