@@ -9,7 +9,7 @@
 score_class <- function(cell_name, predictions, layer){
   layer_predictions <- predictions[cell_name,]
   if(layer == "layer_1"){
-    if(is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
@@ -24,7 +24,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_2_blood"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
@@ -48,7 +48,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_3_TNK"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
@@ -78,7 +78,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_3_BCell"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
@@ -93,7 +93,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_4_CD4_CD8"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
@@ -109,7 +109,7 @@ score_class <- function(cell_name, predictions, layer){
 
   }
   if(layer == "layer_4_CD8_NK"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
@@ -124,7 +124,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_2_non_blood"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
              == "stromal_score"){
@@ -139,7 +139,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_3_non_stromal"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
              == "soft_tissue_neuro_score"){
@@ -161,7 +161,7 @@ score_class <- function(cell_name, predictions, layer){
 
 
   if(layer == "layer_4_non_GI"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
@@ -177,7 +177,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_4_GI"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
@@ -193,7 +193,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_5_ov_endo_kid"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
@@ -211,7 +211,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_5_breast_lung_prostate"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
@@ -229,7 +229,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_6_breast"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
@@ -247,14 +247,14 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_5_biliary"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     } else{
       predicted_class <- colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
     }
   }
   if(layer == "layer_3_stromal"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     } else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
               == "fibroblasts_score"){
@@ -264,7 +264,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_4_soft_tissue_neuro"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
@@ -275,7 +275,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_5_soft_tissue_neuro"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else if(colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
@@ -289,7 +289,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_5_digestive"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else{
@@ -297,7 +297,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_6_brain_nbm"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else{
@@ -305,7 +305,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_6_soft_tissue"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else{
@@ -313,7 +313,7 @@ score_class <- function(cell_name, predictions, layer){
     }
   }
   if(layer == "layer_4_dendritic"){
-    if (is.na(layer_predictions) == TRUE){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
       predicted_class <- "Cell low quality"
     }
     else{

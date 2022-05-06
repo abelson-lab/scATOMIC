@@ -1,4 +1,6 @@
 #CRAN packages
+usethis::use_package("bbmle")
+
 usethis::use_package("tibble")
 usethis::use_package("reticulate")
 usethis::use_package("amap")

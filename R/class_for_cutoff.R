@@ -8,7 +8,7 @@
 #'
 class_for_cutoff <- function(cell_name, predictions){
   layer_predictions <- predictions[cell_name,]
-  if(is.na(layer_predictions)){
+  if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
     class_to_use <- NA
   } else{
     scores <- which(lapply(layer_predictions, class) == "numeric")

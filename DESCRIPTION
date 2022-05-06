@@ -43,7 +43,8 @@ Imports:
     magrittr,
     future,
     amap,
-    tibble
+    tibble,
+    bbmle
 Remotes: 
     choisy/cutoff, 
     navinlabcode/copykat
