@@ -44,6 +44,22 @@ repository:
 
 pip install –user magic-impute
 
+If the python magic module is not loading properly and the following is
+producing FALSE:
+
+``` r
+Rmagic::pymagic_is_available()
+```
+
+Run to resolve the issue:
+
+``` r
+library(reticulate)
+library(Rmagic)
+install.magic()
+pymagic_is_available()
+```
+
 For more information visit
 <https://rdrr.io/cran/Rmagic/f/README.md#installation>
 
@@ -166,25 +182,27 @@ table(results_lung$scATOMIC_pred)
 
     ## 
     ##                     Any Cell                       B cell 
-    ##                          104                          163 
+    ##                          101                          162 
     ##                   Blood Cell            CD4 or CD8 T cell 
-    ##                            6                            4 
+    ##                            7                            4 
     ##                  CD4+ T cell             CD8 T or NK cell 
-    ##                          412                           32 
+    ##                          411                           36 
     ##                  CD8+ T cell                          cDC 
-    ##                          337                          324 
-    ##            Endothelial Cells                  Fibroblasts 
-    ##                          109                           89 
-    ##             Lung Cancer Cell                   Macrophage 
-    ##                          598                          389 
-    ## Macrophage or Dendritic Cell          Natural killer cell 
-    ##                            1                          103 
-    ##               Non Blood Cell           Normal Tissue Cell 
-    ##                           65                           69 
-    ##                          pDC                  Plasmablast 
-    ##                           18                           79 
-    ##          Smooth Muscle Cells                 T or NK Cell 
-    ##                           93                            2
+    ##                          339                          223 
+    ##               Dendritic Cell            Endothelial Cells 
+    ##                            1                          109 
+    ##                  Fibroblasts             Lung Cancer Cell 
+    ##                           89                          604 
+    ##                   Macrophage Macrophage or Dendritic Cell 
+    ##                          281                          209 
+    ##          Natural killer cell               Non Blood Cell 
+    ##                          100                           64 
+    ##           Normal Tissue Cell                          pDC 
+    ##                           65                           18 
+    ##                  Plasmablast          Smooth Muscle Cells 
+    ##                           80                           93 
+    ##                 T or NK Cell 
+    ##                            1
 
 ``` r
 head(results_lung)
@@ -204,34 +222,41 @@ head(results_lung)
     ## AAACCTGTCGAATGCT-1 Tissue_Cell_Normal_or_Cancer             Non Stromal Cell
     ## AAACCTGTCTGAGGGA-1        unclassified_any_cell        unclassified_any_cell
     ## AAACGGGAGTAGATGT-1 Tissue_Cell_Normal_or_Cancer             Non Stromal Cell
-    ##                                   layer_3                   layer_4
-    ## AAACCTGAGACCGGAT-1             Macrophage                Macrophage
-    ## AAACCTGCAGTCACTA-1      CD4 or CD8 T cell               CD4+ T cell
-    ## AAACCTGGTAAGTAGT-1             Macrophage                Macrophage
-    ## AAACCTGTCGAATGCT-1 Non GI Epithelial Cell Breast/Lung/Prostate Cell
-    ## AAACCTGTCTGAGGGA-1  unclassified_any_cell     unclassified_any_cell
-    ## AAACGGGAGTAGATGT-1 Non GI Epithelial Cell Breast/Lung/Prostate Cell
-    ##                                  layer_5          layer_6    scATOMIC_pred
-    ## AAACCTGAGACCGGAT-1            Macrophage       Macrophage       Macrophage
-    ## AAACCTGCAGTCACTA-1           CD4+ T cell      CD4+ T cell      CD4+ T cell
-    ## AAACCTGGTAAGTAGT-1            Macrophage       Macrophage       Macrophage
-    ## AAACCTGTCGAATGCT-1      Lung Cancer Cell Lung Cancer Cell Lung Cancer Cell
-    ## AAACCTGTCTGAGGGA-1 unclassified_any_cell         Any Cell         Any Cell
-    ## AAACGGGAGTAGATGT-1      Lung Cancer Cell Lung Cancer Cell Lung Cancer Cell
-    ##                         S.Score    G2M.Score Phase     old.ident
-    ## AAACCTGAGACCGGAT-1 -0.006630921 -0.047453336    G1 SeuratProject
-    ## AAACCTGCAGTCACTA-1 -0.046677709 -0.006673286    G1 SeuratProject
-    ## AAACCTGGTAAGTAGT-1  0.015462403  0.063293498   G2M SeuratProject
-    ## AAACCTGTCGAATGCT-1 -0.049247934 -0.064310971    G1 SeuratProject
-    ## AAACCTGTCTGAGGGA-1 -0.025618571 -0.023923499    G1 SeuratProject
-    ## AAACGGGAGTAGATGT-1 -0.038660836 -0.129262025    G1 SeuratProject
-    ##                    RNA_snn_res.0.2 seurat_clusters pan_cancer_cluster
-    ## AAACCTGAGACCGGAT-1               2               2             Normal
-    ## AAACCTGCAGTCACTA-1               0               0             Normal
-    ## AAACCTGGTAAGTAGT-1               2               2             Normal
-    ## AAACCTGTCGAATGCT-1               1               1             Cancer
-    ## AAACCTGTCTGAGGGA-1               9               9             Normal
-    ## AAACGGGAGTAGATGT-1               1               1             Cancer
+    ##                                          layer_3                       layer_4
+    ## AAACCTGAGACCGGAT-1                    Macrophage                    Macrophage
+    ## AAACCTGCAGTCACTA-1             CD4 or CD8 T cell                   CD4+ T cell
+    ## AAACCTGGTAAGTAGT-1 unclassified_macrophage_or_DC unclassified_macrophage_or_DC
+    ## AAACCTGTCGAATGCT-1        Non GI Epithelial Cell     Breast/Lung/Prostate Cell
+    ## AAACCTGTCTGAGGGA-1         unclassified_any_cell         unclassified_any_cell
+    ## AAACGGGAGTAGATGT-1        Non GI Epithelial Cell     Breast/Lung/Prostate Cell
+    ##                                          layer_5                      layer_6
+    ## AAACCTGAGACCGGAT-1                    Macrophage                   Macrophage
+    ## AAACCTGCAGTCACTA-1                   CD4+ T cell                  CD4+ T cell
+    ## AAACCTGGTAAGTAGT-1 unclassified_macrophage_or_DC Macrophage or Dendritic Cell
+    ## AAACCTGTCGAATGCT-1              Lung Cancer Cell             Lung Cancer Cell
+    ## AAACCTGTCTGAGGGA-1         unclassified_any_cell                     Any Cell
+    ## AAACGGGAGTAGATGT-1              Lung Cancer Cell             Lung Cancer Cell
+    ##                                   scATOMIC_pred      S.Score    G2M.Score Phase
+    ## AAACCTGAGACCGGAT-1                   Macrophage -0.006630921 -0.047453336    G1
+    ## AAACCTGCAGTCACTA-1                  CD4+ T cell -0.046677709 -0.006673286    G1
+    ## AAACCTGGTAAGTAGT-1 Macrophage or Dendritic Cell  0.015462403  0.063293498   G2M
+    ## AAACCTGTCGAATGCT-1             Lung Cancer Cell -0.049247934 -0.064310971    G1
+    ## AAACCTGTCTGAGGGA-1                     Any Cell -0.025618571 -0.023923499    G1
+    ## AAACGGGAGTAGATGT-1             Lung Cancer Cell -0.038660836 -0.129262025    G1
+    ##                        old.ident RNA_snn_res.0.2 seurat_clusters
+    ## AAACCTGAGACCGGAT-1 SeuratProject               2               2
+    ## AAACCTGCAGTCACTA-1 SeuratProject               0               0
+    ## AAACCTGGTAAGTAGT-1 SeuratProject               2               2
+    ## AAACCTGTCGAATGCT-1 SeuratProject               1               1
+    ## AAACCTGTCTGAGGGA-1 SeuratProject               9               9
+    ## AAACGGGAGTAGATGT-1 SeuratProject               1               1
+    ##                    pan_cancer_cluster
+    ## AAACCTGAGACCGGAT-1             Normal
+    ## AAACCTGCAGTCACTA-1             Normal
+    ## AAACCTGGTAAGTAGT-1             Normal
+    ## AAACCTGTCGAATGCT-1             Cancer
+    ## AAACCTGTCTGAGGGA-1             Normal
+    ## AAACGGGAGTAGATGT-1             Cancer
 
 ## scATOMIC CNV mode
 
@@ -326,7 +351,7 @@ We can plot our results via:
 DimPlot(lung_seurat, group.by = "scATOMIC_pred", ) + ggtitle("Lung Demo Dataset") + labs(fill="scATOMIC Annotations") 
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 ## Training new subclassification layers
 
@@ -450,12 +475,14 @@ table(results_Pal_0125$scATOMIC_pred)
 ```
 
     ## 
-    ##            Any Cell          Blood Cell         CD4+ T cell         CD8+ T cell 
-    ##                  17                   3                   1                  82 
-    ##                 cDC   Endothelial Cells                 ER+         Fibroblasts 
-    ##                  61                  16                3714                 164 
-    ##      Non Blood Cell  Normal Tissue Cell Smooth Muscle Cells        Stromal Cell 
-    ##                  19                 130                  24                   6
+    ##            Any Cell          Blood Cell         CD4+ T cell    CD8 T or NK cell 
+    ##                  15                   4                   1                   1 
+    ##         CD8+ T cell                 cDC   Endothelial Cells                 ER+ 
+    ##                  78                  61                  16                3735 
+    ##         Fibroblasts      Non Blood Cell    Non Stromal Cell  Normal Tissue Cell 
+    ##                 170                   6                   2                 118 
+    ## Smooth Muscle Cells        Stromal Cell 
+    ##                  24                   6
 
 The breast cancer cells are now classified as ER+ cells.
 
