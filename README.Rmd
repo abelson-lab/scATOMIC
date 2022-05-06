@@ -131,12 +131,8 @@ lung_cancer_demo_data <- lung_cancer_demo_data[, intersect(names(which(nFeatureR
 ### Running scATOMIC
 To run scATOMIC we use the run_scATOMIC() function to generate a detailed annotation object. 
 To run with default settings simply use: 
-```{r,  message=FALSE}
+```{r,  message=FALSE,results='hide'}
 cell_predictions <- run_scATOMIC(lung_cancer_demo_data)
-```
-
-```{r}
-head(cell_predictions[["layer_1"]])
 ```
 
 Ignore warnings regarding unexpressed genes.
@@ -144,9 +140,6 @@ This returns a list object with predictions for each cell at each layer of the h
 
 Other relevant parameters of run_scATOMIC whether to use imputation (default = TRUE), how many cores to use, and the threshold for classifying cells.
 
-```{r}
-names(cell_predictions)
-```
 
 
 After running scATOMIC we generate a summary of the intermediate results with create_summary_matrix().
@@ -157,8 +150,10 @@ See ?create_summary_matrix for information on the other parameters.
 
 create_summary_matrix() returns a matrix that provides the final classification for each cell as well as the classification at each layer
 
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE, results='hide'}
 results_lung <- create_summary_matrix(prediction_list = cell_predictions, use_CNVs = F, modify_results = T, mc.cores = 1, raw_counts = lung_cancer_demo_data, min_prop = 0.5 )
+```
+```{r}
 head(results_lung)
 ```
 
@@ -321,7 +316,7 @@ Pal_0125 <- Pal_0125[, intersect(names(which(nFeatureRNA > 500)), colnames(Pal_0
 
 First we use the base scATOMIC model to classify the cells in the data.
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, results='hide'}
 predictions_Pal_0125 <- run_scATOMIC(Pal_0125)
 results_Pal_0125 <- create_summary_matrix(prediction_list = predictions_Pal_0125, raw_counts = Pal_0125)
 table(results_Pal_0125$scATOMIC_pred)
@@ -330,7 +325,7 @@ table(results_Pal_0125$scATOMIC_pred)
 We now want to use our new subclassification layer to further subtype the breast cancer cells identified.
 We do this with the classify_new_scATOMIC_layer() function.
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, results='hide'}
 #define breast cancer cells
 cells_to_subclassify <- row.names(results_Pal_0125)[which(
   results_Pal_0125$scATOMIC_pred == "Breast Cancer Cell")]
@@ -343,8 +338,12 @@ table(breast_subclassifications$predicted_tissue_with_cutoff)
 #add new classifications to results matrix
 results_Pal_0125[row.names(breast_subclassifications), "scATOMIC_pred"] <- breast_subclassifications$predicted_tissue_with_cutoff
 
+```
+```{r}
 table(results_Pal_0125$scATOMIC_pred)
 ```
+
+
 
 The breast cancer cells are now classified as ER+ cells. 
 

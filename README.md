@@ -139,146 +139,12 @@ detailed annotation object. To run with default settings simply use:
 cell_predictions <- run_scATOMIC(lung_cancer_demo_data)
 ```
 
-    ## [1] "Starting Layer 1"
-    ## [1] "Done Layer 1"
-    ## [1] "Starting Layer 2 Non Blood"
-    ## [1] "Done Layer 2 Non Blood"
-    ## [1] "Starting Layer 3 Non Stromal"
-    ## [1] "Done Layer 3 Non Stromal"
-    ## [1] "Starting Layer 4 Non GI"
-    ## [1] "Done Layer 4 Non GI"
-    ## [1] "Starting Layer 5 Breast Lung Prostate"
-    ## [1] "nothing to score in this layer"
-    ## [1] "Done Layer 5 Breast Lung Prostate"
-    ## [1] "Starting Layer 4 GI"
-    ## [1] "Done Layer 4 GI"
-    ## [1] "Starting Layer 5 Digestive"
-    ## [1] "nothing to score in this layer"
-    ## [1] "Done Layer 5 Digestive"
-    ## [1] "Starting Layer 5 Biliary"
-    ## [1] "nothing to score in this layer"
-    ## [1] "Done Layer 5 Biliary"
-    ## [1] "Starting Layer 3 Normal Stromal"
-    ## [1] "Done Layer 3 Normal Stromal"
-    ## [1] "Starting Layer 2 Blood"
-    ## [1] "Done Layer 2 Blood"
-    ## [1] "Starting Layer 3 TNK"
-    ## [1] "Done Layer 3 TNK"
-    ## [1] "Starting Layer 4 CD4 CD8"
-    ## [1] "nothing to score in this layer"
-    ## [1] "Done Layer 4 CD4 CD8"
-    ## [1] "Starting Layer 4 CD8 NK"
-    ## [1] "nothing to score in this layer"
-    ## [1] "Done Layer 4 CD8 NK"
-    ## [1] "Starting Layer 3 Myeloid"
-    ## [1] "Done Layer 3 Myeloid"
-    ## [1] "Starting Layer 4 Dendritic"
-    ## [1] "nothing to score in this layer"
-    ## [1] "Done Layer 4 Dendritic"
-    ## [1] "Starting Layer 3 B Cell"
-    ## [1] "Done Layer 3 B Cell"
-
-``` r
-head(cell_predictions[["layer_1"]])
-```
-
-    ##                     ASDC B cell Bile Duct Cancer Bladder Cancer Bone Cancer
-    ## AAACCTGAGACCGGAT-1 0.006  0.004            0.002          0.006       0.006
-    ## AAACCTGCAGTCACTA-1 0.002  0.026            0.002          0.008       0.004
-    ## AAACCTGGTAAGTAGT-1 0.008  0.000            0.000          0.010       0.000
-    ## AAACCTGTCGAATGCT-1 0.000  0.000            0.064          0.070       0.004
-    ## AAACCTGTCTGAGGGA-1 0.004  0.038            0.006          0.002       0.004
-    ## AAACGGGAGTAGATGT-1 0.000  0.000            0.064          0.072       0.000
-    ##                    Brain Cancer Breast Cancer CD4+ T cell CD8+ T cell   cDC
-    ## AAACCTGAGACCGGAT-1        0.002         0.004       0.002       0.004 0.488
-    ## AAACCTGCAGTCACTA-1        0.014         0.030       0.570       0.066 0.022
-    ## AAACCTGGTAAGTAGT-1        0.006         0.014       0.000       0.000 0.556
-    ## AAACCTGTCGAATGCT-1        0.024         0.120       0.000       0.000 0.002
-    ## AAACCTGTCTGAGGGA-1        0.030         0.030       0.018       0.030 0.164
-    ## AAACGGGAGTAGATGT-1        0.024         0.072       0.004       0.000 0.004
-    ##                    Colon/Colorectal Cancer Endometrial/Uterine Cancer
-    ## AAACCTGAGACCGGAT-1                   0.012                      0.004
-    ## AAACCTGCAGTCACTA-1                   0.010                      0.004
-    ## AAACCTGGTAAGTAGT-1                   0.010                      0.004
-    ## AAACCTGTCGAATGCT-1                   0.052                      0.018
-    ## AAACCTGTCTGAGGGA-1                   0.010                      0.018
-    ## AAACGGGAGTAGATGT-1                   0.054                      0.030
-    ##                    Endothelial Cells Esophageal Cancer Fibroblasts
-    ## AAACCTGAGACCGGAT-1             0.014             0.002       0.018
-    ## AAACCTGCAGTCACTA-1             0.004             0.006       0.002
-    ## AAACCTGGTAAGTAGT-1             0.020             0.002       0.016
-    ## AAACCTGTCGAATGCT-1             0.028             0.040       0.006
-    ## AAACCTGTCTGAGGGA-1             0.032             0.002       0.022
-    ## AAACGGGAGTAGATGT-1             0.022             0.064       0.004
-    ##                    Gallbladder Cancer Gastric Cancer Glial Cells  HSPC
-    ## AAACCTGAGACCGGAT-1              0.000          0.002       0.000 0.008
-    ## AAACCTGCAGTCACTA-1              0.000          0.006       0.000 0.026
-    ## AAACCTGGTAAGTAGT-1              0.000          0.006       0.004 0.008
-    ## AAACCTGTCGAATGCT-1              0.008          0.054       0.000 0.008
-    ## AAACCTGTCTGAGGGA-1              0.000          0.006       0.014 0.180
-    ## AAACGGGAGTAGATGT-1              0.012          0.034       0.000 0.006
-    ##                    Kidney Cancer Liver Cancer Lung Cancer Macrophage
-    ## AAACCTGAGACCGGAT-1         0.006        0.006       0.010      0.304
-    ## AAACCTGCAGTCACTA-1         0.012        0.016       0.020      0.008
-    ## AAACCTGGTAAGTAGT-1         0.012        0.012       0.006      0.208
-    ## AAACCTGTCGAATGCT-1         0.016        0.028       0.200      0.000
-    ## AAACCTGTCTGAGGGA-1         0.010        0.026       0.030      0.086
-    ## AAACGGGAGTAGATGT-1         0.012        0.036       0.240      0.000
-    ##                    Myofibroblasts Natural killer cell Neuroblastoma
-    ## AAACCTGAGACCGGAT-1          0.024               0.004         0.000
-    ## AAACCTGCAGTCACTA-1          0.006               0.028         0.000
-    ## AAACCTGGTAAGTAGT-1          0.014               0.006         0.002
-    ## AAACCTGTCGAATGCT-1          0.010               0.000         0.006
-    ## AAACCTGTCTGAGGGA-1          0.014               0.046         0.010
-    ## AAACGGGAGTAGATGT-1          0.010               0.000         0.004
-    ##                    Oligodendrocytes Ovarian Cancer Pancreatic Cancer   pDC
-    ## AAACCTGAGACCGGAT-1            0.000          0.004             0.010 0.010
-    ## AAACCTGCAGTCACTA-1            0.000          0.014             0.020 0.006
-    ## AAACCTGGTAAGTAGT-1            0.002          0.008             0.008 0.004
-    ## AAACCTGTCGAATGCT-1            0.000          0.064             0.142 0.000
-    ## AAACCTGTCTGAGGGA-1            0.000          0.020             0.028 0.030
-    ## AAACGGGAGTAGATGT-1            0.000          0.036             0.146 0.000
-    ##                    Plasmablast Prostate Cancer Sarcoma Skin Cancer
-    ## AAACCTGAGACCGGAT-1       0.002           0.002   0.002       0.018
-    ## AAACCTGCAGTCACTA-1       0.038           0.004   0.008       0.008
-    ## AAACCTGGTAAGTAGT-1       0.004           0.000   0.004       0.032
-    ## AAACCTGTCGAATGCT-1       0.000           0.012   0.008       0.014
-    ## AAACCTGTCTGAGGGA-1       0.008           0.008   0.014       0.040
-    ## AAACGGGAGTAGATGT-1       0.000           0.010   0.006       0.024
-    ##                    Smooth Muscle Cells cancer_normal_stromal_score blood_score
-    ## AAACCTGAGACCGGAT-1               0.014                       0.168       0.832
-    ## AAACCTGCAGTCACTA-1               0.010                       0.208       0.792
-    ## AAACCTGGTAAGTAGT-1               0.014                       0.206       0.794
-    ## AAACCTGTCGAATGCT-1               0.002                       0.990       0.010
-    ## AAACCTGTCTGAGGGA-1               0.020                       0.396       0.604
-    ## AAACGGGAGTAGATGT-1               0.010                       0.986       0.014
-    ##                                 predicted_class predicted_tissue_with_cutoff
-    ## AAACCTGAGACCGGAT-1                   Blood_Cell                   Blood_Cell
-    ## AAACCTGCAGTCACTA-1                   Blood_Cell                   Blood_Cell
-    ## AAACCTGGTAAGTAGT-1                   Blood_Cell                   Blood_Cell
-    ## AAACCTGTCGAATGCT-1 Tissue_Cell_Normal_or_Cancer Tissue_Cell_Normal_or_Cancer
-    ## AAACCTGTCTGAGGGA-1                   Blood_Cell        unclassified_any_cell
-    ## AAACGGGAGTAGATGT-1 Tissue_Cell_Normal_or_Cancer Tissue_Cell_Normal_or_Cancer
-
 Ignore warnings regarding unexpressed genes. This returns a list object
 with predictions for each cell at each layer of the hierarchy.
 
 Other relevant parameters of run\_scATOMIC whether to use imputation
 (default = TRUE), how many cores to use, and the threshold for
 classifying cells.
-
-``` r
-names(cell_predictions)
-```
-
-    ##  [1] "layer_1"                      "layer_2_non_blood"           
-    ##  [3] "layer_3_non_stromal"          "layer_4_non_GI"              
-    ##  [5] "layer_5_breast_lung_prostate" "layer_4_GI"                  
-    ##  [7] "layer_5_digestive"            "layer_5_biliary"             
-    ##  [9] "layer_3_stromal"              "layer_2_blood"               
-    ## [11] "layer_3_TNK"                  "layer_4_CD4_CD8"             
-    ## [13] "layer_4_CD8_NK"               "layer_3_myeloid"             
-    ## [15] "layer_4_dendritic"            "layer_3_BCell"
 
 After running scATOMIC we generate a summary of the intermediate results
 with create\_summary\_matrix(). Here we need to input our prediction
@@ -293,23 +159,6 @@ classification for each cell as well as the classification at each layer
 ``` r
 results_lung <- create_summary_matrix(prediction_list = cell_predictions, use_CNVs = F, modify_results = T, mc.cores = 1, raw_counts = lung_cancer_demo_data, min_prop = 0.5 )
 ```
-
-    ## Warning: The following features are not present in the object: MLF1IP, not
-    ## searching for symbol synonyms
-
-    ## Warning: The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric
-    ## To use Python UMAP via reticulate, set umap.method to 'umap-learn' and metric to 'correlation'
-    ## This message will be shown once per session
-
-    ## Warning: Keys should be one or more alphanumeric characters followed by an
-    ## underscore, setting key from magic_rna_ to magicrna_
-
-    ## [1] "Added MAGIC output to MAGIC_RNA. To use it, pass assay='MAGIC_RNA' to downstream methods or set seurat_object@active.assay <- 'MAGIC_RNA'."
-
-    ## Warning: Keys should be one or more alphanumeric characters followed by an
-    ## underscore, setting key from magic_rna_ to magicrna_
-
-    ## [1] "Added MAGIC output to MAGIC_RNA. To use it, pass assay='MAGIC_RNA' to downstream methods or set seurat_object@active.assay <- 'MAGIC_RNA'."
 
 ``` r
 head(results_lung)
@@ -332,14 +181,14 @@ head(results_lung)
     ##                                   layer_3                   layer_4
     ## AAACCTGAGACCGGAT-1             Macrophage                Macrophage
     ## AAACCTGCAGTCACTA-1      CD4 or CD8 T cell               CD4+ T cell
-    ## AAACCTGGTAAGTAGT-1         Dendritic Cell                       cDC
+    ## AAACCTGGTAAGTAGT-1             Macrophage                Macrophage
     ## AAACCTGTCGAATGCT-1 Non GI Epithelial Cell Breast/Lung/Prostate Cell
     ## AAACCTGTCTGAGGGA-1  unclassified_any_cell     unclassified_any_cell
     ## AAACGGGAGTAGATGT-1 Non GI Epithelial Cell Breast/Lung/Prostate Cell
     ##                                  layer_5          layer_6    scATOMIC_pred
     ## AAACCTGAGACCGGAT-1            Macrophage       Macrophage       Macrophage
     ## AAACCTGCAGTCACTA-1           CD4+ T cell      CD4+ T cell      CD4+ T cell
-    ## AAACCTGGTAAGTAGT-1                   cDC              cDC              cDC
+    ## AAACCTGGTAAGTAGT-1            Macrophage       Macrophage       Macrophage
     ## AAACCTGTCGAATGCT-1      Lung Cancer Cell Lung Cancer Cell Lung Cancer Cell
     ## AAACCTGTCTGAGGGA-1 unclassified_any_cell         Any Cell         Any Cell
     ## AAACGGGAGTAGATGT-1      Lung Cancer Cell Lung Cancer Cell Lung Cancer Cell
@@ -451,7 +300,7 @@ We can plot our results via:
 DimPlot(lung_seurat, group.by = "scATOMIC_pred", ) + ggtitle("Lung Demo Dataset") + labs(fill="scATOMIC Annotations") 
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 ## Training new subclassification layers
 
@@ -548,52 +397,9 @@ First we use the base scATOMIC model to classify the cells in the data.
 
 ``` r
 predictions_Pal_0125 <- run_scATOMIC(Pal_0125)
-```
-
-    ## [1] "Starting Layer 1"
-    ## [1] "Done Layer 1"
-    ## [1] "Starting Layer 2 Non Blood"
-    ## [1] "Done Layer 2 Non Blood"
-    ## [1] "Starting Layer 3 Non Stromal"
-    ## [1] "Done Layer 3 Non Stromal"
-    ## [1] "Starting Layer 4 Non GI"
-    ## [1] "Done Layer 4 Non GI"
-    ## [1] "Starting Layer 5 Breast Lung Prostate"
-    ## [1] "nothing to score in this layer"
-    ## [1] "Done Layer 5 Breast Lung Prostate"
-    ## [1] "Starting Layer 3 Normal Stromal"
-    ## [1] "Done Layer 3 Normal Stromal"
-    ## [1] "Starting Layer 2 Blood"
-    ## [1] "Done Layer 2 Blood"
-    ## [1] "Starting Layer 3 TNK"
-    ## [1] "Done Layer 3 TNK"
-    ## [1] "Starting Layer 4 CD8 NK"
-    ## [1] "nothing to score in this layer"
-    ## [1] "Done Layer 4 CD8 NK"
-    ## [1] "Starting Layer 3 Myeloid"
-    ## [1] "Done Layer 3 Myeloid"
-    ## [1] "Starting Layer 4 Dendritic"
-    ## [1] "nothing to score in this layer"
-    ## [1] "Done Layer 4 Dendritic"
-
-``` r
 results_Pal_0125 <- create_summary_matrix(prediction_list = predictions_Pal_0125, raw_counts = Pal_0125)
-```
-
-    ## [1] "Added MAGIC output to MAGIC_RNA. To use it, pass assay='MAGIC_RNA' to downstream methods or set seurat_object@active.assay <- 'MAGIC_RNA'."
-    ## [1] "Added MAGIC output to MAGIC_RNA. To use it, pass assay='MAGIC_RNA' to downstream methods or set seurat_object@active.assay <- 'MAGIC_RNA'."
-
-``` r
 table(results_Pal_0125$scATOMIC_pred)
 ```
-
-    ## 
-    ##            Any Cell          Blood Cell  Breast Cancer Cell    CD8 T or NK cell 
-    ##                  17                   2                3724                   1 
-    ##         CD8+ T cell                 cDC   Endothelial Cells         Fibroblasts 
-    ##                  80                  56                  13                 164 
-    ##      Non Blood Cell  Normal Tissue Cell Smooth Muscle Cells        Stromal Cell 
-    ##                  17                 132                  23                   8
 
 We now want to use our new subclassification layer to further subtype
 the breast cancer cells identified. We do this with the
@@ -608,26 +414,24 @@ breast_subclassifications <- classify_new_scATOMIC_layer(rf_model = breast_cance
                                                          rna_counts = Pal_0125, cell_names = cells_to_subclassify, layer_name = "Breast Cancer Cells", mc_cores = 6  )
 
 table(breast_subclassifications$predicted_tissue_with_cutoff)
-```
 
-    ## 
-    ##  ER+ 
-    ## 3724
-
-``` r
 #add new classifications to results matrix
 results_Pal_0125[row.names(breast_subclassifications), "scATOMIC_pred"] <- breast_subclassifications$predicted_tissue_with_cutoff
+```
 
+``` r
 table(results_Pal_0125$scATOMIC_pred)
 ```
 
     ## 
-    ##            Any Cell          Blood Cell    CD8 T or NK cell         CD8+ T cell 
-    ##                  17                   2                   1                  80 
-    ##                 cDC   Endothelial Cells                 ER+         Fibroblasts 
-    ##                  56                  13                3724                 164 
-    ##      Non Blood Cell  Normal Tissue Cell Smooth Muscle Cells        Stromal Cell 
-    ##                  17                 132                  23                   8
+    ##            Any Cell          Blood Cell         CD4+ T cell    CD8 T or NK cell 
+    ##                  18                   6                   2                   1 
+    ##         CD8+ T cell                 cDC   Endothelial Cells                 ER+ 
+    ##                  78                  60                  16                3728 
+    ##         Fibroblasts      Non Blood Cell    Non Stromal Cell  Normal Tissue Cell 
+    ##                 171                   5                   3                 119 
+    ## Smooth Muscle Cells        Stromal Cell 
+    ##                  24                   6
 
 The breast cancer cells are now classified as ER+ cells.
 
