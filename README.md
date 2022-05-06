@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -454,7 +455,7 @@ and to run these subclassifications. As an example we will add a breast
 cancer subclassification layer. Here we use [Wu et
 al](https://www.nature.com/articles/s41588-021-00911-1) as a training
 dataset, and a sample from [Pal et
-al](%22https://www.embopress.org/doi/full/10.15252/embj.2020107333) as a
+al](https://www.embopress.org/doi/full/10.15252/embj.2020107333) as a
 testing dataset.
 
 Download training data at
@@ -719,3 +720,7 @@ sessionInfo()
     ## [121] class_7.3-18          rmarkdown_2.8         Rtsne_0.15           
     ## [124] bbmle_1.0.23.1        pROC_1.17.0.1         numDeriv_2016.8-1.1  
     ## [127] shiny_1.6.0           lubridate_1.7.10
+=======
+# scATOMIC
+Single Cell Annotation of TumOur Microenvironments In pan-Cancer settings
+>>>>>>> a1cb3f18e9a747ce041e5e6b496bfbba60233932

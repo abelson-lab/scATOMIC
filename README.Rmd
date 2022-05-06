@@ -240,7 +240,7 @@ DimPlot(lung_seurat, group.by = "scATOMIC_pred", ) + ggtitle("Lung Demo Dataset"
 Given scATOMIC's modular design, we allow users to add new subclassification layers for any additional cell type including blood, cancer, and stromal cells. 
 We provide functions to both train new layers and to run these subclassifications. 
 As an example we will add a breast cancer subclassification layer.
-Here we use [Wu et al](https://www.nature.com/articles/s41588-021-00911-1) as a training dataset, and a sample from [Pal et al]("https://www.embopress.org/doi/full/10.15252/embj.2020107333) as a testing dataset. 
+Here we use [Wu et al](https://www.nature.com/articles/s41588-021-00911-1) as a training dataset, and a sample from [Pal et al](https://www.embopress.org/doi/full/10.15252/embj.2020107333) as a testing dataset. 
 
 Download training data at [GSE176078_Wu_etal_2021_BRCA_scRNASeq.tar.gz](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE176078)
 
