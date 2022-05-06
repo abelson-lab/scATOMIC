@@ -42,7 +42,8 @@ Imports:
     forcats,
     magrittr,
     future,
-    amap
+    amap,
+    tibble
 Remotes: 
     choisy/cutoff, 
     navinlabcode/copykat
