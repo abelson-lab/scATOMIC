@@ -13,12 +13,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 <!-- badges: start -->
 <!-- badges: end -->
-
+**S**ingle **C**ell **A**nnotation of **T**um**O**ur **M**icroenvironments **I**n pan-**C**ancer settings
 
 ![](img/scATOMIC_pipeline.png)
 
 
-Single Cell Annotation of TumOur Microenvironments In pan-Cancer settings
+
 
 ## Installation
 
@@ -154,6 +154,7 @@ create_summary_matrix() returns a matrix that provides the final classification 
 results_lung <- create_summary_matrix(prediction_list = cell_predictions, use_CNVs = F, modify_results = T, mc.cores = 1, raw_counts = lung_cancer_demo_data, min_prop = 0.5 )
 ```
 ```{r}
+table(results_lung$scATOMIC_pred)
 head(results_lung)
 ```
 

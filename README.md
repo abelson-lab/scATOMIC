@@ -6,10 +6,10 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-![](img/scATOMIC_pipeline.png)
+**S**ingle **C**ell **A**nnotation of **T**um**O**ur
+**M**icroenvironments **I**n pan-**C**ancer settings
 
-Single Cell Annotation of TumOur Microenvironments In pan-Cancer
-settings
+![](img/scATOMIC_pipeline.png)
 
 ## Installation
 
@@ -159,6 +159,32 @@ classification for each cell as well as the classification at each layer
 ``` r
 results_lung <- create_summary_matrix(prediction_list = cell_predictions, use_CNVs = F, modify_results = T, mc.cores = 1, raw_counts = lung_cancer_demo_data, min_prop = 0.5 )
 ```
+
+``` r
+table(results_lung$scATOMIC_pred)
+```
+
+    ## 
+    ##                     Any Cell                       B cell 
+    ##                          104                          163 
+    ##                   Blood Cell            CD4 or CD8 T cell 
+    ##                            6                            4 
+    ##                  CD4+ T cell             CD8 T or NK cell 
+    ##                          412                           32 
+    ##                  CD8+ T cell                          cDC 
+    ##                          337                          324 
+    ##            Endothelial Cells                  Fibroblasts 
+    ##                          109                           89 
+    ##             Lung Cancer Cell                   Macrophage 
+    ##                          598                          389 
+    ## Macrophage or Dendritic Cell          Natural killer cell 
+    ##                            1                          103 
+    ##               Non Blood Cell           Normal Tissue Cell 
+    ##                           65                           69 
+    ##                          pDC                  Plasmablast 
+    ##                           18                           79 
+    ##          Smooth Muscle Cells                 T or NK Cell 
+    ##                           93                            2
 
 ``` r
 head(results_lung)
@@ -424,14 +450,12 @@ table(results_Pal_0125$scATOMIC_pred)
 ```
 
     ## 
-    ##            Any Cell          Blood Cell         CD4+ T cell    CD8 T or NK cell 
-    ##                  18                   6                   2                   1 
-    ##         CD8+ T cell                 cDC   Endothelial Cells                 ER+ 
-    ##                  78                  60                  16                3728 
-    ##         Fibroblasts      Non Blood Cell    Non Stromal Cell  Normal Tissue Cell 
-    ##                 171                   5                   3                 119 
-    ## Smooth Muscle Cells        Stromal Cell 
-    ##                  24                   6
+    ##            Any Cell          Blood Cell         CD4+ T cell         CD8+ T cell 
+    ##                  17                   3                   1                  82 
+    ##                 cDC   Endothelial Cells                 ER+         Fibroblasts 
+    ##                  61                  16                3714                 164 
+    ##      Non Blood Cell  Normal Tissue Cell Smooth Muscle Cells        Stromal Cell 
+    ##                  19                 130                  24                   6
 
 The breast cancer cells are now classified as ER+ cells.
 
