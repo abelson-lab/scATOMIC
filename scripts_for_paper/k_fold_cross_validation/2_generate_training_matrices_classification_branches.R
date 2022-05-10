@@ -1,0 +1,169 @@
+#/usr/bin/Rscript
+#set up matrices for training each classification branch
+#for feature selection we use the unbalanced matrices (not class balanced)
+#for training we use class balanced matrices (after k-fold split)
+#layer 1
+library(dplyr)
+library(data.table)
+library(parallel)
+library(dplyr)
+library(Matrix)
+library(Seurat)
+layer_name <- as.numeric(commandArgs(trailingOnly = T))
+#load full layer 1 matrix for each fold
+
+#filter dataset to include cells of interest
+if(layer_name == "layer_2_non_blood"){
+  cells_keep <- c("Bile Duct Cancer","Bladder Cancer","Bone Cancer","Brain Cancer",
+                  "Breast Cancer","Colon/Colorectal Cancer","Endometrial/Uterine Cancer","Endothelial Cells",
+                  "Esophageal Cancer","Fibroblasts","Gallbladder Cancer","Gastric Cancer",
+                  "Glial Cells","Kidney Cancer","Liver Cancer","Lung Cancer",
+                  "Myofibroblasts","Neuroblastoma","Oligodendrocytes","Ovarian Cancer",
+                  "Pancreatic Cancer","Prostate Cancer","Rhabdomyosarcoma","Sarcoma",
+                  "Skin Cancer","Smooth Muscle Cells")
+  balanced_number <- 5000
+
+} else if(layer_name == "layer_2_blood"){
+  cells_keep <- c("B cell","CD4+ T cell",
+                  "CD8+ T cell", "HSPC",
+                  "Macrophage","Natural killer cell", "Plasmablast", "cDC", "pDC", "ASDC")
+  balanced_number <- 10000
+
+} else if(layer_name == "layer_3_B_cell"){
+  cells_keep <- c("B cell", "Plasmablast")
+  balanced_number <- 10000
+
+} else if(layer_name == "layer_3_MDC"){
+  cells_keep <- c("cDC", "pDC", "ASDC", "Macrophage")
+  balanced_number <- 10000
+
+} else if(layer_name == "layer_3_non_stromal"){
+  cells_keep <- c("Bile Duct Cancer","Bladder Cancer","Bone Cancer","Brain Cancer",
+                  "Breast Cancer","Colon/Colorectal Cancer","Endometrial/Uterine Cancer",
+                  "Esophageal Cancer","Gallbladder Cancer","Gastric Cancer",
+                  "Kidney Cancer","Liver Cancer","Lung Cancer",
+                  "Neuroblastoma","Ovarian Cancer",
+                  "Pancreatic Cancer","Prostate Cancer","Rhabdomyosarcoma","Sarcoma",
+                  "Skin Cancer")
+  balanced_number <- 5000
+
+} else if(layer_name == "layer_3_stromal"){
+  cells_keep <- c("Endothelial Cells",
+                  "Fibroblasts",
+                  "Myofibroblasts","Smooth Muscle Cells")
+  balanced_number <- 5000
+
+} else if(layer_name == "layer_3_TNK"){
+  cells_keep <- c("CD4+ T cell",
+                  "CD8+ T cell", "Natural killer cell")
+  balanced_number <- 10000
+
+} else if(layer_name == "layer_4_CD4_CD8"){
+  cells_keep <- c("CD4+ T cell",
+                  "CD8+ T cell")
+  balanced_number <- 10000
+
+} else if(layer_name == "layer_4_CD8_NK"){
+  cells_keep <- c("Natural killer cell",
+                  "CD8+ T cell")
+  balanced_number <- 10000
+
+} else if(layer_name == "layer_4_DC"){
+  cells_keep <- c("cDC","pDC",
+                  "ASDC")
+  balanced_number <- 10000
+
+} else if(layer_name == "layer_4_non_GI"){
+  cells_keep <- c("Breast Cancer","Endometrial/Uterine Cancer",
+                  "Kidney Cancer","Lung Cancer",
+                  "Ovarian Cancer",
+                  "Prostate Cancer")
+  balanced_number <- 5000
+
+} else if(layer_name == "layer_4_GI"){
+  cells_keep <- c("Bile Duct Cancer","Bladder Cancer","Colon/Colorectal Cancer",
+                  "Esophageal Cancer","Gallbladder Cancer","Gastric Cancer",
+                  "Liver Cancer","Pancreatic Cancer")
+  balanced_number <- 5000
+
+} else if(layer_name == "layer_4_soft_tissue_neuro"){
+  cells_keep <- c("Bone Cancer","Brain Cancer","Neuroblastoma",
+                  "Lung Cancer", "Rhabdomyosarcoma","Sarcoma",
+                  "Skin Cancer")
+  balanced_number <- 5000
+
+} else if(layer_name == "layer_5_soft_tissue_neuro"){
+  cells_keep <- c("Bone Cancer","Brain Cancer",
+                  "Neuroblastoma","Rhabdomyosarcoma","Sarcoma")
+  balanced_number <- 5000
+
+} else if(layer_name == "layer_5_breast_lung_prostate"){
+  cells_keep <- c("Breast Cancer", "Lung Cancer", "Prostate Cancer")
+  balanced_number <- 10000
+
+} else if(layer_name == "layer_5_ov_endo_kid"){
+  cells_keep <- c("Endometrial/Uterine Cancer","Kidney Cancer","Ovarian Cancer")
+  balanced_number <- 10000
+
+} else if(layer_name == "layer_5_digestive"){
+  cells_keep <- c("Colon/Colorectal Cancer",
+                  "Esophageal Cancer","Gastric Cancer")
+  balanced_number <- 10000
+
+} else if(layer_name == "layer_5_biliary"){
+  cells_keep <- c("Bile Duct Cancer","Bladder Cancer", "Gallbladder Cancer",
+                  "Liver Cancer","Pancreatic Cancer")
+  balanced_number <- 10000
+
+} else if(layer_name == "layer_6_soft_tissue"){
+  cells_keep <- c("Bone Cancer","Rhabdomyosarcoma","Sarcoma")
+  balanced_number <- 10000
+
+} else if(layer_name == "layer_6_brain_nbm"){
+  cells_keep <- c("Brain Cancer","Neuroblastoma")
+  balanced_number <- 10000
+
+}
+#filter dataset
+
+
+
+
+for(j in 1:5){
+  training <- readRDS(paste0("/unbalanced_set/unbalanced_training_count_mat_layer_1_fold_", j, ".RDS"))
+  training_metadata <- readRDS(paste0("/unbalanced_set/unbalanced_training_metadata_layer_1_fold_", j, ".RDS"))
+  training_metadata <- training_metadata[which(training_metadata$cell_type_merged_modified %in% cells_keep),]
+  training <- training[,row.names(training_metadata)]
+  training_seurat <- CreateSeuratObject(training)
+  nFeatureRNA <- training_seurat@meta.data$nFeature_RNA
+  names(nFeatureRNA) <- row.names(training_seurat@meta.data)
+  rm(training_seurat)
+  training <- training[, intersect(names(which(nFeatureRNA > 500 & nFeatureRNA < 6000)), colnames(training))]
+  training_metadata <- training_metadata[colnames(training), ]
+  saveRDS(training, paste0("/unbalanced_set/unbalanced_training_count_mat_", layer_name,"_fold_", j, ".RDS"))
+  saveRDS(training_metadata, paste0("/unbalanced_set/unbalanced_training_metadata_", layer_name,"_fold_", j, ".RDS"))
+
+  #sample each class
+  cell_types_merged <- levels(as.factor(as.character(training_metadata$cell_type_merged_modified)))
+  index_keep <- c()
+  for(i in 1:length(cell_types_merged)){
+    index_cell_type <- which(training_metadata$cell_type_merged_modified == cell_types_merged[i])
+    if(length(index_cell_type) >= balanced_number){
+      set.seed(456)
+      index_keep <- c(index_keep, sample(index_cell_type, balanced_number))
+    } else if (length(index_cell_type) < balanced_number){
+      index_keep <- c(index_keep, sample(index_cell_type, balanced_number, replace = T))
+    }
+  }
+  training_metadata$cell_type_merged_modified <- as.factor(as.character(training_metadata$cell_type_merged_modified))
+  training_metadata <- training_metadata[index_keep,]
+  training <- training[,index_keep]
+
+  saveRDS(training, paste0("/split_by_folds/balanced_training_count_mat_", layer_name,"_fold_", j, ".RDS"))
+  saveRDS(training_metadata, paste0("/split_by_folds/balanced_training_metadata_", layer_name,"_fold_", j, ".RDS"))
+  print(j)
+}
+
+
+
+

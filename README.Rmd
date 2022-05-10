@@ -64,11 +64,13 @@ if(!require(Rmagic)) install.packages("Rmagic")
 ```
 
 
-In a terminal, run the following command to install the Python repository:
+In a terminal, run the following command in command line to install the Python repository:
 
+```{bash, eval=FALSE}
 pip install --user magic-impute
+```
 
-Often the python magic module is not loading properly in R and the following is producing FALSE:
+Often the python magic module is not loading properly in R and the following in R is producing FALSE:
 ```{r, eval=FALSE}
 Rmagic::pymagic_is_available()
 ```

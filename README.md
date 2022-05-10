@@ -54,13 +54,15 @@ dependencies:
 if(!require(Rmagic)) install.packages("Rmagic")
 ```
 
-In a terminal, run the following command to install the Python
-repository:
+In a terminal, run the following command in command line to install the
+Python repository:
 
-pip install –user magic-impute
+``` bash
+pip install --user magic-impute
+```
 
 Often the python magic module is not loading properly in R and the
-following is producing FALSE:
+following in R is producing FALSE:
 
 ``` r
 Rmagic::pymagic_is_available()
@@ -197,27 +199,27 @@ table(results_lung$scATOMIC_pred)
 
     ## 
     ##                     Any Cell                       B cell 
-    ##                          101                          163 
+    ##                          104                          163 
     ##        B cell or Plasmablast                   Blood Cell 
     ##                            1                            4 
     ##            CD4 or CD8 T cell                  CD4+ T cell 
-    ##                            3                          408 
+    ##                            4                          406 
     ##             CD8 T or NK cell                  CD8+ T cell 
-    ##                           34                          346 
-    ##                          cDC            Endothelial Cells 
-    ##                          269                          109 
-    ##                  Fibroblasts             Lung Cancer Cell 
-    ##                           91                          598 
-    ##                   Macrophage Macrophage or Dendritic Cell 
-    ##                          389                           56 
-    ##          Natural killer cell               Non Blood Cell 
-    ##                          100                           66 
-    ##           Normal Tissue Cell                          pDC 
-    ##                           69                           18 
-    ##                  Plasmablast          Smooth Muscle Cells 
-    ##                           79                           91 
-    ##                 T or NK Cell 
-    ##                            2
+    ##                           33                          343 
+    ##                          cDC               Dendritic Cell 
+    ##                          225                            1 
+    ##            Endothelial Cells                  Fibroblasts 
+    ##                          109                           89 
+    ##             Lung Cancer Cell                   Macrophage 
+    ##                          599                          388 
+    ## Macrophage or Dendritic Cell          Natural killer cell 
+    ##                          100                          103 
+    ##               Non Blood Cell           Normal Tissue Cell 
+    ##                           67                           67 
+    ##                          pDC                  Plasmablast 
+    ##                           18                           77 
+    ##          Smooth Muscle Cells                 T or NK Cell 
+    ##                           93                            3
 
 ``` r
 head(results_lung)
@@ -359,7 +361,7 @@ We can plot our results via:
 DimPlot(lung_seurat, group.by = "scATOMIC_pred", ) + ggtitle("Lung Demo Dataset") + labs(fill="scATOMIC Annotations") 
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
 ## Training new subclassification layers
 
@@ -484,13 +486,13 @@ table(results_Pal_0125$scATOMIC_pred)
 
     ## 
     ##            Any Cell          Blood Cell         CD4+ T cell    CD8 T or NK cell 
-    ##                  16                   4                   2                   1 
+    ##                  17                   2                   1                   1 
     ##         CD8+ T cell                 cDC   Endothelial Cells                 ER+ 
-    ##                  79                  59                  14                3735 
-    ##         Fibroblasts      Non Blood Cell    Non Stromal Cell  Normal Tissue Cell 
-    ##                 171                   5                   2                 117 
-    ## Smooth Muscle Cells        Stromal Cell 
-    ##                  24                   8
+    ##                  79                  61                  16                3715 
+    ##         Fibroblasts      Non Blood Cell  Normal Tissue Cell Smooth Muscle Cells 
+    ##                 174                  21                 121                  24 
+    ##        Stromal Cell 
+    ##                   5
 
 The breast cancer cells are now classified as ER+ cells.
 
