@@ -22,6 +22,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Installation
 
+Note: Mac users require Xcode Command Line Tools for the installation. 
+To check if these are installed run the following in terminal:
+
+```{bash}
+xcode-select -p
+```
+
+
+Install these by running the following in terminal:
+
+```{bash, eval=FALSE}
+xcode-select --install
+```
+
+
+
 To install scATOMIC you will need to use the devtools package. We recommend you install other dependencies first.
 Note: The package "cutoff" we use is a developer package that is different from the CRAN "cutoff" package.
 
@@ -52,12 +68,12 @@ In a terminal, run the following command to install the Python repository:
 
 pip install --user magic-impute
 
-If the python magic module is not loading properly and the following is producing FALSE:
+Often the python magic module is not loading properly in R and the following is producing FALSE:
 ```{r, eval=FALSE}
 Rmagic::pymagic_is_available()
 ```
 
-Run to resolve the issue:
+To resolve this issue run:
 
 ```{r,eval=FALSE}
 library(reticulate)
@@ -65,7 +81,6 @@ library(Rmagic)
 install.magic()
 pymagic_is_available()
 ```
-
 
 
 For more information visit https://rdrr.io/cran/Rmagic/f/README.md#installation
