@@ -30,7 +30,7 @@ xcode-select -p
 ```
 
 
-Install these by running the following in terminal:
+Install these by running the following in terminal if CommandlLineTools are not found:
 
 ```{bash, eval=FALSE}
 xcode-select --install

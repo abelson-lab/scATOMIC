@@ -22,7 +22,8 @@ xcode-select -p
 
     ## /Library/Developer/CommandLineTools
 
-Install these by running the following in terminal:
+Install these by running the following in terminal if CommandlLineTools
+are not found:
 
 ``` bash
 xcode-select --install
@@ -198,28 +199,20 @@ table(results_lung$scATOMIC_pred)
 ```
 
     ## 
-    ##                     Any Cell                       B cell 
-    ##                          104                          163 
-    ##        B cell or Plasmablast                   Blood Cell 
-    ##                            1                            4 
-    ##            CD4 or CD8 T cell                  CD4+ T cell 
-    ##                            4                          406 
-    ##             CD8 T or NK cell                  CD8+ T cell 
-    ##                           33                          343 
-    ##                          cDC               Dendritic Cell 
-    ##                          225                            1 
-    ##            Endothelial Cells                  Fibroblasts 
-    ##                          109                           89 
-    ##             Lung Cancer Cell                   Macrophage 
-    ##                          599                          388 
-    ## Macrophage or Dendritic Cell          Natural killer cell 
-    ##                          100                          103 
-    ##               Non Blood Cell           Normal Tissue Cell 
-    ##                           67                           67 
-    ##                          pDC                  Plasmablast 
-    ##                           18                           77 
-    ##          Smooth Muscle Cells                 T or NK Cell 
-    ##                           93                            3
+    ##              Any Cell                B cell B cell or Plasmablast 
+    ##                   101                   162                     1 
+    ##            Blood Cell     CD4 or CD8 T cell           CD4+ T cell 
+    ##                     5                     6                   407 
+    ##      CD8 T or NK cell           CD8+ T cell                   cDC 
+    ##                    34                   342                   326 
+    ##     Endothelial Cells           Fibroblasts      Lung Cancer Cell 
+    ##                   109                    90                   603 
+    ##            Macrophage   Natural killer cell        Non Blood Cell 
+    ##                   388                   101                    62 
+    ##    Normal Tissue Cell                   pDC           Plasmablast 
+    ##                    68                    18                    80 
+    ##   Smooth Muscle Cells          T or NK Cell 
+    ##                    92                     2
 
 ``` r
 head(results_lung)
@@ -486,13 +479,13 @@ table(results_Pal_0125$scATOMIC_pred)
 
     ## 
     ##            Any Cell          Blood Cell         CD4+ T cell    CD8 T or NK cell 
-    ##                  17                   2                   1                   1 
+    ##                  14                   3                   3                   1 
     ##         CD8+ T cell                 cDC   Endothelial Cells                 ER+ 
-    ##                  79                  61                  16                3715 
-    ##         Fibroblasts      Non Blood Cell  Normal Tissue Cell Smooth Muscle Cells 
-    ##                 174                  21                 121                  24 
-    ##        Stromal Cell 
-    ##                   5
+    ##                  79                  54                  16                3755 
+    ##         Fibroblasts      Non Blood Cell    Non Stromal Cell  Normal Tissue Cell 
+    ##                 159                   4                   4                 117 
+    ## Smooth Muscle Cells        Stromal Cell 
+    ##                  23                   5
 
 The breast cancer cells are now classified as ER+ cells.
 
