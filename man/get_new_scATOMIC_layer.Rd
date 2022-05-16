@@ -9,7 +9,6 @@ get_new_scATOMIC_layer(
   cell_type_metadata,
   output_dir,
   layer_name,
-  mc_cores,
   n_cells_replicate = 5000,
   n_trees = 500,
   custom_gene_list = NULL
@@ -24,13 +23,13 @@ get_new_scATOMIC_layer(
 
 \item{layer_name}{name of resulting layer}
 
-\item{mc_cores}{number of cores for parallel computing, we suggest using at least 5 cores to speed up process}
-
-\item{n_cells_replicate}{number of cells for balancing each class, we suggest 10000 if <5 cell types, 500 if < 20 cell types and 2500 if > 20}
+\item{n_cells_replicate}{number of cells for balancing each class, we suggest 10000 if <5 cell types, 5000 if < 20 cell types and 2500 if > 20}
 
 \item{n_trees}{number of trees in random forest}
 
 \item{custom_gene_list}{vector of features to use, if user wants to provide their own genes.}
+
+\item{mc_cores}{number of cores for parallel computing, we suggest using at least 5 cores to speed up process}
 }
 \value{
 list of new rf model and selected features

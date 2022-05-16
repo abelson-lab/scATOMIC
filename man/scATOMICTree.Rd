@@ -11,7 +11,7 @@ scATOMICTree(
   collapsed = T,
   save_results = T,
   save_dir = getwd(),
-  project_name,
+  project_name = "test_project",
   width = NULL,
   height = NULL,
   fontSize = 10,

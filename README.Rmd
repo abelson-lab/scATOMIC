@@ -312,15 +312,34 @@ Wu_et_al_breast_count_mat <- Wu_et_al_breast_count_mat[,row.names(Wu_et_al_breas
 table(Wu_et_al_breast_metadata$subtype)
 
 ```
+We recommend using a high performance compute cluster to train new models as they can often include large references requiring large memory usage.
+For this demo we are taking a sample of the data to speed up training and run it on a laptop:
+```{r, message=FALSE, warning=FALSE}
+cancer_types <- levels(as.factor(Wu_et_al_breast_metadata$subtype))
+#sample 3000 cells from each type if size is greater than 3000
+index_subset <- c()
+for(i in 1:length(cancer_types)){
+  index_cancer <- row.names(Wu_et_al_breast_metadata)[which(Wu_et_al_breast_metadata$subtype == cancer_types[i])]
+  if(length(index_cancer) > 3000){
+    index_subset <- c(index_subset, index_cancer[sample(1:length(index_cancer), size = 3000)])
+  } else{
+    index_subset <- c(index_subset, index_cancer)
+  }
+}
+Wu_et_al_breast_count_mat <- Wu_et_al_breast_count_mat[,index_subset]
+Wu_et_al_breast_metadata <- Wu_et_al_breast_metadata[index_subset,]
+```
+
+
 
 To train a new layer we must create a directory to save the model to and we run the get_new_scATOMIC_layer() function
-
+To speed up the demo we use only 100 trees here
 ```{r, eval=FALSE}
 #change "~/Downloads" to path containing "Wu_etal_2021_BRCA_scRNASeq/"
 dir.create("~/Downloads/Wu_etal_2021_BRCA_scRNASeq/breast_subclassification_layer")
 
 breast_cancer_subclassification <- get_new_scATOMIC_layer(training_data = Wu_et_al_breast_count_mat,cell_type_metadata = Wu_et_al_breast_metadata$subtype, output_dir = "~/Downloads/Wu_etal_2021_BRCA_scRNASeq/breast_subclassification_layer/",
-                       mc_cores = 6, layer_name = "breast_subclassification", n_cells_replicate = 10000, n_trees = 500)
+                        layer_name = "breast_subclassification", n_cells_replicate = 5000, n_trees = 100)
 
 ```
 

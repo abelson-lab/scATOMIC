@@ -36,7 +36,7 @@
 #' tree_results_non_interactive <- scATOMICTree(predictions_list = cell_predictions, summary_matrix = results_lung,
 #' interactive_mode = F, save_results = F)
 #' }
-scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T, collapsed = T, save_results = T, save_dir = getwd(), project_name, width =NULL, height= NULL,fontSize = 10,linkLength = 150, ncell_size = T){
+scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T, collapsed = T, save_results = T, save_dir = getwd(), project_name = "test_project", width =NULL, height= NULL,fontSize = 10,linkLength = 150, ncell_size = T){
   layer_median_scores <- list()
   layer_IQRs <- list()
   for(i in 1:length(predictions_list)){

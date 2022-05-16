@@ -199,20 +199,26 @@ table(results_lung$scATOMIC_pred)
 ```
 
     ## 
-    ##              Any Cell                B cell B cell or Plasmablast 
-    ##                   101                   162                     1 
-    ##            Blood Cell     CD4 or CD8 T cell           CD4+ T cell 
-    ##                     5                     6                   407 
-    ##      CD8 T or NK cell           CD8+ T cell                   cDC 
-    ##                    34                   342                   326 
-    ##     Endothelial Cells           Fibroblasts      Lung Cancer Cell 
-    ##                   109                    90                   603 
-    ##            Macrophage   Natural killer cell        Non Blood Cell 
-    ##                   388                   101                    62 
-    ##    Normal Tissue Cell                   pDC           Plasmablast 
-    ##                    68                    18                    80 
-    ##   Smooth Muscle Cells          T or NK Cell 
-    ##                    92                     2
+    ##                     Any Cell                       B cell 
+    ##                          103                          162 
+    ##                   Blood Cell            CD4 or CD8 T cell 
+    ##                            7                            6 
+    ##                  CD4+ T cell             CD8 T or NK cell 
+    ##                          400                           32 
+    ##                  CD8+ T cell                          cDC 
+    ##                          344                          223 
+    ##            Endothelial Cells                  Fibroblasts 
+    ##                          109                           90 
+    ##             Lung Cancer Cell                   Macrophage 
+    ##                          605                          280 
+    ## Macrophage or Dendritic Cell          Natural killer cell 
+    ##                          211                          104 
+    ##               Non Blood Cell           Normal Tissue Cell 
+    ##                           66                           61 
+    ##                          pDC                  Plasmablast 
+    ##                           18                           80 
+    ##          Smooth Muscle Cells                 T or NK Cell 
+    ##                           92                            4
 
 ``` r
 head(results_lung)
@@ -232,34 +238,41 @@ head(results_lung)
     ## AAACCTGTCGAATGCT-1 Tissue_Cell_Normal_or_Cancer             Non Stromal Cell
     ## AAACCTGTCTGAGGGA-1        unclassified_any_cell        unclassified_any_cell
     ## AAACGGGAGTAGATGT-1 Tissue_Cell_Normal_or_Cancer             Non Stromal Cell
-    ##                                   layer_3                   layer_4
-    ## AAACCTGAGACCGGAT-1             Macrophage                Macrophage
-    ## AAACCTGCAGTCACTA-1      CD4 or CD8 T cell               CD4+ T cell
-    ## AAACCTGGTAAGTAGT-1             Macrophage                Macrophage
-    ## AAACCTGTCGAATGCT-1 Non GI Epithelial Cell Breast/Lung/Prostate Cell
-    ## AAACCTGTCTGAGGGA-1  unclassified_any_cell     unclassified_any_cell
-    ## AAACGGGAGTAGATGT-1 Non GI Epithelial Cell Breast/Lung/Prostate Cell
-    ##                                  layer_5          layer_6    scATOMIC_pred
-    ## AAACCTGAGACCGGAT-1            Macrophage       Macrophage       Macrophage
-    ## AAACCTGCAGTCACTA-1           CD4+ T cell      CD4+ T cell      CD4+ T cell
-    ## AAACCTGGTAAGTAGT-1            Macrophage       Macrophage       Macrophage
-    ## AAACCTGTCGAATGCT-1      Lung Cancer Cell Lung Cancer Cell Lung Cancer Cell
-    ## AAACCTGTCTGAGGGA-1 unclassified_any_cell         Any Cell         Any Cell
-    ## AAACGGGAGTAGATGT-1      Lung Cancer Cell Lung Cancer Cell Lung Cancer Cell
-    ##                         S.Score    G2M.Score Phase     old.ident
-    ## AAACCTGAGACCGGAT-1 -0.006630921 -0.047453336    G1 SeuratProject
-    ## AAACCTGCAGTCACTA-1 -0.046677709 -0.006673286    G1 SeuratProject
-    ## AAACCTGGTAAGTAGT-1  0.015462403  0.063293498   G2M SeuratProject
-    ## AAACCTGTCGAATGCT-1 -0.049247934 -0.064310971    G1 SeuratProject
-    ## AAACCTGTCTGAGGGA-1 -0.025618571 -0.023923499    G1 SeuratProject
-    ## AAACGGGAGTAGATGT-1 -0.038660836 -0.129262025    G1 SeuratProject
-    ##                    RNA_snn_res.0.2 seurat_clusters pan_cancer_cluster
-    ## AAACCTGAGACCGGAT-1               2               2             Normal
-    ## AAACCTGCAGTCACTA-1               0               0             Normal
-    ## AAACCTGGTAAGTAGT-1               2               2             Normal
-    ## AAACCTGTCGAATGCT-1               1               1             Cancer
-    ## AAACCTGTCTGAGGGA-1               9               9             Normal
-    ## AAACGGGAGTAGATGT-1               1               1             Cancer
+    ##                                          layer_3                       layer_4
+    ## AAACCTGAGACCGGAT-1                    Macrophage                    Macrophage
+    ## AAACCTGCAGTCACTA-1             CD4 or CD8 T cell                   CD4+ T cell
+    ## AAACCTGGTAAGTAGT-1 unclassified_macrophage_or_DC unclassified_macrophage_or_DC
+    ## AAACCTGTCGAATGCT-1        Non GI Epithelial Cell     Breast/Lung/Prostate Cell
+    ## AAACCTGTCTGAGGGA-1         unclassified_any_cell         unclassified_any_cell
+    ## AAACGGGAGTAGATGT-1        Non GI Epithelial Cell     Breast/Lung/Prostate Cell
+    ##                                          layer_5                      layer_6
+    ## AAACCTGAGACCGGAT-1                    Macrophage                   Macrophage
+    ## AAACCTGCAGTCACTA-1                   CD4+ T cell                  CD4+ T cell
+    ## AAACCTGGTAAGTAGT-1 unclassified_macrophage_or_DC Macrophage or Dendritic Cell
+    ## AAACCTGTCGAATGCT-1              Lung Cancer Cell             Lung Cancer Cell
+    ## AAACCTGTCTGAGGGA-1         unclassified_any_cell                     Any Cell
+    ## AAACGGGAGTAGATGT-1              Lung Cancer Cell             Lung Cancer Cell
+    ##                                   scATOMIC_pred      S.Score    G2M.Score Phase
+    ## AAACCTGAGACCGGAT-1                   Macrophage -0.006630921 -0.047453336    G1
+    ## AAACCTGCAGTCACTA-1                  CD4+ T cell -0.046677709 -0.006673286    G1
+    ## AAACCTGGTAAGTAGT-1 Macrophage or Dendritic Cell  0.015462403  0.063293498   G2M
+    ## AAACCTGTCGAATGCT-1             Lung Cancer Cell -0.049247934 -0.064310971    G1
+    ## AAACCTGTCTGAGGGA-1                     Any Cell -0.025618571 -0.023923499    G1
+    ## AAACGGGAGTAGATGT-1             Lung Cancer Cell -0.038660836 -0.129262025    G1
+    ##                        old.ident RNA_snn_res.0.2 seurat_clusters
+    ## AAACCTGAGACCGGAT-1 SeuratProject               2               2
+    ## AAACCTGCAGTCACTA-1 SeuratProject               0               0
+    ## AAACCTGGTAAGTAGT-1 SeuratProject               2               2
+    ## AAACCTGTCGAATGCT-1 SeuratProject               1               1
+    ## AAACCTGTCTGAGGGA-1 SeuratProject               9               9
+    ## AAACGGGAGTAGATGT-1 SeuratProject               1               1
+    ##                    pan_cancer_cluster
+    ## AAACCTGAGACCGGAT-1             Normal
+    ## AAACCTGCAGTCACTA-1             Normal
+    ## AAACCTGGTAAGTAGT-1             Normal
+    ## AAACCTGTCGAATGCT-1             Cancer
+    ## AAACCTGTCTGAGGGA-1             Normal
+    ## AAACGGGAGTAGATGT-1             Cancer
 
 ## scATOMIC CNV mode
 
@@ -414,15 +427,37 @@ table(Wu_et_al_breast_metadata$subtype)
     ##   ER+ HER2+  TNBC 
     ## 11878  1775 10836
 
+We recommend using a high performance compute cluster to train new
+models as they can often include large references requiring large memory
+usage. For this demo we are taking a sample of the data to speed up
+training and run it on a laptop:
+
+``` r
+cancer_types <- levels(as.factor(Wu_et_al_breast_metadata$subtype))
+#sample 3000 cells from each type if size is greater than 3000
+index_subset <- c()
+for(i in 1:length(cancer_types)){
+  index_cancer <- row.names(Wu_et_al_breast_metadata)[which(Wu_et_al_breast_metadata$subtype == cancer_types[i])]
+  if(length(index_cancer) > 3000){
+    index_subset <- c(index_subset, index_cancer[sample(1:length(index_cancer), size = 3000)])
+  } else{
+    index_subset <- c(index_subset, index_cancer)
+  }
+}
+Wu_et_al_breast_count_mat <- Wu_et_al_breast_count_mat[,index_subset]
+Wu_et_al_breast_metadata <- Wu_et_al_breast_metadata[index_subset,]
+```
+
 To train a new layer we must create a directory to save the model to and
-we run the get\_new\_scATOMIC\_layer() function
+we run the get\_new\_scATOMIC\_layer() function To speed up the demo we
+use only 100 trees here
 
 ``` r
 #change "~/Downloads" to path containing "Wu_etal_2021_BRCA_scRNASeq/"
 dir.create("~/Downloads/Wu_etal_2021_BRCA_scRNASeq/breast_subclassification_layer")
 
 breast_cancer_subclassification <- get_new_scATOMIC_layer(training_data = Wu_et_al_breast_count_mat,cell_type_metadata = Wu_et_al_breast_metadata$subtype, output_dir = "~/Downloads/Wu_etal_2021_BRCA_scRNASeq/breast_subclassification_layer/",
-                       mc_cores = 6, layer_name = "breast_subclassification", n_cells_replicate = 10000, n_trees = 500)
+                        layer_name = "breast_subclassification", n_cells_replicate = 5000, n_trees = 100)
 ```
 
 To show how to use the new subclassification layer, we apply it to an
@@ -478,14 +513,34 @@ table(results_Pal_0125$scATOMIC_pred)
 ```
 
     ## 
-    ##            Any Cell          Blood Cell         CD4+ T cell    CD8 T or NK cell 
-    ##                  14                   3                   3                   1 
-    ##         CD8+ T cell                 cDC   Endothelial Cells                 ER+ 
-    ##                  79                  54                  16                3755 
-    ##         Fibroblasts      Non Blood Cell    Non Stromal Cell  Normal Tissue Cell 
-    ##                 159                   4                   4                 117 
-    ## Smooth Muscle Cells        Stromal Cell 
-    ##                  23                   5
+    ##                                   Any Cell 
+    ##                                         14 
+    ##                                 Blood Cell 
+    ##                                          5 
+    ##                                CD4+ T cell 
+    ##                                          3 
+    ##                           CD8 T or NK cell 
+    ##                                          1 
+    ##                                CD8+ T cell 
+    ##                                         79 
+    ##                                        cDC 
+    ##                                         58 
+    ##                          Endothelial Cells 
+    ##                                         16 
+    ##                                        ER+ 
+    ##                                       3707 
+    ##                                Fibroblasts 
+    ##                                        161 
+    ##                             Non Blood Cell 
+    ##                                         18 
+    ##                         Normal Tissue Cell 
+    ##                                        143 
+    ##                        Smooth Muscle Cells 
+    ##                                         24 
+    ##                               Stromal Cell 
+    ##                                          5 
+    ## Unclassified_Cell_from_Breast Cancer Cells 
+    ##                                          3
 
 The breast cancer cells are now classified as ER+ cells.
 

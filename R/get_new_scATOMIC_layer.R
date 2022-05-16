@@ -5,7 +5,7 @@
 #' @param output_dir directory to save random forest and selected genes to
 #' @param layer_name name of resulting layer
 #' @param mc_cores number of cores for parallel computing, we suggest using at least 5 cores to speed up process
-#' @param n_cells_replicate number of cells for balancing each class, we suggest 10000 if <5 cell types, 500 if < 20 cell types and 2500 if > 20
+#' @param n_cells_replicate number of cells for balancing each class, we suggest 10000 if <5 cell types, 5000 if < 20 cell types and 2500 if > 20
 #' @param n_trees number of trees in random forest
 #' @param custom_gene_list vector of features to use, if user wants to provide their own genes.
 #'
@@ -23,7 +23,7 @@
 #'
 #' }
 
-get_new_scATOMIC_layer <- function(training_data, cell_type_metadata,output_dir,layer_name,mc_cores,n_cells_replicate = 5000, n_trees = 500, custom_gene_list = NULL){
+get_new_scATOMIC_layer <- function(training_data, cell_type_metadata,output_dir,layer_name,n_cells_replicate = 5000, n_trees = 500, custom_gene_list = NULL){
   print("Training new layers can take a long time...")
   library(dplyr)
   cell_type_metadata <- data.frame(cell_type_metadata)
@@ -170,22 +170,18 @@ get_new_scATOMIC_layer <- function(training_data, cell_type_metadata,output_dir,
   colnames(training_scaled_fractions_scRNA) <- names_genes
   training_scaled_fractions_scRNA <- na.omit(training_scaled_fractions_scRNA)
   print("training started")
-  doParallel::registerDoParallel(cores=mc_cores)
-  n_tree_per_core <- round(n_trees/mc_cores,digits = 0)
-  library(foreach)
+
   library(randomForest)
 
-  rf_classifier_cell_lines <- foreach::foreach(ntree=rep(n_tree_per_core, mc_cores), .combine=randomForest::combine,
-                                      .multicombine=TRUE, .packages='randomForest') %dopar% {
-                                        randomForest::randomForest(cell_class ~ ., data=training_scaled_fractions_scRNA, ntree=ntree)
-                                      }
-  foreach::registerDoSEQ()
+  rf_classifier_cell_lines <- randomForest::randomForest(cell_class ~ ., data=training_scaled_fractions_scRNA, ntree = n_trees)
+
+
+
   print("training ended")
   # keep genes expressed in at least 10 cells
   print("saving")
   rm(list = setdiff(ls(), c("rf_classifier_cell_lines", "output_dir", "layer_name",
                             "top_genes_unlisted")))
-  foreach::registerDoSEQ()
   stripRF <- function(cm) {
     cm$finalModel$predicted <- NULL
     cm$finalModel$oob.times <- NULL

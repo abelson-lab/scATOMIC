@@ -44,7 +44,8 @@ Imports:
     future,
     amap,
     tibble,
-    bbmle
+    bbmle,
+    DiagrammeR
 Remotes: 
     choisy/cutoff, 
     navinlabcode/copykat
