@@ -7,6 +7,9 @@
 #' @return Value to use as a cutoff
 #' @export
 automatic_threshold <- function(score, unimodal_nsd, bimodal_nsd){
+  if(.Platform$OS.type == "windows"){
+    mc.cores = 1
+  }
   score <- na.omit(score)
   if(length(score) < 50 | min(score) > 0.8){
     threshold = (min(score) - 0.01)

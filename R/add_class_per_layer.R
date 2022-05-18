@@ -7,6 +7,9 @@
 #' @export
 #'
 add_class_per_layer <- function(layer_predictions, layer){
+  if(.Platform$OS.type == "windows"){
+    mc.cores = 1
+  }
   if(layer == "layer_1"){
     cancer_normal_stromal_classes <- c( "Bile Duct Cancer","Bladder Cancer",  "Bone Cancer",     "Brain Cancer",    "Breast Cancer",
                                         "Colon/Colorectal Cancer","Endometrial/Uterine Cancer","Esophageal Cancer",

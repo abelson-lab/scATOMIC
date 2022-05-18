@@ -24,6 +24,9 @@
 #' cell_predictions <- run_scATOMIC(lung_cancer_demo_data)
 #' }
 run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores = (parallel::detectCores()-1), unimodal_nsd = 3, bimodal_nsd = 2, breast_mode = F, confidence_cutoff = T){
+  if(.Platform$OS.type == "windows"){
+    mc.cores = 1
+  }
   if(confidence_cutoff == T){
     prediction_list <- list()
     print("Starting Layer 1")

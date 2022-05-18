@@ -37,6 +37,9 @@
 #' interactive_mode = F, save_results = F)
 #' }
 scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T, collapsed = T, save_results = T, save_dir = getwd(), project_name = "test_project", width =NULL, height= NULL,fontSize = 10,linkLength = 150, ncell_size = T){
+  if(.Platform$OS.type == "windows"){
+    mc.cores = 1
+  }
   layer_median_scores <- list()
   layer_IQRs <- list()
   for(i in 1:length(predictions_list)){

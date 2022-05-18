@@ -29,6 +29,9 @@
 #' }
 create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE, modify_results = TRUE, mc.cores = (parallel::detectCores()-1),
                                              min_prop = 0.5, breast_mode = F, confidence_cutoff = T, pan_cancer = F){
+  if(.Platform$OS.type == "windows"){
+    mc.cores = 1
+  }
   if(confidence_cutoff == T){
     summary_master <- data.frame(row.names(prediction_list[["layer_1"]]),stringsAsFactors = F)
     colnames(summary_master) <- c("cell_names")

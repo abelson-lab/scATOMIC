@@ -28,8 +28,6 @@ get_new_scATOMIC_layer(
 \item{n_trees}{number of trees in random forest}
 
 \item{custom_gene_list}{vector of features to use, if user wants to provide their own genes.}
-
-\item{mc_cores}{number of cores for parallel computing, we suggest using at least 5 cores to speed up process}
 }
 \value{
 list of new rf model and selected features
@@ -42,7 +40,6 @@ get_new_scATOMIC_layer
 #visit github for more information on how to generate training datasets.
 breast_cancer_subclassification <- get_new_scATOMIC_layer(training_data = Wu_et_al_breast_count_mat,cell_type_metadata = Wu_et_al_breast_metadata$subtype,
 output_dir = "Wu_etal_2021_BRCA_scRNASeq/breast_subclassification_layer/",
-mc_cores = 6, layer_name = "breast_subclassification", n_cells_replicate = 10000, n_trees = 500)
 
 
 

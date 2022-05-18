@@ -19,6 +19,10 @@ copy_kat_no_heatmap <- function (rawmat = rawdata,summary_matrix,  id.type = "S"
                                  ngene.chr = 5, LOW.DR = 0.05, UP.DR = 0.1, win.size = 25, KS.cut = 0.1, sam.name = "", distance = "euclidean",
                                  n.cores = (detectCores() - 1))
 {
+  if(.Platform$OS.type == "windows"){
+    mc.cores = 1
+    n.cores = 1
+  }
   start_time <- Sys.time()
   norm.cell.names = row.names(summary_matrix)[which(summary_matrix$layer_1 == "Blood_Cell" |
                                                       summary_matrix$layer_2 %in% c("Endothelial Cells", "Stromal Cell", "Oligodendrocytes"))]

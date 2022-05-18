@@ -7,6 +7,9 @@
 #' @export
 #'
 class_for_cutoff <- function(cell_name, predictions){
+  if(.Platform$OS.type == "windows"){
+    mc.cores = 1
+  }
   layer_predictions <- predictions[cell_name,]
   if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
     class_to_use <- NA

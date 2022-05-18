@@ -4,7 +4,6 @@
 #' @param cell_type_metadata vector containing the cell type corresponding to each cell in training_data
 #' @param output_dir directory to save random forest and selected genes to
 #' @param layer_name name of resulting layer
-#' @param mc_cores number of cores for parallel computing, we suggest using at least 5 cores to speed up process
 #' @param n_cells_replicate number of cells for balancing each class, we suggest 10000 if <5 cell types, 5000 if < 20 cell types and 2500 if > 20
 #' @param n_trees number of trees in random forest
 #' @param custom_gene_list vector of features to use, if user wants to provide their own genes.
@@ -16,7 +15,6 @@
 #' #visit github for more information on how to generate training datasets.
 #' breast_cancer_subclassification <- get_new_scATOMIC_layer(training_data = Wu_et_al_breast_count_mat,cell_type_metadata = Wu_et_al_breast_metadata$subtype,
 #' output_dir = "Wu_etal_2021_BRCA_scRNASeq/breast_subclassification_layer/",
-#' mc_cores = 6, layer_name = "breast_subclassification", n_cells_replicate = 10000, n_trees = 500)
 #'
 #'
 #'
@@ -24,6 +22,9 @@
 #' }
 
 get_new_scATOMIC_layer <- function(training_data, cell_type_metadata,output_dir,layer_name,n_cells_replicate = 5000, n_trees = 500, custom_gene_list = NULL){
+  if(.Platform$OS.type == "windows"){
+    mc.cores = 1
+  }
   print("Training new layers can take a long time...")
   library(dplyr)
   cell_type_metadata <- data.frame(cell_type_metadata)

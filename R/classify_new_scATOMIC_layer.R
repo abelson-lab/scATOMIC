@@ -5,7 +5,7 @@
 #' @param rna_counts gene by cell count matrix of query dataset
 #' @param cell_names names of cells to be classified in layer. We recommend passing row.names of the output of create_summary_matrix() of cells that are to be further classified
 #' @param layer_name name of new layer, unclassified cells will receive the name Unclassified_Cell_from_layer_name
-#' @param mc_cores number of computing cores to use for parallel processing
+#' @param mc.cores number of computing cores to use for parallel processing
 #'
 #' @return returns a matrix containing cell classifications and each class score
 #' @export
@@ -14,7 +14,7 @@
 #' #visit github for more information on how to generate training datasets.
 #' breast_cancer_subclassification <- get_new_scATOMIC_layer(training_data = Wu_et_al_breast_count_mat,cell_type_metadata = Wu_et_al_breast_metadata$subtype,
 #' output_dir = "Wu_etal_2021_BRCA_scRNASeq/breast_subclassification_layer/",
-#' mc_cores = 6, layer_name = "breast_subclassification", n_cells_replicate = 10000, n_trees = 500)
+#' mc.cores = 6, layer_name = "breast_subclassification", n_cells_replicate = 10000, n_trees = 500)
 #' predictions_Pal_0125 <- run_scATOMIC(Pal_0125)
 #' results_Pal_0125 <- create_summary_matrix(prediction_list = predictions_Pal_0125)
 #' cells_to_subclassify <- row.names(results_Pal_0125)[which(results_Pal_0125$scATOMIC_pred == "Breast Cancer Cell")]
@@ -24,7 +24,10 @@
 #'
 #' }
 #'
-classify_new_scATOMIC_layer <- function(rf_model, selected_features, rna_counts, cell_names, layer_name, mc_cores){
+classify_new_scATOMIC_layer <- function(rf_model, selected_features, rna_counts, cell_names, layer_name, mc.cores){
+  if(.Platform$OS.type == "windows"){
+    mc.cores = 1
+  }
   normalized_counts <- Rmagic::library.size.normalize(t(as.matrix(rna_counts)))
   normalized_counts <- t(sqrt(normalized_counts))
   layer_predictions <- scATOMIC::classify_cells_RNA_no_scale(rna_counts =rna_counts , imputation = T,
@@ -36,7 +39,7 @@ classify_new_scATOMIC_layer <- function(rf_model, selected_features, rna_counts,
                                                {    layer_predictions <- predictions[cell_name, ]
                                                predicted_class <- colnames(sort(layer_predictions[which(lapply(layer_predictions,
                                                                                                                class) == "numeric")], decreasing = T)[1])}, predictions = layer_predictions,
-                                               mc.cores = mc_cores), use.names = F)
+                                               mc.cores = mc.cores), use.names = F)
   layer_predictions <- cbind(layer_predictions, predicted_class)
   layer_predictions$predicted_class <- as.character(predicted_class)
   threshold_per_class <- scATOMIC::get_auto_threshold(layer_predictions)
@@ -61,7 +64,7 @@ classify_new_scATOMIC_layer <- function(rf_model, selected_features, rna_counts,
                                                               }
                                                             }, predictions = layer_predictions,
                                                             threshold_use = threshold_per_class, layer_name = layer_name,
-                                                            mc.cores = 6), use.names = F)
+                                                            mc.cores = mc.cores), use.names = F)
   layer_predictions <- cbind(layer_predictions, predicted_tissue_with_cutoff)
   return(layer_predictions)
 }

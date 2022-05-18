@@ -7,6 +7,9 @@
 #' @return A vector of the predicted class based on scores
 #' @export
 score_class <- function(cell_name, predictions, layer){
+  if(.Platform$OS.type == "windows"){
+    mc.cores = 1
+  }
   layer_predictions <- predictions[cell_name,]
   if(layer == "layer_1"){
     if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){

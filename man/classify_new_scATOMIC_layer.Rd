@@ -10,7 +10,7 @@ classify_new_scATOMIC_layer(
   rna_counts,
   cell_names,
   layer_name,
-  mc_cores
+  mc.cores
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ classify_new_scATOMIC_layer(
 
 \item{layer_name}{name of new layer, unclassified cells will receive the name Unclassified_Cell_from_layer_name}
 
-\item{mc_cores}{number of computing cores to use for parallel processing}
+\item{mc.cores}{number of computing cores to use for parallel processing}
 }
 \value{
 returns a matrix containing cell classifications and each class score
@@ -37,7 +37,7 @@ classify_new_scATOMIC_layer
 #visit github for more information on how to generate training datasets.
 breast_cancer_subclassification <- get_new_scATOMIC_layer(training_data = Wu_et_al_breast_count_mat,cell_type_metadata = Wu_et_al_breast_metadata$subtype,
 output_dir = "Wu_etal_2021_BRCA_scRNASeq/breast_subclassification_layer/",
-mc_cores = 6, layer_name = "breast_subclassification", n_cells_replicate = 10000, n_trees = 500)
+mc.cores = 6, layer_name = "breast_subclassification", n_cells_replicate = 10000, n_trees = 500)
 predictions_Pal_0125 <- run_scATOMIC(Pal_0125)
 results_Pal_0125 <- create_summary_matrix(prediction_list = predictions_Pal_0125)
 cells_to_subclassify <- row.names(results_Pal_0125)[which(results_Pal_0125$scATOMIC_pred == "Breast Cancer Cell")]

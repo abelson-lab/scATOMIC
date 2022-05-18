@@ -12,6 +12,9 @@
 #' @export
 classify_cells_RNA_no_scale <- function(rna_counts, imputation, model, genes_in_model, cells_to_use, ref_based, normalized_counts){
   #normalize via magic
+  if(.Platform$OS.type == "windows"){
+    mc.cores = 1
+  }
   if(length(cells_to_use)==0){
     print("There are no cells to be classified in this layer")
   } else {

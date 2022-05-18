@@ -8,6 +8,9 @@
 #' @return
 #' @export
 get_auto_threshold <- function(predictions, mc.cores = (parallel::detectCores()-1), unimodal_nsd = 3, bimodal_nsd = 2){
+  if(.Platform$OS.type == "windows"){
+    mc.cores = 1
+  }
   cutoff_class <- unlist(parallel::mclapply(row.names(predictions), scATOMIC::class_for_cutoff, predictions = predictions, mc.cores = mc.cores), use.names = F)
   predictions <- cbind(predictions, cutoff_class)
   scores_to_get_threshold <- levels(as.factor(cutoff_class))

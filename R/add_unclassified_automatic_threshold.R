@@ -8,6 +8,9 @@
 #' @return vecotr of filtered classes
 #' @export
 add_unclassified_automatic_threshold <- function(cell_name, predictions, layer, threshold_use){
+  if(.Platform$OS.type == "windows"){
+    mc.cores = 1
+  }
   layer_predictions <- predictions[cell_name,]
 
   if(layer == "layer_1"){
