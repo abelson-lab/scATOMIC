@@ -15,6 +15,7 @@
 #'
 #' @return
 #' @export
+#function is code modified from Gao R. 2021 https://github.com/navinlabcode/copykat
 copy_kat_no_heatmap <- function (rawmat = rawdata,summary_matrix,  id.type = "S", cell.line = "no",
                                  ngene.chr = 5, LOW.DR = 0.05, UP.DR = 0.1, win.size = 25, KS.cut = 0.1, sam.name = "", distance = "euclidean",
                                  n.cores = (detectCores() - 1))
@@ -24,6 +25,7 @@ copy_kat_no_heatmap <- function (rawmat = rawdata,summary_matrix,  id.type = "S"
     n.cores = 1
   }
   start_time <- Sys.time()
+  rawmat <- rawmat[-which(duplicated(row.names(mat))),]
   norm.cell.names = row.names(summary_matrix)[which(summary_matrix$layer_1 == "Blood_Cell" |
                                                       summary_matrix$layer_2 %in% c("Endothelial Cells", "Stromal Cell", "Oligodendrocytes"))]
   set.seed(1)
