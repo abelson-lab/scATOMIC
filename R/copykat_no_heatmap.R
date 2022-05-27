@@ -25,7 +25,7 @@ copy_kat_no_heatmap <- function (rawmat = rawdata,summary_matrix,  id.type = "S"
     n.cores = 1
   }
   start_time <- Sys.time()
-  rawmat <- rawmat[-which(duplicated(row.names(mat))),]
+  rawmat <- rawmat[-which(duplicated(row.names(rawmat))),]
   norm.cell.names = row.names(summary_matrix)[which(summary_matrix$layer_1 == "Blood_Cell" |
                                                       summary_matrix$layer_2 %in% c("Endothelial Cells", "Stromal Cell", "Oligodendrocytes"))]
   set.seed(1)
