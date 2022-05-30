@@ -364,7 +364,7 @@ lung_seurat <- AddMetaData(lung_seurat, results_lung)
 We can plot our results via:
 
 ``` r
-DimPlot(lung_seurat, group.by = "scATOMIC_pred", ) + ggtitle("Lung Demo Dataset") + labs(fill="scATOMIC Annotations") 
+DimPlot(lung_seurat, group.by = "scATOMIC_pred") + ggtitle("Lung Demo Dataset") + labs(fill="scATOMIC Annotations") 
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
