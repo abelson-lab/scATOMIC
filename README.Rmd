@@ -20,9 +20,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-## Installation
+## Installation and System Requirements
 
+This tutorial has been tested on MacOS (Montery), Linux (Ubuntu 18.04.6 LTS), and Windows. 
+Note: Windows does not natively perform parallel functions and thus takes longer to run.
 Note: Mac users require Xcode Command Line Tools for the installation. 
+
 To check if these are installed run the following in terminal:
 
 ```{bash}
@@ -40,6 +43,7 @@ xcode-select --install
 
 To install scATOMIC you will need to use the devtools package. We recommend you install other dependencies first.
 Note: The package "cutoff" we use is a developer package that is different from the CRAN "cutoff" package.
+Installation of scATOMIC may take several minutes, as the package contains the pre-trained random forest models. 
 
 ```{r, results='hide', eval=FALSE}
 if(!require(devtools)) install.packages("devtools")
@@ -89,6 +93,11 @@ For more information visit https://rdrr.io/cran/Rmagic/f/README.md#installation
 
 ## Tutorial for scATOMIC
 ### Applications
+
+We recommend running scATOMIC on individual patient/biopsy samples.
+For most datasets the scATOMIC should run in ~5-10 minutes on a standard 16GB RAM laptop. 
+For larger datasets (> 15,000 cells) we recommend using a machine with greater RAM. 
+
 scATOMIC is designed to classify cells within the pan cancer TME hierarchy:
 
 ![](img/hierarchy.png)

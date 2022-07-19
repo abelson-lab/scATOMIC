@@ -11,9 +11,13 @@
 
 ![](img/scATOMIC_pipeline.png)
 
-## Installation
+## Installation and System Requirements
 
-Note: Mac users require Xcode Command Line Tools for the installation.
+This tutorial has been tested on MacOS (Montery), Linux (Ubuntu 18.04.6
+LTS), and Windows. Note: Windows does not natively perform parallel
+functions and thus takes longer to run. Note: Mac users require Xcode
+Command Line Tools for the installation.
+
 To check if these are installed run the following in terminal:
 
 ``` bash
@@ -32,7 +36,8 @@ xcode-select --install
 To install scATOMIC you will need to use the devtools package. We
 recommend you install other dependencies first. Note: The package
 “cutoff” we use is a developer package that is different from the CRAN
-“cutoff” package.
+“cutoff” package. Installation of scATOMIC may take several minutes, as
+the package contains the pre-trained random forest models.
 
 ``` r
 if(!require(devtools)) install.packages("devtools")
@@ -84,6 +89,11 @@ For more information visit
 ## Tutorial for scATOMIC
 
 ### Applications
+
+We recommend running scATOMIC on individual patient/biopsy samples. For
+most datasets the scATOMIC should run in \~5-10 minutes on a standard
+16GB RAM laptop. For larger datasets (\> 15,000 cells) we recommend
+using a machine with greater RAM.
 
 scATOMIC is designed to classify cells within the pan cancer TME
 hierarchy:
@@ -142,7 +152,7 @@ sparse_matrix <- seurat_object@assays$RNA@counts
 ### Load demo dataset
 
 We included a demo dataset of a primary lung cancer sample within our
-package under the object name ‘demo\_lung\_data’. We store this as a
+package under the object name ‘demo_lung_data’. We store this as a
 sparse matrix.
 
 ``` r
@@ -166,7 +176,7 @@ lung_cancer_demo_data <- lung_cancer_demo_data[, intersect(names(which(nFeatureR
 
 ### Running scATOMIC
 
-To run scATOMIC we use the run\_scATOMIC() function to generate a
+To run scATOMIC we use the run_scATOMIC() function to generate a
 detailed annotation object. To run with default settings simply use:
 
 ``` r
@@ -176,18 +186,18 @@ cell_predictions <- run_scATOMIC(lung_cancer_demo_data)
 Ignore warnings regarding unexpressed genes. This returns a list object
 with predictions for each cell at each layer of the hierarchy.
 
-Other relevant parameters of run\_scATOMIC whether to use imputation
+Other relevant parameters of run_scATOMIC whether to use imputation
 (default = TRUE), how many cores to use, and the threshold for
 classifying cells.
 
 After running scATOMIC we generate a summary of the intermediate results
-with create\_summary\_matrix(). Here we need to input our prediction
-list and the raw count data. By default we set use\_CNV to FALSE to
-avoid CNV corrections. We set modify\_results to TRUE to allow for the
-assumption that only one cancer type is in the sample. See
-?create\_summary\_matrix for information on the other parameters.
+with create_summary_matrix(). Here we need to input our prediction list
+and the raw count data. By default we set use_CNV to FALSE to avoid CNV
+corrections. We set modify_results to TRUE to allow for the assumption
+that only one cancer type is in the sample. See ?create_summary_matrix
+for information on the other parameters.
 
-create\_summary\_matrix() returns a matrix that provides the final
+create_summary_matrix() returns a matrix that provides the final
 classification for each cell as well as the classification at each layer
 
 ``` r
@@ -200,25 +210,27 @@ table(results_lung$scATOMIC_pred)
 
     ## 
     ##                     Any Cell                       B cell 
-    ##                          103                          162 
-    ##                   Blood Cell            CD4 or CD8 T cell 
-    ##                            7                            6 
-    ##                  CD4+ T cell             CD8 T or NK cell 
-    ##                          400                           32 
-    ##                  CD8+ T cell                          cDC 
-    ##                          344                          223 
-    ##            Endothelial Cells                  Fibroblasts 
-    ##                          109                           90 
-    ##             Lung Cancer Cell                   Macrophage 
-    ##                          605                          280 
-    ## Macrophage or Dendritic Cell          Natural killer cell 
-    ##                          211                          104 
-    ##               Non Blood Cell           Normal Tissue Cell 
-    ##                           66                           61 
-    ##                          pDC                  Plasmablast 
-    ##                           18                           80 
-    ##          Smooth Muscle Cells                 T or NK Cell 
-    ##                           92                            4
+    ##                          107                          163 
+    ##        B cell or Plasmablast                   Blood Cell 
+    ##                            1                            5 
+    ##            CD4 or CD8 T cell                  CD4+ T cell 
+    ##                            4                          413 
+    ##             CD8 T or NK cell                  CD8+ T cell 
+    ##                           32                          334 
+    ##                          cDC            Endothelial Cells 
+    ##                          227                          110 
+    ##                  Fibroblasts             Lung Cancer Cell 
+    ##                           89                          598 
+    ##                   Macrophage Macrophage or Dendritic Cell 
+    ##                          279                          208 
+    ##          Natural killer cell               Non Blood Cell 
+    ##                          103                           64 
+    ##           Normal Tissue Cell                          pDC 
+    ##                           70                           18 
+    ##                  Plasmablast          Smooth Muscle Cells 
+    ##                           78                           93 
+    ##                 T or NK Cell 
+    ##                            1
 
 ``` r
 head(results_lung)
@@ -277,8 +289,8 @@ head(results_lung)
 ## scATOMIC CNV mode
 
 To calculate inferred CNV status we offer a built in argument to run
-CopyKAT CNV inference. In this mode we run the create\_summary\_matrix()
-function with use\_CNVs = TRUE. Note: CNV correction takes significantly
+CopyKAT CNV inference. In this mode we run the create_summary_matrix()
+function with use_CNVs = TRUE. Note: CNV correction takes significantly
 longer than the regular mode of scATOMIC and can be sped up with
 parallel computing. We recommend using parallel multi-core processing by
 setting the mc.cores argument to the number of cores that can be used.
@@ -299,7 +311,7 @@ tree_results_lung <- scATOMICTree(predictions_list = cell_predictions, summary_m
 
 This produces an interactive tree for the results. Click on nodes to
 expand and reveal subgroups. Hover your mouse over dots to get metrics
-(in RStudio Viewer or can save the tree to HTML via the save\_results
+(in RStudio Viewer or can save the tree to HTML via the save_results
 argument)  
 Github .md files do not allow the interactive html file to be embedded
 but it can be visualized in the R console or by opening the saved file
@@ -386,10 +398,10 @@ al](https://www.embopress.org/doi/full/10.15252/embj.2020107333) as a
 testing dataset.
 
 Download training data at
-[GSE176078\_Wu\_etal\_2021\_BRCA\_scRNASeq.tar.gz](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE176078)
+[GSE176078_Wu_etal_2021_BRCA_scRNASeq.tar.gz](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE176078)
 
-We unzip these files, and rename count\_matrix\_barcode.tsv,
-count\_matrix\_genes.tsv, and count\_matrix\_sparse.mtx to barcodes.tsv,
+We unzip these files, and rename count_matrix_barcode.tsv,
+count_matrix_genes.tsv, and count_matrix_sparse.mtx to barcodes.tsv,
 genes.tsv, and matrix.mtx respectively for the Read10X function to work.
 
 ``` r
@@ -449,8 +461,8 @@ Wu_et_al_breast_metadata <- Wu_et_al_breast_metadata[index_subset,]
 ```
 
 To train a new layer we must create a directory to save the model to and
-we run the get\_new\_scATOMIC\_layer() function To speed up the demo we
-use only 100 trees here
+we run the get_new_scATOMIC_layer() function To speed up the demo we use
+only 100 trees here
 
 ``` r
 #change "~/Downloads" to path containing "Wu_etal_2021_BRCA_scRNASeq/"
@@ -467,7 +479,7 @@ Additionally download the [features
 list](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE161529&format=file&file=GSE161529%5Ffeatures%2Etsv%2Egz)
 and [barcode
 file](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSM4909297&format=file&file=GSM4909297%5FER%2DMH0125%2Dbarcodes%2Etsv%2Egz).
-Move these files into a folder named Pal\_et\_al\_ER\_0125 and name them
+Move these files into a folder named Pal_et_al_ER_0125 and name them
 matrix.mtx.gz, features.tsv.gz, and barcodes.tsv.gz respectively.
 
 We read and filter this dataset.
@@ -492,7 +504,7 @@ table(results_Pal_0125$scATOMIC_pred)
 
 We now want to use our new subclassification layer to further subtype
 the breast cancer cells identified. We do this with the
-classify\_new\_scATOMIC\_layer() function.
+classify_new_scATOMIC_layer() function.
 
 ``` r
 #define breast cancer cells
@@ -514,33 +526,35 @@ table(results_Pal_0125$scATOMIC_pred)
 
     ## 
     ##                                   Any Cell 
-    ##                                         14 
+    ##                                         19 
     ##                                 Blood Cell 
-    ##                                          5 
+    ##                                          7 
     ##                                CD4+ T cell 
-    ##                                          3 
+    ##                                          2 
     ##                           CD8 T or NK cell 
-    ##                                          1 
+    ##                                          2 
     ##                                CD8+ T cell 
-    ##                                         79 
+    ##                                         78 
     ##                                        cDC 
     ##                                         58 
     ##                          Endothelial Cells 
     ##                                         16 
     ##                                        ER+ 
-    ##                                       3707 
+    ##                                       3710 
     ##                                Fibroblasts 
-    ##                                        161 
+    ##                                        170 
     ##                             Non Blood Cell 
-    ##                                         18 
+    ##                                         17 
+    ##                           Non Stromal Cell 
+    ##                                          1 
     ##                         Normal Tissue Cell 
-    ##                                        143 
+    ##                                        125 
     ##                        Smooth Muscle Cells 
-    ##                                         24 
+    ##                                         23 
     ##                               Stromal Cell 
     ##                                          5 
     ## Unclassified_Cell_from_Breast Cancer Cells 
-    ##                                          3
+    ##                                          4
 
 The breast cancer cells are now classified as ER+ cells.
 
@@ -549,14 +563,14 @@ The breast cancer cells are now classified as ER+ cells.
 ### Forced full classifications
 
 To bypass any classification score cutoffs and force a terminal
-specialized classification for each cell use run\_scATOMIC() and
-create\_summary\_matrix() with the confidence\_cutoff argument as FALSE.
+specialized classification for each cell use run_scATOMIC() and
+create_summary_matrix() with the confidence_cutoff argument as FALSE.
 
 ### Breast subclassification mode
 
 We included a native breast cancer subclassification module. To run
-breast subclassification, set the breast\_mode argument to TRUE in both
-run\_scATOMIC() and create\_summary\_matrix().
+breast subclassification, set the breast_mode argument to TRUE in both
+run_scATOMIC() and create_summary_matrix().
 
 ### Adding layers not in hierarchy
 
@@ -596,14 +610,14 @@ sessionInfo()
     ## loaded via a namespace (and not attached):
     ##   [1] igraph_1.2.6          lazyeval_0.2.2        splines_4.0.4        
     ##   [4] listenv_0.8.0         scattermore_0.7       amap_0.8-18          
-    ##   [7] digest_0.6.27         foreach_1.5.1         htmltools_0.5.1.1    
+    ##   [7] digest_0.6.27         foreach_1.5.1         htmltools_0.5.3      
     ##  [10] fansi_0.4.2           magrittr_2.0.1        tensor_1.5           
     ##  [13] cluster_2.1.1         ROCR_1.0-11           recipes_0.1.15       
     ##  [16] globals_0.14.0        gower_0.2.2           matrixStats_0.58.0   
     ##  [19] bdsmatrix_1.3-4       spatstat.sparse_2.0-0 colorspace_2.0-0     
-    ##  [22] ggrepel_0.9.1         xfun_0.22             crayon_1.4.1         
+    ##  [22] ggrepel_0.9.1         xfun_0.31             crayon_1.4.1         
     ##  [25] jsonlite_1.7.2        spatstat.data_2.1-2   survival_3.2-10      
-    ##  [28] zoo_1.8-9             iterators_1.0.13      glue_1.4.2           
+    ##  [28] zoo_1.8-9             iterators_1.0.13      glue_1.6.2           
     ##  [31] polyclip_1.10-0       gtable_0.3.0          ipred_0.9-11         
     ##  [34] leiden_0.3.7          future.apply_1.7.0    abind_1.4-5          
     ##  [37] scales_1.1.1          mvtnorm_1.1-1         data.tree_1.0.0      
@@ -634,6 +648,6 @@ sessionInfo()
     ## [112] assertthat_0.2.1      withr_2.4.1           sctransform_0.3.2    
     ## [115] collapsibleTree_0.1.7 mgcv_1.8-34           grid_4.0.4           
     ## [118] rpart_4.1-15          timeDate_3043.102     tidyr_1.1.3          
-    ## [121] class_7.3-18          rmarkdown_2.8         Rtsne_0.15           
+    ## [121] class_7.3-18          rmarkdown_2.14        Rtsne_0.15           
     ## [124] bbmle_1.0.23.1        pROC_1.17.0.1         numDeriv_2016.8-1.1  
     ## [127] shiny_1.6.0           lubridate_1.7.10
