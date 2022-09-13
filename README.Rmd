@@ -54,6 +54,19 @@ if(!require(scATOMIC)) devtools::install_github("abelson-lab/scATOMIC")
 
 ```
 
+if installation has the error due to the large size of the package:
+Error in utils::download.file(url, path, method = method, quiet = quiet, :
+download from 'https://api.github.com/repos/abelson-lab/scATOMIC/tarball/HEAD' failed
+
+
+Set timeout to longer by running:
+
+```{r, results='hide', eval=FALSE}
+options(timeout=9999999)
+devtools::install_github("abelson-lab/scATOMIC")
+```
+
+
 In scATOMIC we rely on the Rmagic package to impute values.
 
 To use MAGIC, you will need to install both the R and Python packages.

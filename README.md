@@ -45,6 +45,19 @@ if(!require(cutoff)) devtools::install_github("choisy/cutoff")
 if(!require(scATOMIC)) devtools::install_github("abelson-lab/scATOMIC")
 ```
 
+if installation has the error due to the large size of the package:
+Error in utils::download.file(url, path, method = method, quiet = quiet,
+: download from
+‘<https://api.github.com/repos/abelson-lab/scATOMIC/tarball/HEAD>’
+failed
+
+Set timeout to longer by running:
+
+``` r
+options(timeout=9999999)
+devtools::install_github("abelson-lab/scATOMIC")
+```
+
 In scATOMIC we rely on the Rmagic package to impute values.
 
 To use MAGIC, you will need to install both the R and Python packages.
@@ -210,27 +223,27 @@ table(results_lung$scATOMIC_pred)
 
     ## 
     ##                     Any Cell                       B cell 
-    ##                          107                          163 
+    ##                          103                          162 
     ##        B cell or Plasmablast                   Blood Cell 
     ##                            1                            5 
     ##            CD4 or CD8 T cell                  CD4+ T cell 
-    ##                            4                          413 
+    ##                            2                          414 
     ##             CD8 T or NK cell                  CD8+ T cell 
-    ##                           32                          334 
+    ##                           33                          337 
     ##                          cDC            Endothelial Cells 
-    ##                          227                          110 
+    ##                          224                          109 
     ##                  Fibroblasts             Lung Cancer Cell 
-    ##                           89                          598 
+    ##                           89                          607 
     ##                   Macrophage Macrophage or Dendritic Cell 
-    ##                          279                          208 
+    ##                          281                          209 
     ##          Natural killer cell               Non Blood Cell 
-    ##                          103                           64 
+    ##                          102                           64 
     ##           Normal Tissue Cell                          pDC 
-    ##                           70                           18 
+    ##                           61                           18 
     ##                  Plasmablast          Smooth Muscle Cells 
-    ##                           78                           93 
+    ##                           81                           93 
     ##                 T or NK Cell 
-    ##                            1
+    ##                            2
 
 ``` r
 head(results_lung)
@@ -379,7 +392,7 @@ We can plot our results via:
 DimPlot(lung_seurat, group.by = "scATOMIC_pred") + ggtitle("Lung Demo Dataset") + labs(fill="scATOMIC Annotations") 
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 ## Training new subclassification layers
 
@@ -526,35 +539,33 @@ table(results_Pal_0125$scATOMIC_pred)
 
     ## 
     ##                                   Any Cell 
-    ##                                         19 
+    ##                                         17 
     ##                                 Blood Cell 
-    ##                                          7 
+    ##                                          5 
     ##                                CD4+ T cell 
-    ##                                          2 
-    ##                           CD8 T or NK cell 
-    ##                                          2 
+    ##                                          4 
     ##                                CD8+ T cell 
-    ##                                         78 
+    ##                                         79 
     ##                                        cDC 
-    ##                                         58 
+    ##                                         59 
     ##                          Endothelial Cells 
     ##                                         16 
     ##                                        ER+ 
-    ##                                       3710 
+    ##                                       3723 
     ##                                Fibroblasts 
-    ##                                        170 
+    ##                                        171 
     ##                             Non Blood Cell 
-    ##                                         17 
+    ##                                          7 
     ##                           Non Stromal Cell 
-    ##                                          1 
+    ##                                          7 
     ##                         Normal Tissue Cell 
-    ##                                        125 
+    ##                                        111 
     ##                        Smooth Muscle Cells 
-    ##                                         23 
+    ##                                         24 
     ##                               Stromal Cell 
     ##                                          5 
     ## Unclassified_Cell_from_Breast Cancer Cells 
-    ##                                          4
+    ##                                          9
 
 The breast cancer cells are now classified as ER+ cells.
 
@@ -603,7 +614,7 @@ sessionInfo()
     ##  [1] copykat_1.0.5       cutoff_0.1.0        agrmt_1.42.4       
     ##  [4] SeuratObject_4.0.0  Seurat_4.0.1        Rmagic_2.0.3       
     ##  [7] Matrix_1.3-2        reticulate_1.18     caret_6.0-86       
-    ## [10] ggplot2_3.3.3       lattice_0.20-41     randomForest_4.6-14
+    ## [10] ggplot2_3.3.6       lattice_0.20-41     randomForest_4.6-14
     ## [13] data.table_1.14.0   dplyr_1.0.5         plyr_1.8.6         
     ## [16] scATOMIC_1.0.0     
     ## 
