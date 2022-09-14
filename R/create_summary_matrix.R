@@ -481,10 +481,15 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
                   }
 
                 }
-
-                if (levels(as.factor(index_cancer_last == index_cancer)) == TRUE){
-                  continue = FALSE
+                if(length(index_cancer_last) == length(index_cancer)){
+                  if(length(levels(as.factor(index_cancer_last == index_cancer)) == TRUE) == 1){
+                    if (levels(as.factor(index_cancer_last == index_cancer)) == TRUE){
+                      continue = FALSE
+                    }
+                  }
                 }
+
+
                 if(continue == FALSE){
                   index_cancer <- row.names(cancer_subset@meta.data)[which(cancer_subset@meta.data$upreg_genes1 >  cancer_subset@meta.data$downreg_genes2 )]
                 }
@@ -1035,9 +1040,14 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
 
                 }
 
-                if (levels(as.factor(index_cancer_last == index_cancer)) == TRUE){
-                  continue = FALSE
+                if(length(index_cancer_last) == length(index_cancer)){
+                  if(length(levels(as.factor(index_cancer_last == index_cancer)) == TRUE) == 1){
+                    if (levels(as.factor(index_cancer_last == index_cancer)) == TRUE){
+                      continue = FALSE
+                    }
+                  }
                 }
+
                 if(continue == FALSE){
                   index_cancer <- row.names(cancer_subset@meta.data)[which(cancer_subset@meta.data$upreg_genes1 >  cancer_subset@meta.data$downreg_genes2 )]
                 }
