@@ -78,7 +78,7 @@ registerDoParallel(cores=5)
 #trained forest with 5 * 100 trees
 rf_classifier_cell_lines <- foreach(ntree=rep(100, 5), .combine=randomForest::combine,
                                     .multicombine=TRUE, .packages='randomForest') %dopar% {
-                                      randomForest(cell_class ~ ., data=training_scaled_fractions_scRNA, ntree=ntree)
+                                      randomForest(cell_class ~ ., data=training, ntree=ntree)
                                     }
 print("training ended")
 # keep genes expressed in at least 10 cells
