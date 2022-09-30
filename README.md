@@ -525,7 +525,7 @@ cells_to_subclassify <- row.names(results_Pal_0125)[which(
   results_Pal_0125$scATOMIC_pred == "Breast Cancer Cell")]
 
 breast_subclassifications <- classify_new_scATOMIC_layer(rf_model = breast_cancer_subclassification[["rf_classifier"]], selected_features = breast_cancer_subclassification[["selected_features"]],
-                                                         rna_counts = Pal_0125, cell_names = cells_to_subclassify, layer_name = "Breast Cancer Cells", mc.cores = 6  )
+                                                         rna_counts = Pal_0125, cell_names = cells_to_subclassify, layer_name = "Breast Cancer Cells", mc.cores = 1, imputation = T  )
 
 table(breast_subclassifications$predicted_tissue_with_cutoff)
 

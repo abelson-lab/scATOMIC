@@ -10,7 +10,9 @@ classify_new_scATOMIC_layer(
   rna_counts,
   cell_names,
   layer_name,
-  mc.cores
+  mc.cores,
+  imputation = F,
+  confidence_cutoff = T
 )
 }
 \arguments{
@@ -25,6 +27,10 @@ classify_new_scATOMIC_layer(
 \item{layer_name}{name of new layer, unclassified cells will receive the name Unclassified_Cell_from_layer_name}
 
 \item{mc.cores}{number of computing cores to use for parallel processing}
+
+\item{imputation}{whether to use imputation, we recommend turning this off for fine grained cell subtypes}
+
+\item{confidence_cutoff}{logical to use confidence cutoffs}
 }
 \value{
 returns a matrix containing cell classifications and each class score
