@@ -11,7 +11,8 @@ classify_cells_RNA_no_scale(
   genes_in_model,
   cells_to_use,
   ref_based,
-  normalized_counts
+  normalized_counts,
+  mc.cores = (parallel::detectCores() - 1)
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ classify_cells_RNA_no_scale(
 \item{ref_based}{TRUE or FALSE whether reference based imputation will be used}
 
 \item{normalized_counts}{library-size normalized counts}
+
+\item{mc.cores}{number of cores}
 }
 \value{
 A matrix with predictions of each cell class in the model

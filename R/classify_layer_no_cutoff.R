@@ -15,21 +15,21 @@
 #' @export
 
 classify_layer_no_cutoff <- function(rna_counts, cells_to_use, imputation = TRUE, genes_in_model, model,
-                           ref_based = F, mc.cores = (parallel::detectCores()-1), unimodal_nsd = 3, bimodal_nsd = 2,
-                           layer, normalized_counts){
+                                     ref_based = F, mc.cores = (parallel::detectCores()-1), unimodal_nsd = 3, bimodal_nsd = 2,
+                                     layer, normalized_counts){
   if(.Platform$OS.type == "windows"){
     mc.cores = 1
   }
   layer_predictions <- scATOMIC::classify_cells_RNA_no_scale(rna_counts = rna_counts, imputation = imputation,
-                                                   genes_in_model = genes_in_model,
-                                                   model = model, cells_to_use = cells_to_use,
-                                                   ref_based = ref_based, normalized_counts=normalized_counts)
+                                                                       genes_in_model = genes_in_model,
+                                                                       model = model, cells_to_use = cells_to_use,
+                                                                       ref_based = ref_based, normalized_counts=normalized_counts,mc.cores = mc.cores)
   layer_predictions <- scATOMIC::add_class_per_layer(layer_predictions = layer_predictions,
-                                           layer = layer)
+                                                               layer = layer)
 
   predicted_class <- unlist(parallel::mclapply(row.names(layer_predictions),
-                                     score_class, predictions = layer_predictions,
-                                     layer = layer, mc.cores = mc.cores), use.names = F)
+                                               score_class, predictions = layer_predictions,
+                                               layer = layer, mc.cores = mc.cores), use.names = F)
   layer_predictions <- cbind(layer_predictions, predicted_class)
   layer_predictions$predicted_class <- as.character(predicted_class)
 

@@ -36,12 +36,14 @@
 #' tree_results_non_interactive <- scATOMICTree(predictions_list = cell_predictions, summary_matrix = results_lung,
 #' interactive_mode = F, save_results = F)
 #' }
-scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T, collapsed = T, save_results = T, save_dir = getwd(), project_name = "test_project", width =NULL, height= NULL,fontSize = 10,linkLength = 150, ncell_size = T){
+scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T, collapsed = T, save_results = T, save_dir = getwd(), project_name = "test_project", width =NULL, height= NULL,fontSize = 10,linkLength = 150, ncell_size = F){
   if(.Platform$OS.type == "windows"){
     mc.cores = 1
   }
+
   layer_median_scores <- list()
   layer_IQRs <- list()
+
   for(i in 1:length(predictions_list)){
     layer_pred <- predictions_list[[i]]
     layer <- names(predictions_list)[i]
@@ -63,8 +65,12 @@ scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T,
     names(layer_median_scores)[i] <- layer
     names(layer_IQRs)[i] <- layer
   }
+
+
+
+
   #check if CNV mode was run
-   if(length(grep("pan_cancer_cluster", colnames(summary_matrix))) > 0) {
+  if(length(grep("pan_cancer_cluster", colnames(summary_matrix))) > 0) {
     normal_index <- which(summary_matrix$layer_6 != summary_matrix$scATOMIC_pred &
                             summary_matrix$scATOMIC_pred == "Normal Tissue Cell")
 
@@ -93,6 +99,14 @@ scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T,
     summary_matrix[cancer_converted_index,c("layer_1", "layer_2","layer_3","layer_4", "layer_5", "layer_6") ]<-
       summary_matrix[grep("Cancer Cell|oma$", summary_matrix$scATOMIC_pred)[1],c("layer_1", "layer_2","layer_3","layer_4", "layer_5","layer_6")  ]
   }
+  summary_matrix[which(summary_matrix$layer_6 == "CD4+ T cell"),c("layer_5")] <- "unclassified_CD4+ T cell"
+  summary_matrix[which(summary_matrix$layer_6 == "CD8+ T cell"),c("layer_5")] <- "unclassified_CD8+ T cell"
+  summary_matrix[which(summary_matrix$layer_6 == "CD4+ T cell"),c("scATOMIC_pred")] <- "Broad CD4+ T cell"
+  summary_matrix[which(summary_matrix$layer_6 == "CD8+ T cell"),c("scATOMIC_pred")] <- "Broad CD8+ T cell"
+  summary_matrix[which(summary_matrix$layer_6 == "CD4+ T cell"),c("layer_6")] <- "Broad CD4+ T cell"
+  summary_matrix[which(summary_matrix$layer_6 == "CD8+ T cell"),c("layer_6")] <- "Broad CD8+ T cell"
+
+
   collapsed_results <- summary_matrix[,c( "layer_1","layer_2","layer_3","layer_4","layer_5","layer_6",
                                           "scATOMIC_pred")]
 
@@ -113,6 +127,8 @@ scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T,
   names(IQR_scores) <- names(median_scores)
 
   collapsed_results[which(collapsed_results$layer_3 == "Soft Tissue or Neuro Cancer Cell"),"layer_3"] <- "Skin_Lung_Soft Tissue or Neuro Cancer Cell"
+
+
   collapsed_results_na <- collapsed_results
 
   collapsed_results_na$layer_0 <- "Any cell"
@@ -136,7 +152,12 @@ scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T,
       for(p in 1:length(cell_types)){
         if(cell_types[p] %in%c("Normal Tissue Cell", "Unknown Cancer Cell")){
 
-        } else if(cell_types[p] != "CD8+ T cell"){
+        } else if(cell_types[p] %in% c("unclassified_CD4+ T cell", "unclassified_CD8+ T cell") ){
+
+
+          collapsed_results_na[which(collapsed_results_na[,i] == cell_types[p]), i] <- paste0(cell_types[p], "\n", "median score not calculated IQR not calculated")
+
+        }else if(cell_types[p] != "CD8+ T cell"){
           if(cell_types[p] == "Skin_Lung_Soft Tissue or Neuro Cancer Cell"){
             median_score_cell <- median_scores[paste0(layer_use, "__Soft Tissue or Neuro Cancer Cell")]
             IQR_score_cell <- IQR_scores[paste0(layer_use, "__Soft Tissue or Neuro Cancer Cell")]
@@ -187,6 +208,9 @@ scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T,
         for(p in 1:length(cell_types)){
           if(grepl("^CD8+ T cell\n", cell_types[p])){
             number_of_cells <- sum(collapsed_results_na[which(collapsed_results_na[,i] == cell_types[p]),"Number of Cells"])
+            collapsed_results_na[which(collapsed_results_na[,i] == cell_types[p]), i] <- paste0(cell_types[p], "\n", number_of_cells, " cells")
+          } else if(grepl("^Effector/Memory CD8\\+ T cells|^Exhausted CD8\\+ T cells|^Naive CD8\\+ T cells", cell_types[p])){
+            number_of_cells <- collapsed_results_na[which(collapsed_results_na[,i] == cell_types[p]),"Number of Cells"]
             collapsed_results_na[which(collapsed_results_na[,i] == cell_types[p]), i] <- paste0(cell_types[p], "\n", number_of_cells, " cells")
           } else{
             collapsed_results_na[which(collapsed_results_na[,i] == cell_types[p]), i] <- paste0(collapsed_results_na[which(collapsed_results_na[,i] == cell_types[p]), i],
@@ -317,10 +341,19 @@ scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T,
       }
     }
   }
+
+
+  index_remove <- which(is.na(long_form_mat$parent) & long_form_mat$child != "All cells" )
+  if(length(index_remove > 0)){
+    long_form_mat <- long_form_mat[-index_remove, ]
+  }
   long_form_mat$parent <- gsub("Any cell", "All cells",long_form_mat$parent )
   long_form_mat[which(is.na(long_form_mat$Median_Score)), "Median_Score"] <- ""
   long_form_mat[which(is.na(long_form_mat$IQR)), "IQR"] <- ""
   layers_long <- levels(as.factor(long_form_mat$layer))
+
+
+
   for(i in 1:length(layers_long)){
     layer_used <- layers_long[i]
     if(layer_used == "layer_0"){
@@ -331,7 +364,7 @@ scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T,
     } else{
       children <- levels(as.factor(long_form_mat$child[which(long_form_mat$layer == layer_used)]))
       long_form_mat[,paste0("string_", i)] <- "undetermined"
-      index_children <- which(long_form_mat$child %in% children | long_form_mat$parent %in% children)
+      index_children <- which((long_form_mat$child %in% children | long_form_mat$parent %in% children) & long_form_mat$layer %in% c(layers_long[i], layers_long[i+1]))
       if(length(index_children)>0){
         for(m in index_children){
           if(long_form_mat[m, paste0("string_", (i-1))] == long_form_mat[m, "parent"] ){
@@ -346,8 +379,12 @@ scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T,
 
 
   for(i in which(long_form_mat$layer == "layer_3")){
+    mat_temp <- long_form_mat[which(long_form_mat$layer == "layer_3"),]
     index_true_string_2 <- which(long_form_mat$child == long_form_mat[i,"string_3"] &long_form_mat$parent != long_form_mat[i,"string_3"])
+
     long_form_mat[i,"string_2"] <- long_form_mat[index_true_string_2, "parent"]
+
+
   }
   for(i in which(long_form_mat$layer == "layer_4")){
     index_true_string_3 <- which(long_form_mat$child == long_form_mat[i,"string_4"] & long_form_mat$parent != long_form_mat[i,"string_4"])
@@ -355,14 +392,27 @@ scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T,
     index_true_string_2 <- which(long_form_mat$child == long_form_mat[i,"string_3"] &long_form_mat$parent != long_form_mat[i,"string_3"])
     long_form_mat[i,"string_2"] <- long_form_mat[index_true_string_2, "parent"]
   }
+  counter <- 0
   for(i in which(long_form_mat$layer == "layer_5")){
     index_true_string_4 <- which(long_form_mat$child == long_form_mat[i,"string_5"] &long_form_mat$parent != long_form_mat[i,"string_5"])
-    long_form_mat[i,"string_4"] <- long_form_mat[index_true_string_4, "parent"]
+    if(length(index_true_string_4) ==2){
+      counter <- counter + 1
+      if(counter %% 2 == 0){
+        long_form_mat[i,"string_4"] <- long_form_mat[index_true_string_4[2], "parent"]
+      } else{
+        long_form_mat[i,"string_4"] <- long_form_mat[index_true_string_4[1], "parent"]
+      }
+    } else{
+      long_form_mat[i,"string_4"] <- long_form_mat[index_true_string_4, "parent"]
+    }
     index_true_string_3 <- which(long_form_mat$child == long_form_mat[i,"string_4"] & long_form_mat$parent != long_form_mat[i,"string_4"])
     long_form_mat[i,"string_3"] <- long_form_mat[index_true_string_3, "parent"]
     index_true_string_2 <- which(long_form_mat$child == long_form_mat[i,"string_3"] &long_form_mat$parent != long_form_mat[i,"string_3"])
     long_form_mat[i,"string_2"] <- long_form_mat[index_true_string_2, "parent"]
   }
+
+
+
   for(i in which(long_form_mat$layer == "layer_6")){
     index_true_string_5 <- which(long_form_mat$child == long_form_mat[i,"string_6"] &long_form_mat$parent != long_form_mat[i,"string_6"])
     long_form_mat[i,"string_5"] <- long_form_mat[index_true_string_5, "parent"]
@@ -533,4 +583,3 @@ scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T,
   }
   return(tree_output)
 }
-

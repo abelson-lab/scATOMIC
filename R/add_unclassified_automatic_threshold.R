@@ -130,7 +130,26 @@ add_unclassified_automatic_threshold <- function(cell_name, predictions, layer, 
       else {
         predicted_with_cutoff <- "CD4 or CD8 T cell"
       }
-    }}
+    }
+  }
+  if(layer == "layer_5_CD4"){
+    if ((layer_predictions["predicted_class"]) == "Cell low quality"){
+      predicted_with_cutoff <- "Cell low quality"
+    } else {
+      scores <- which(lapply(layer_predictions, class) == "numeric")
+      max_score <- max(layer_predictions[which(lapply(layer_predictions, class) == "numeric")])
+      max_score_class <- colnames(layer_predictions)[which(layer_predictions == max_score)]
+      if(length(max_score_class) > 1){
+        max_score_class <- max_score_class[length(max_score_class)]
+      }
+      if(max_score > threshold_use[[max_score_class]]){
+        predicted_with_cutoff <- layer_predictions[ "predicted_class"]
+      }
+      else {
+        predicted_with_cutoff <- "CD4+ T cell"
+      }
+    }
+  }
   if(layer == "layer_4_CD8_NK"){
     if ((layer_predictions["predicted_class"]) == "Cell low quality"){
       predicted_with_cutoff <- "Cell low quality"
@@ -147,7 +166,27 @@ add_unclassified_automatic_threshold <- function(cell_name, predictions, layer, 
       else {
         predicted_with_cutoff <- "CD8 T or NK cell"
       }
-    }}
+    }
+  }
+  if(layer == "layer_5_CD8"){
+    if ((layer_predictions["predicted_class"]) == "Cell low quality"){
+      predicted_with_cutoff <- "Cell low quality"
+    } else {
+      scores <- which(lapply(layer_predictions, class) == "numeric")
+      max_score <- max(layer_predictions[which(lapply(layer_predictions, class) == "numeric")])
+      max_score_class <- colnames(layer_predictions)[which(layer_predictions == max_score)]
+      if(length(max_score_class) > 1){
+        max_score_class <- max_score_class[length(max_score_class)]
+      }
+      if(max_score > threshold_use[[max_score_class]]){
+        predicted_with_cutoff <- layer_predictions[ "predicted_class"]
+      }
+      else {
+        predicted_with_cutoff <- "CD8+ T cell"
+      }
+    }
+  }
+
   if(layer == "layer_4_non_GI"){
     if ((layer_predictions["predicted_class"]) == "Cell low quality"){
       predicted_with_cutoff <- "Cell low quality"
@@ -387,5 +426,23 @@ add_unclassified_automatic_threshold <- function(cell_name, predictions, layer, 
         predicted_with_cutoff <- "Dendritic Cell"
       }
     }}
+  if(layer == "layer_4_macrophage"){
+    if ((layer_predictions["predicted_class"]) == "Cell low quality"){
+      predicted_with_cutoff <- "Cell low quality"
+    } else {
+      scores <- which(lapply(layer_predictions, class) == "numeric")
+      max_score <- max(layer_predictions[which(lapply(layer_predictions, class) == "numeric")])
+      max_score_class <- colnames(layer_predictions)[which(layer_predictions == max_score)]
+      if(length(max_score_class) > 1){
+        max_score_class <- max_score_class[length(max_score_class)]
+      }
+      if(max_score > threshold_use[[max_score_class]]){
+        predicted_with_cutoff <- as.character(layer_predictions["predicted_class"])
+      }
+      else {
+        predicted_with_cutoff <- "Macrophage or Monocyte"
+      }
+    }}
+
   return(predicted_with_cutoff)
 }

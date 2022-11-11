@@ -7,10 +7,11 @@
 #' @param cells_to_use Vector of cell names to use from the rna_counts, refers to their column names
 #' @param ref_based TRUE or FALSE whether reference based imputation will be used
 #' @param normalized_counts library-size normalized counts
+#' @param mc.cores number of cores
 #'
 #' @return A matrix with predictions of each cell class in the model
 #' @export
-classify_cells_RNA_no_scale <- function(rna_counts, imputation, model, genes_in_model, cells_to_use, ref_based, normalized_counts){
+classify_cells_RNA_no_scale <- function(rna_counts, imputation, model, genes_in_model, cells_to_use, ref_based, normalized_counts, mc.cores = (parallel::detectCores()-1)){
   #normalize via magic
   if(.Platform$OS.type == "windows"){
     mc.cores = 1
@@ -36,7 +37,7 @@ classify_cells_RNA_no_scale <- function(rna_counts, imputation, model, genes_in_
         filtered_counts <- t(as.matrix(filtered_counts))
         defaultW <- getOption("warn")
         options(warn = -1)
-        sc_magic <- Rmagic::magic(filtered_counts,verbose = F )
+        sc_magic <- Rmagic::magic(filtered_counts,verbose = F)
         options(warn = defaultW)
         filtered_counts <- as.data.frame(t(as.data.frame(sc_magic)))
         if(ref_based == TRUE){
@@ -91,7 +92,7 @@ classify_cells_RNA_no_scale <- function(rna_counts, imputation, model, genes_in_
       #run magic imputation or not
       if(imputation == TRUE){
         filtered_counts <- t(as.matrix(filtered_counts))
-        sc_magic <- Rmagic::magic(filtered_counts,verbose = F )
+        sc_magic <- Rmagic::magic(filtered_counts,verbose = F)
         filtered_counts <- as.data.frame(t(as.data.frame(sc_magic)))
         filtered_counts <- filtered_counts[,cells_to_use]
       }

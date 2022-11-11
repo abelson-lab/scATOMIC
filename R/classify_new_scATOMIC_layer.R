@@ -34,9 +34,9 @@ classify_new_scATOMIC_layer <- function(rf_model, selected_features, rna_counts,
     normalized_counts <- Rmagic::library.size.normalize(t(as.matrix(rna_counts)))
     normalized_counts <- t(sqrt(normalized_counts))
     layer_predictions <- scATOMIC::classify_cells_RNA_no_scale(rna_counts =rna_counts , imputation = imputation,
-                                                               genes_in_model = selected_features,
-                                                               model = rf_model, cells_to_use = cell_names,
-                                                               ref_based = F, normalized_counts=normalized_counts)
+                                                                         genes_in_model = selected_features,
+                                                                         model = rf_model, cells_to_use = cell_names,
+                                                                         ref_based = F, normalized_counts=normalized_counts)
     predicted_class <- unlist(parallel::mclapply(row.names(layer_predictions),
                                                  function (cell_name, predictions)
                                                  {    layer_predictions <- predictions[cell_name, ]
@@ -74,9 +74,9 @@ classify_new_scATOMIC_layer <- function(rf_model, selected_features, rna_counts,
     normalized_counts <- Rmagic::library.size.normalize(t(as.matrix(rna_counts)))
     normalized_counts <- t(sqrt(normalized_counts))
     layer_predictions <- scATOMIC::classify_cells_RNA_no_scale(rna_counts =rna_counts , imputation = imputation,
-                                                               genes_in_model = selected_features,
-                                                               model = rf_model, cells_to_use = cell_names,
-                                                               ref_based = F, normalized_counts=normalized_counts)
+                                                                         genes_in_model = selected_features,
+                                                                         model = rf_model, cells_to_use = cell_names,
+                                                                         ref_based = F, normalized_counts=normalized_counts)
     layer_predictions <- na.omit(layer_predictions)
     predicted_class <- unlist(parallel::mclapply(row.names(layer_predictions),
                                                  function (cell_name, predictions)
@@ -90,7 +90,7 @@ classify_new_scATOMIC_layer <- function(rf_model, selected_features, rna_counts,
     layer_predictions <- cbind(layer_predictions, predicted_tissue_with_cutoff)
 
   }
-    return(layer_predictions)
+  return(layer_predictions)
 }
 
 

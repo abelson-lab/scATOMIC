@@ -41,11 +41,14 @@ xcode-select --install
 
 
 
-To install scATOMIC you will need to use the devtools package. We recommend you install other dependencies first.
+To install scATOMIC you will need to use the devtools package. We recommend you install other dependencies before installing scATOMIC.
+Note that packages DLM and RMagic were removed from CRAN in October 2022 so we installed the archived package.
 Note: The package "cutoff" we use is a developer package that is different from the CRAN "cutoff" package.
 Installation of scATOMIC may take several minutes, as the package contains the pre-trained random forest models. 
 
 ```{r, results='hide', eval=FALSE}
+devtools::install_version("dlm", version = "1.1.5", repos = "http://cran.us.r-project.org")
+devtools::install_version("Rmagic", version = "2.0.3", repos = "http://cran.us.r-project.org")
 if(!require(devtools)) install.packages("devtools")
 if(!require(cutoff)) devtools::install_github("choisy/cutoff")
 if(!require(scATOMIC)) devtools::install_github("abelson-lab/scATOMIC")
@@ -77,7 +80,8 @@ Installation from CRAN
 In R, run this command to install MAGIC and all dependencies:
 
 ```{r,eval=FALSE}
-if(!require(Rmagic)) install.packages("Rmagic")
+if(!require(Rmagic)) devtools::install_version("Rmagic", version = "2.0.3", repos = "http://cran.us.r-project.org")
+
 ```
 
 
@@ -107,9 +111,10 @@ For more information visit https://rdrr.io/cran/Rmagic/f/README.md#installation
 ## Tutorial for scATOMIC
 ### Applications
 
-We recommend running scATOMIC on individual patient/biopsy samples.
+We strongly recommend running scATOMIC only on individual patient/biopsy samples.
 For most datasets the scATOMIC should run in ~5-10 minutes on a standard 16GB RAM laptop. 
 For larger datasets (> 15,000 cells) we recommend using a machine with greater RAM. 
+scATOMIC's model assumes the presence at least some cancer cells in a biopsy and should not be used in normal tissue applications. 
 
 scATOMIC is designed to classify cells within the pan cancer TME hierarchy:
 
@@ -177,7 +182,7 @@ The user can change the pct mt and nFeatureRNA numbers to suit their own filteri
 
 ```{r}
 pct_mt <- colSums(lung_cancer_demo_data[grep("^MT-", row.names(lung_cancer_demo_data)),])/colSums(lung_cancer_demo_data) * 100
-nFeatureRNA <- apply(lung_cancer_demo_data, 2,function(x){length(which(x != 0))})
+nFeatureRNA <- colSums(lung_cancer_demo_data > 0)
 lung_cancer_demo_data <- lung_cancer_demo_data[, names(which(pct_mt < 25))]
 lung_cancer_demo_data <- lung_cancer_demo_data[, intersect(names(which(nFeatureRNA > 500)), colnames(lung_cancer_demo_data))]
 ```
@@ -405,7 +410,7 @@ cells_to_subclassify <- row.names(results_Pal_0125)[which(
   results_Pal_0125$scATOMIC_pred == "Breast Cancer Cell")]
 
 breast_subclassifications <- classify_new_scATOMIC_layer(rf_model = breast_cancer_subclassification[["rf_classifier"]], selected_features = breast_cancer_subclassification[["selected_features"]],
-                                                         rna_counts = Pal_0125, cell_names = cells_to_subclassify, layer_name = "Breast Cancer Cells", mc.cores = 1, imputation = T  )
+                                                         rna_counts = Pal_0125, cell_names = cells_to_subclassify, layer_name = "Breast Cancer Cells", mc.cores = 1, imputation = T, confidence_cutoff = T  )
 
 table(breast_subclassifications$predicted_tissue_with_cutoff)
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_summary_matrix.R
 \name{create_summary_matrix}
 \alias{create_summary_matrix}
-\title{create_summary_matrix_pan_can_v2}
+\title{create_summary_matrix_pan_can_v3}
 \usage{
 create_summary_matrix(
   raw_counts,
@@ -12,8 +12,10 @@ create_summary_matrix(
   mc.cores = (parallel::detectCores() - 1),
   min_prop = 0.5,
   breast_mode = F,
+  fine_grained_T = T,
   confidence_cutoff = T,
-  pan_cancer = F
+  pan_cancer = F,
+  cancer_confidence = "default"
 )
 }
 \arguments{
@@ -31,15 +33,19 @@ create_summary_matrix(
 
 \item{breast_mode}{run breast subclassfication}
 
+\item{fine_grained_T}{run T cell subclassfication}
+
 \item{confidence_cutoff}{logical to use confidence cutoffs}
 
 \item{pan_cancer}{logical to use pan cancer features or cancer specific features}
+
+\item{cancer_confidence}{assesing whether a cancer prediction should be interpreted as confident. by default we use layer specific cutoff derived from our paper that optimally split true positives and true negatives. Set to a numeric from 0-1 to set a hard cutoff for all layers.}
 }
 \value{
 dataframe of cell names and final prediction
 }
 \description{
-create_summary_matrix_pan_can_v2
+create_summary_matrix_pan_can_v3
 }
 \examples{
 \dontrun{
@@ -52,7 +58,7 @@ lung_cancer_demo_data <- lung_cancer_demo_data[, names(which(pct_mt < 25))]
 lung_cancer_demo_data <- lung_cancer_demo_data[, intersect(names(which(nFeatureRNA > 500)), colnames(lung_cancer_demo_data))]
 cell_predictions <- run_scATOMIC(lung_cancer_demo_data)
 #create results matrix - no CNVs
-results_matrix <- create_summary_matrix(prediction_list = cell_predictions, use_CNVs = F, modify_results = T, mc.cores = 1, raw_counts = lung_cancer_demo_data, min_prop = 0.5 )
+summary_masterrix <- create_summary_matrix(prediction_list = cell_predictions, use_CNVs = F, modify_results = T, mc.cores = 1, raw_counts = lung_cancer_demo_data, min_prop = 0.5 )
 #create results matrix with CNV corrections
 results_lung_CNV <- create_summary_matrix(prediction_list = cell_predictions, use_CNVs = T, modify_results = T, mc.cores = 6, raw_counts = lung_cancer_demo_data, min_prop = 0.5 )
 }

@@ -12,7 +12,8 @@ run_scATOMIC(
   unimodal_nsd = 3,
   bimodal_nsd = 2,
   breast_mode = F,
-  confidence_cutoff = T
+  confidence_cutoff = T,
+  fine_grained_T = T
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ run_scATOMIC(
 \item{breast_mode}{run breast subclassfication}
 
 \item{confidence_cutoff}{logical to use confidence cutoffs}
+
+\item{fine_grained_T}{run fine grained T cell subclassification}
 }
 \value{
 list of layers classified

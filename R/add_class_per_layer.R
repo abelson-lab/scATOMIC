@@ -17,32 +17,29 @@ add_class_per_layer <- function(layer_predictions, layer){
                                         "Neuroblastoma",  "Oligodendrocytes","Ovarian Cancer",
                                         "Pancreatic Cancer",
                                         "Prostate Cancer", "Skin Cancer", "Endothelial Cells", "Fibroblasts", "Myofibroblasts",  "Smooth Muscle Cells",
-                                        "Sarcoma")
-    blood_classes <- c("B cell","CD4+ T cell", "CD8+ T cell", "HSPC", "Macrophage","cDC", "pDC", "ASDC","Plasmablast",
-                       "Natural killer cell")
+                                        "Sarcoma","Cancer Associated Fibroblasts","Cancer Associated Myofibroblasts")
+    blood_classes <- c("ASDC","B cell","CD4+ T cell", "CD8+ T cell", "Macrophage","Monocyte","Mast cell","cDC", "pDC","Plasmablast",
+                       "Natural killer cell", "HSPC")
     cancer_normal_stromal_score <- rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in% cancer_normal_stromal_classes)]))
     blood_score <- rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in% blood_classes)]))
-
     layer_classes <- cbind(layer_predictions, cancer_normal_stromal_score, blood_score)
   }
   if(layer == "layer_2_blood"){
-
     B_cell_score <- rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in% c("B cell", "Plasmablast"))]))
     non_B_lymphocyte_score <- rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in%c("CD4+ T cell","CD8+ T cell", "Natural killer cell"))]))
     macrophage_DC_score <- rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in%c("ASDC","Macrophage","cDC", "pDC", "Monocyte"))]))
+    mast_score <- layer_predictions[,which(colnames(layer_predictions) %in% "Mast cell")]
     HSPC_score <- layer_predictions[,which(colnames(layer_predictions) %in% "HSPC")]
-
     layer_classes <- cbind(layer_predictions, B_cell_score, non_B_lymphocyte_score, macrophage_DC_score,
-                           HSPC_score)
+                           mast_score,HSPC_score)
   }
   if(layer == "layer_3_TNK"){
     CD4_CD8_score <- rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in%c("CD4+ T cell", "CD8+ T cell"))]))
     NK_CD8_score <- rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in%c("Natural killer cell", "CD8+ T cell"))]))
-
     layer_classes <- cbind(layer_predictions, CD4_CD8_score, NK_CD8_score)
   }
   if(layer == "layer_3_MDC"){
-    macrophage_score <- layer_predictions[,"Macrophage"]
+    macrophage_score <- rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in% c("Macrophage", "Monocyte"))]))
     DC_score <- rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in%c( "ASDC","cDC", "pDC"))]))
     layer_classes <- cbind(layer_predictions, macrophage_score, DC_score)
   }
@@ -113,13 +110,15 @@ add_class_per_layer <- function(layer_predictions, layer){
   if(layer == "layer_3_stromal"){
     fibroblasts_score <-   rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in% c(
       "Fibroblasts", "Myofibroblasts"))]))
-    layer_classes <- cbind(layer_predictions, fibroblasts_score)
+    cancer_associated_fibroblast_score <- rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in% c("Cancer Associated Fibroblasts", "Cancer Associated Myofibroblasts"))]))
+
+    layer_classes <- cbind(layer_predictions, fibroblasts_score,cancer_associated_fibroblast_score)
   }
-  if(layer %in% c("layer_4_dendritic","layer_5_biliary",
+  if(layer %in% c("layer_4_macrophage","layer_4_dendritic","layer_5_biliary",
                   "layer_6_soft_tissue", "layer_6_brain_nbm",
                   "layer_5_digestive", "layer_5_breast_lung_prostate",
-                  "layer_5_ov_endo_kid", "layer_4_CD4_CD8",
-                  "layer_4_CD8_NK", "layer_6_breast")){
+                  "layer_5_ov_endo_kid", "layer_4_CD4_CD8","layer_4_CD8_NK",
+                  "layer_6_breast", "layer_5_CD4", "layer_5_CD8")){
     print("nothing to score in this layer")
     layer_classes <- layer_predictions
   }

@@ -16,7 +16,7 @@ scATOMICTree(
   height = NULL,
   fontSize = 10,
   linkLength = 150,
-  ncell_size = T
+  ncell_size = F
 )
 }
 \arguments{
