@@ -369,11 +369,11 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
     median_score_class_layer_6 <- c()
     for (i in 1:nrow(summary_master)){
       if(layer_6[i] == "TNBC Breast Cancer Cell"){
-        median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_6_breast"]][which(prediction_list[["layer_6_breast"]]$predicted_tissue_with_cutoff %in% c("TNBC Breast Cancer Cell")),"TNBC"]))
+        median_score_class_layer_6[i] <- median(as.numeric(prediction_list[["layer_6_breast"]][which(prediction_list[["layer_6_breast"]]$predicted_tissue_with_cutoff %in% c("TNBC Breast Cancer Cell")),"TNBC"]))
       } else if(layer_6[i] == "Her2+ Breast Cancer Cell"){
-        median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_6_breast"]][which(prediction_list[["layer_6_breast"]]$predicted_tissue_with_cutoff %in% c("Her2+ Breast Cancer Cell")),"HER2+"]))
+        median_score_class_layer_6[i] <- median(as.numeric(prediction_list[["layer_6_breast"]][which(prediction_list[["layer_6_breast"]]$predicted_tissue_with_cutoff %in% c("Her2+ Breast Cancer Cell")),"HER2+"]))
       } else if(layer_6[i] == "ER+ Breast Cancer Cell"){
-        median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_6_breast"]][which(prediction_list[["layer_6_breast"]]$predicted_tissue_with_cutoff %in% c("ER+ Breast Cancer Cell")),"ER+"]))
+        median_score_class_layer_6[i] <- median(as.numeric(prediction_list[["layer_6_breast"]][which(prediction_list[["layer_6_breast"]]$predicted_tissue_with_cutoff %in% c("ER+ Breast Cancer Cell")),"ER+"]))
       } else if(layer_6[i] == "Brain Cancer" ){
         median_score_class_layer_6[i] <- median(as.numeric(prediction_list[["layer_6_brain_nbm"]][which(prediction_list[["layer_6_brain_nbm"]]$predicted_tissue_with_cutoff %in% c("Brain Cancer")),"Brain Cancer"]))
       } else if(layer_6[i] == "Neuroblastoma" ){
@@ -1187,11 +1187,11 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
     median_score_class_layer_6 <- c()
     for (i in 1:nrow(summary_master)){
       if(layer_6[i] == "TNBC Breast Cancer Cell"){
-        median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_6_breast"]][which(prediction_list[["layer_6_breast"]]$predicted_tissue_with_cutoff %in% c("TNBC Breast Cancer Cell")),"TNBC"]))
+        median_score_class_layer_6[i] <- median(as.numeric(prediction_list[["layer_6_breast"]][which(prediction_list[["layer_6_breast"]]$predicted_tissue_with_cutoff %in% c("TNBC Breast Cancer Cell")),"TNBC"]))
       } else if(layer_6[i] == "Her2+ Breast Cancer Cell"){
-        median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_6_breast"]][which(prediction_list[["layer_6_breast"]]$predicted_tissue_with_cutoff %in% c("Her2+ Breast Cancer Cell")),"HER2+"]))
+        median_score_class_layer_6[i] <- median(as.numeric(prediction_list[["layer_6_breast"]][which(prediction_list[["layer_6_breast"]]$predicted_tissue_with_cutoff %in% c("Her2+ Breast Cancer Cell")),"HER2+"]))
       } else if(layer_6[i] == "ER+ Breast Cancer Cell"){
-        median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_6_breast"]][which(prediction_list[["layer_6_breast"]]$predicted_tissue_with_cutoff %in% c("ER+ Breast Cancer Cell")),"ER+"]))
+        median_score_class_layer_6[i] <- median(as.numeric(prediction_list[["layer_6_breast"]][which(prediction_list[["layer_6_breast"]]$predicted_tissue_with_cutoff %in% c("ER+ Breast Cancer Cell")),"ER+"]))
       } else if(layer_6[i] == "Brain Cancer" ){
         median_score_class_layer_6[i] <- median(as.numeric(prediction_list[["layer_6_brain_nbm"]][which(prediction_list[["layer_6_brain_nbm"]]$predicted_tissue_with_cutoff %in% c("Brain Cancer")),"Brain Cancer"]))
       } else if(layer_6[i] == "Neuroblastoma" ){
