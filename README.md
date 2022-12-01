@@ -229,35 +229,33 @@ table(results_lung$scATOMIC_pred)
 
     ## 
     ##                      Any Cell                        B Cell 
-    ##                            12                           158 
+    ##                             9                           157 
     ##                    Blood Cell Cancer Associated Fibroblasts 
-    ##                            11                           155 
+    ##                            18                           182 
     ##             CD4 or CD8 T cell                   CD4+ T cell 
-    ##                            21                            93 
+    ##                            21                            92 
     ##              CD8 T or NK cell                   CD8+ T cell 
-    ##                             9                            47 
+    ##                            10                            46 
     ##                           cDC                Dendritic Cell 
     ##                            71                             1 
     ##  Effector/Memory CD4+ T cells  Effector/Memory CD8+ T cells 
-    ##                           176                           229 
+    ##                           176                           231 
     ##             Endothelial Cells        Exhausted CD8+ T cells 
     ##                           109                            30 
     ##              Lung Cancer Cell                    Macrophage 
-    ##                           601                           608 
+    ##                           604                           607 
     ##  Macrophage or Dendritic Cell                     Mast cell 
     ##                            36                            80 
     ##            Naive CD4+ T cells           Natural killer cell 
     ##                             6                           101 
     ##                Non Blood Cell              Non Stromal Cell 
-    ##                            93                             1 
+    ##                            94                             1 
     ##            Normal Tissue Cell                           pDC 
-    ##                            40                            18 
-    ##                   Plasmablast           Smooth Muscle Cells 
-    ##                            91                            27 
-    ##                  T or NK Cell            T regulatory cells 
-    ##                             2                           143 
-    ##   Tfh/Th1 helper CD4+ T cells 
-    ##                            28
+    ##                            37                            18 
+    ##                   Plasmablast                  T or NK Cell 
+    ##                            89                             2 
+    ##            T regulatory cells   Tfh/Th1 helper CD4+ T cells 
+    ##                           143                            26
 
 ``` r
 head(results_lung)
@@ -292,26 +290,26 @@ head(results_lung)
     ## AAACCTGTCTGAGGGA-1        Mast cell        Mast cell                      0.926
     ## AAACGGGAGTAGATGT-1 Lung Cancer Cell Lung Cancer Cell                      0.980
     ##                    median_score_class_layer_2 median_score_class_layer_3
-    ## AAACCTGAGACCGGAT-1                      0.998                      0.986
-    ## AAACCTGCAGTCACTA-1                      0.858                      0.996
-    ## AAACCTGGTAAGTAGT-1                      0.998                      0.986
+    ## AAACCTGAGACCGGAT-1                      0.998                      0.984
+    ## AAACCTGCAGTCACTA-1                      0.860                      0.996
+    ## AAACCTGGTAAGTAGT-1                      0.998                      0.984
     ## AAACCTGTCGAATGCT-1                      0.874                      0.574
     ## AAACCTGTCTGAGGGA-1                      0.968                      0.968
     ## AAACGGGAGTAGATGT-1                      0.874                      0.574
     ##                    median_score_class_layer_4 median_score_class_layer_5
     ## AAACCTGAGACCGGAT-1                      1.000                      1.000
-    ## AAACCTGCAGTCACTA-1                      0.977                      0.977
+    ## AAACCTGCAGTCACTA-1                      0.976                      0.976
     ## AAACCTGGTAAGTAGT-1                      1.000                      1.000
-    ## AAACCTGTCGAATGCT-1                      0.808                      0.874
+    ## AAACCTGTCGAATGCT-1                      0.808                      0.872
     ## AAACCTGTCTGAGGGA-1                      0.968                      0.968
-    ## AAACGGGAGTAGATGT-1                      0.808                      0.874
+    ## AAACGGGAGTAGATGT-1                      0.808                      0.872
     ##                    median_score_class_layer_6    scATOMIC_pred      S.Score
     ## AAACCTGAGACCGGAT-1                      1.000       Macrophage -0.006630921
-    ## AAACCTGCAGTCACTA-1                      0.977      CD4+ T cell -0.046677709
+    ## AAACCTGCAGTCACTA-1                      0.976      CD4+ T cell -0.046677709
     ## AAACCTGGTAAGTAGT-1                      1.000       Macrophage  0.015462403
-    ## AAACCTGTCGAATGCT-1                      0.874 Lung Cancer Cell -0.049247934
+    ## AAACCTGTCGAATGCT-1                      0.872 Lung Cancer Cell -0.049247934
     ## AAACCTGTCTGAGGGA-1                      0.968        Mast cell -0.025618571
-    ## AAACGGGAGTAGATGT-1                      0.874 Lung Cancer Cell -0.038660836
+    ## AAACGGGAGTAGATGT-1                      0.872 Lung Cancer Cell -0.038660836
     ##                       G2M.Score Phase     old.ident RNA_snn_res.0.2
     ## AAACCTGAGACCGGAT-1 -0.047453336    G1 SeuratProject               2
     ## AAACCTGCAGTCACTA-1 -0.006673286    G1 SeuratProject               0
@@ -567,43 +565,43 @@ table(results_Pal_0125$scATOMIC_pred)
 
     ## 
     ##                                   Any Cell 
-    ##                                          6 
+    ##                                          5 
     ##                                 Blood Cell 
-    ##                                         29 
+    ##                                         31 
     ##              Cancer Associated Fibroblasts 
-    ##                                        169 
+    ##                                        197 
     ##                          CD4 or CD8 T cell 
     ##                                          4 
     ##                                        cDC 
-    ##                                         31 
+    ##                                         33 
     ##               Effector/Memory CD4+ T cells 
-    ##                                          6 
+    ##                                          5 
     ##               Effector/Memory CD8+ T cells 
     ##                                         27 
     ##                          Endothelial Cells 
-    ##                                         16 
-    ##                                        ER+ 
-    ##                                       3698 
-    ##                                 Macrophage 
-    ##                                         36 
-    ##                         Naive CD4+ T cells 
     ##                                         15 
+    ##                                        ER+ 
+    ##                                       3704 
+    ##                                 Macrophage 
+    ##                                         35 
+    ##               Macrophage or Dendritic Cell 
+    ##                                          1 
+    ##                         Naive CD4+ T cells 
+    ##                                         13 
     ##                        Natural killer cell 
     ##                                          3 
     ##                             Non Blood Cell 
-    ##                                         28 
+    ##                                         33 
     ##                         Normal Tissue Cell 
-    ##                                        123 
-    ##                        Smooth Muscle Cells 
-    ##                                          3 
+    ##                                        114 
     ##                               Stromal Cell 
-    ##                                         26 
+    ##                                          1 
     ##                         T regulatory cells 
     ##                                          7 
     ##                Tfh/Th1 helper CD4+ T cells 
     ##                                          1 
     ## Unclassified_Cell_from_Breast Cancer Cells 
-    ##                                          9
+    ##                                          8
 
 The breast cancer cells are now classified as ER+ cells.
 
@@ -654,7 +652,7 @@ sessionInfo()
     ##  [7] Matrix_1.3-2        reticulate_1.18     caret_6.0-86       
     ## [10] ggplot2_3.3.6       lattice_0.20-41     randomForest_4.6-14
     ## [13] data.table_1.14.0   dplyr_1.0.10        plyr_1.8.6         
-    ## [16] scATOMIC_1.0.0     
+    ## [16] scATOMIC_1.1.0     
     ## 
     ## loaded via a namespace (and not attached):
     ##   [1] igraph_1.2.6          lazyeval_0.2.2        splines_4.0.4        
