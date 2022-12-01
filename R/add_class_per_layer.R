@@ -108,11 +108,10 @@ add_class_per_layer <- function(layer_predictions, layer){
     layer_classes <- cbind(layer_predictions, brain_nbm_score, soft_tissue_score)
   }
   if(layer == "layer_3_stromal"){
-    fibroblasts_score <-   rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in% c(
-      "Fibroblasts", "Myofibroblasts"))]))
-    cancer_associated_fibroblast_score <- rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in% c("Cancer Associated Fibroblasts", "Cancer Associated Myofibroblasts"))]))
 
-    layer_classes <- cbind(layer_predictions, fibroblasts_score,cancer_associated_fibroblast_score)
+    cancer_associated_fibroblast_score <- rowSums(as.data.frame(layer_predictions[,which(colnames(layer_predictions) %in% c("Cancer Associated Fibroblasts", "Cancer Associated Myofibroblasts","Fibroblasts", "Myofibroblasts", "Smooth Muscle Cells"))]))
+
+    layer_classes <- cbind(layer_predictions,cancer_associated_fibroblast_score)
   }
   if(layer %in% c("layer_4_macrophage","layer_4_dendritic","layer_5_biliary",
                   "layer_6_soft_tissue", "layer_6_brain_nbm",

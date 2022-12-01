@@ -37,6 +37,7 @@ classify_new_scATOMIC_layer <- function(rf_model, selected_features, rna_counts,
                                                                          genes_in_model = selected_features,
                                                                          model = rf_model, cells_to_use = cell_names,
                                                                          ref_based = F, normalized_counts=normalized_counts)
+    layer_predictions <- na.omit(layer_predictions)
     predicted_class <- unlist(parallel::mclapply(row.names(layer_predictions),
                                                  function (cell_name, predictions)
                                                  {    layer_predictions <- predictions[cell_name, ]
