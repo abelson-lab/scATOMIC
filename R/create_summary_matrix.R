@@ -809,10 +809,17 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
                                                                    (summary_master$scATOMIC_pred == "Skin Cancer Cell" & (summary_master$median_score_class_layer_3 < 0.6   ) ) |
                                                                    (summary_master$scATOMIC_pred == "Prostate Cancer Cell" & (summary_master$median_score_class_layer_5 < 0.68 )))]
 
+          if(length(index_non_confident) > 0 ){
+            summary_master[index_non_confident, "classification_confidence"] <-"low_confidence"
+          }
+          if(length(index_non_confident) > 0 ){
+            preds_layer_6 <- summary_master[index_non_confident, "layer_6"]
+            if(major_cancer %in% preds_layer_6){
+              warning("Level of confidence for cancer typing is low")
+            }
+          }
 
 
-          warning("Level of confidence for cancer typing is low")
-          summary_master[index_non_confident, "classification_confidence"] <-"low_confidence"
 
           index_new_major_cancer <- which(summary_master$pan_cancer_cluster == "Cancer" & summary_master$classification_confidence == "confident")
           if(length(index_new_major_cancer) > 0){
@@ -824,6 +831,20 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
             warning("Cancer was called esophageal, but may be a different squamous cell cancer type")
             summary_master[index_esophageal, "classification_confidence"] <-"low_confidence"
           }
+
+
+
+          index_na_confident <- row.names(summary_master)[which(summary_master$scATOMIC_pred %in%  c("Bile Duct Cancer Cell",
+                                                                                                     "Bone Cancer Cell",
+                                                                                                     "Endometrial/Uterine Cancer Cell",
+                                                                                                     "Endometrial Cancer Cell",
+                                                                                                     "Gallbladder Cancer Cell",
+                                                                                                     "Gastric Cancer Cell")) ]
+          if(length(index_na_confident) > 0){
+            warning("Cancer was not externally validated, no confidence assigned")
+            summary_master[index_na_confident, "classification_confidence"] <- NA
+          }
+
         } else if(is.numeric(cancer_confidence) & median_score_major_cancer < cancer_confidence){
           warning(paste0("Level of confidence for cancer typing = ", median_score_major_cancer, "\nThis classfication is not reliable"))
           summary_master[which(summary_master$scATOMIC_pred == major_cancer), "classification_confidence"] <-"low_confidence"
@@ -1632,11 +1653,30 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
             major_cancer_fixed <- names(sort(table(summary_master[index_new_major_cancer, "layer_6"]), decreasing = T))[1]
             summary_master[which(summary_master$pan_cancer_cluster == "Cancer"), "scATOMIC_pred"] <- major_cancer_fixed
           }
-          warning("Level of confidence for cancer typing is low")
+          if(length(index_non_confident) > 0 ){
+            summary_master[index_non_confident, "classification_confidence"] <-"low_confidence"
+          }
+          if(length(index_non_confident) > 0 ){
+            preds_layer_6 <- summary_master[index_non_confident, "layer_6"]
+            if(major_cancer %in% preds_layer_6){
+              warning("Level of confidence for cancer typing is low")
+            }
+          }
+
           index_esophageal <- row.names(summary_master)[which(summary_master$scATOMIC_pred == "Esophageal Cancer Cell")]
           if(length(index_esophageal) > 0){
             warning("Cancer was called esophageal, but may be a different squamous cell cancer type")
             summary_master[index_esophageal, "classification_confidence"] <-"low_confidence"
+          }
+          index_na_confident <- row.names(summary_master)[which(summary_master$scATOMIC_pred %in%  c("Bile Duct Cancer Cell",
+                                                                                                     "Bone Cancer Cell",
+                                                                                                     "Endometrial/Uterine Cancer Cell",
+                                                                                                     "Endometrial Cancer Cell",
+                                                                                                     "Gallbladder Cancer Cell",
+                                                                                                     "Gastric Cancer Cell")) ]
+          if(length(index_na_confident) > 0){
+            warning("Cancer was not externally validated, no confidence assigned")
+            summary_master[index_na_confident, "classification_confidence"] <- NA
           }
         } else if(is.numeric(cancer_confidence) & median_score_major_cancer < cancer_confidence){
           warning(paste0("Level of confidence for cancer typing = ", median_score_major_cancer, "\nThis classfication is not reliable"))
