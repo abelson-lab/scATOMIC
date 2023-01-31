@@ -40,7 +40,7 @@ classify_layer(
 \item{layer}{which layer is being classified}
 }
 \value{
-
+returns a prediction matrix for a layer - used in run_scATOMIC
 }
 \description{
 classify_layer

@@ -45,7 +45,7 @@ scATOMICTree(
 \item{ncell_size}{logical whether to scale size of dots in interactive mode by number of cells (set to false if using relatively homogeneous dataset)}
 }
 \value{
-
+returns a visualization of annotations
 }
 \description{
 scATOMICTree

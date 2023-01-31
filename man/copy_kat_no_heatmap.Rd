@@ -45,7 +45,7 @@ copy_kat_no_heatmap(
 \item{norm.cell.names}{vector of normal cells use the blood and stromal from the classifier}
 }
 \value{
-
+returns a CNV matrix for use in create_summary_matrix
 }
 \description{
 copy_kat_no_heatmap

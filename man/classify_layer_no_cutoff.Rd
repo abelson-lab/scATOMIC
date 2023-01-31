@@ -40,7 +40,7 @@ classify_layer_no_cutoff(
 \item{layer}{which layer is being classified}
 }
 \value{
-
+returns a prediction matrix for a layer - used in run_scATOMIC
 }
 \description{
 classify_layer_no_cutoff

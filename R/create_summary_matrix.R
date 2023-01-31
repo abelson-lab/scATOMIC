@@ -869,6 +869,15 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
 
 
     }
+    percent_confident <- round(length(which(summary_master$classification_confidence == "confident"))/nrow(summary_master), digits = 2)
+    if(percent_confident == 1){
+      print(paste0("Sample classification confidence = 1.00"))
+    } else{
+      print(paste0("Sample classification confidence = ", percent_confident))
+    }
+    if(percent_confident < 0.75){
+      warning("Sample classification confidence is low")
+    }
     return(summary_master)
 
 
@@ -1701,6 +1710,15 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
 
 
 
+    }
+    percent_confident <- round(length(which(summary_master$classification_confidence == "confident"))/nrow(summary_master), digits = 2)
+    if(percent_confident == 1){
+      print(paste0("Sample classification confidence = 1.00"))
+    } else{
+      print(paste0("Sample classification confidence = ", percent_confident))
+    }
+    if(percent_confident < 0.75){
+      warning("Sample classification confidence is low")
     }
     return(summary_master)
   }

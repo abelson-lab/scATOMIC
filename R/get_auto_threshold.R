@@ -5,7 +5,7 @@
 #' @param unimodal_nsd number of standard deviations if scores are unimodal
 #' @param bimodal_nsd number of standard deviations if scores are multimodal
 #'
-#' @return
+#' @return returns a confidence threshold for each cell type class
 #' @export
 get_auto_threshold <- function(predictions, mc.cores = (parallel::detectCores()-1), unimodal_nsd = 3, bimodal_nsd = 2){
   if(.Platform$OS.type == "windows"){

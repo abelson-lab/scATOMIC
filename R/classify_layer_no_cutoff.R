@@ -11,7 +11,7 @@
 #' @param bimodal_nsd number of sd for setting threshold in bimodal distributions
 #' @param layer which layer is being classified
 #'
-#' @return
+#' @return returns a prediction matrix for a layer - used in run_scATOMIC
 #' @export
 
 classify_layer_no_cutoff <- function(rna_counts, cells_to_use, imputation = TRUE, genes_in_model, model,

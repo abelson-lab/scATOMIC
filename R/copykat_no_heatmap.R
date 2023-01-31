@@ -13,7 +13,7 @@
 #' @param distance default eucledian
 #' @param n.cores for parallel computing
 #'
-#' @return
+#' @return returns a CNV matrix for use in create_summary_matrix
 #' @export
 #function is code modified from Gao R. 2021 https://github.com/navinlabcode/copykat
 copy_kat_no_heatmap <- function (rawmat = rawdata,summary_matrix,  id.type = "S", cell.line = "no",

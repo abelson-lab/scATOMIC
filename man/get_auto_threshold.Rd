@@ -21,7 +21,7 @@ get_auto_threshold(
 \item{bimodal_nsd}{number of standard deviations if scores are multimodal}
 }
 \value{
-
+returns a confidence threshold for each cell type class
 }
 \description{
 get_auto_threshold

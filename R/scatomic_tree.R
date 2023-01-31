@@ -13,7 +13,7 @@
 #' @param linkLength length of the horizontal links that connect nodes in pixels
 #' @param ncell_size logical whether to scale size of dots in interactive mode by number of cells (set to false if using relatively homogeneous dataset)
 #'
-#' @return
+#' @return returns a visualization of annotations
 #' @export
 #'
 #' @examples
