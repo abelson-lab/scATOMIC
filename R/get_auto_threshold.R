@@ -12,7 +12,7 @@ get_auto_threshold <- function(predictions, mc.cores = (parallel::detectCores()-
     mc.cores = 1
   }
   cutoff_class <- unlist(parallel::mclapply(row.names(predictions), scATOMIC::class_for_cutoff, predictions = predictions, mc.cores = mc.cores), use.names = F)
-  predictions <- cbind(na.omit(predictions), cutoff_class)
+  predictions <- cbind(na.omit(predictions), na.omit(cutoff_class))
   scores_to_get_threshold <- levels(as.factor(cutoff_class))
   list_scores_for_cutoffs <- list()
   for(i in 1:length(scores_to_get_threshold)){

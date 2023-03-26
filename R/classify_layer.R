@@ -32,7 +32,7 @@ classify_layer <- function(rna_counts, cells_to_use, imputation = TRUE, genes_in
                                                layer = layer, mc.cores = mc.cores), use.names = F)
   layer_predictions <- cbind(layer_predictions, predicted_class)
   layer_predictions$predicted_class <- as.character(predicted_class)
-  threshold_per_class <- get_auto_threshold(layer_predictions)
+  threshold_per_class <- get_auto_threshold(layer_predictions, mc.cores=mc.cores)
   predicted_tissue_with_cutoff <- unlist(parallel::mclapply(row.names(layer_predictions),
                                                             add_unclassified_automatic_threshold, predictions = layer_predictions,
                                                             layer = layer, threshold_use = threshold_per_class,
