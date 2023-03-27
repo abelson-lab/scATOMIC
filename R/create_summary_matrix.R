@@ -466,7 +466,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         frequency <- cbind(frequency, proportion)
         max_proportion <- max(frequency$proportion)
         major_cancer <- frequency[which(frequency$proportion == max_proportion), "Var1"]
-
+        if(length(major_cancer) > 1){
+          major_cancer <- major_cancer[1]
+        }
         #if there is more than 1 seurat cluster for cancer we want to split into normal and cancer
         if(major_cancer == "Bile Duct Cancer Cell" ){
           cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "CHOL") ),"Gene"]
@@ -710,6 +712,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               frequency <- cbind(frequency, proportion)
               max_proportion <- max(frequency$proportion)
               major_cancer <- frequency[which(frequency$proportion == max_proportion), "Var1"]
+              if(length(major_cancer) > 1){
+                major_cancer <- major_cancer[1]
+              }
               seurat_object@meta.data[row.names(predicted_cancer_new),"scATOMIC_pred"] <- major_cancer
               seurat_object@meta.data[,"pan_cancer_cluster"] <- "Normal"
               seurat_object@meta.data[row.names(predicted_cancer_new),"pan_cancer_cluster"] <- "Cancer"
@@ -719,6 +724,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               frequency <- cbind(frequency, proportion)
               max_proportion <- max(frequency$proportion)
               major_cancer <- frequency[which(frequency$proportion == max_proportion), "Var1"]
+              if(length(major_cancer) > 1){
+                major_cancer <- major_cancer[1]
+              }
               index_non_breast <- row.names(predicted_cancer_new)[-which(predicted_cancer_new$scATOMIC_pred %in% c("ER+ Breast Cancer Cell",
                                                                                                                    "HER2+ Breast Cancer Cell","TNBC Breast Cancer Cell",
                                                                                                                    "Her2+ Breast Cancer Cell", "Breast Cancer Cell") )]
@@ -743,6 +751,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               frequency <- cbind(frequency, proportion)
               max_proportion <- max(frequency$proportion)
               major_cancer <- frequency[which(frequency$proportion == max_proportion), "Var1"]
+              if(length(major_cancer) > 1){
+                major_cancer <- major_cancer[1]
+              }
               seurat_object@meta.data[row.names(predicted_cancer_new),"scATOMIC_pred"] <- major_cancer
               seurat_object@meta.data[,"pan_cancer_cluster"] <- "Normal"
               seurat_object@meta.data[row.names(predicted_cancer_new),"pan_cancer_cluster"] <- "Cancer"
@@ -752,6 +763,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               frequency <- cbind(frequency, proportion)
               max_proportion <- max(frequency$proportion)
               major_cancer <- frequency[which(frequency$proportion == max_proportion), "Var1"]
+              if(length(major_cancer) > 1){
+                major_cancer <- major_cancer[1]
+              }
               index_non_breast <- row.names(predicted_cancer_new)[-which(predicted_cancer_new$scATOMIC_pred %in% c("ER+ Breast Cancer Cell",
                                                                                                                    "HER2+ Breast Cancer Cell","TNBC Breast Cancer Cell",
                                                                                                                    "Her2+ Breast Cancer Cell", "Breast Cancer Cell") )]
@@ -774,6 +788,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
           frequency <- cbind(frequency, proportion)
           max_proportion <- max(frequency$proportion)
           major_cancer <- frequency[which(frequency$proportion == max_proportion), "Var1"]
+          if(length(major_cancer) > 1){
+            major_cancer <- major_cancer[1]
+          }
           seurat_object@meta.data[row.names(predicted_cancer_new),"scATOMIC_pred"] <- major_cancer
           seurat_object@meta.data[,"pan_cancer_cluster"] <- "Normal"
           seurat_object@meta.data[row.names(predicted_cancer_new),"pan_cancer_cluster"] <- "Cancer"
@@ -1311,6 +1328,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         frequency <- cbind(frequency, proportion)
         max_proportion <- max(frequency$proportion)
         major_cancer <- frequency[which(frequency$proportion == max_proportion), "Var1"]
+        if(length(major_cancer) > 1){
+          major_cancer <- major_cancer[1]
+        }
 
         #if there is more than 1 seurat cluster for cancer we want to split into normal and cancer
         if(major_cancer == "Bile Duct Cancer Cell" ){
@@ -1556,6 +1576,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               frequency <- cbind(frequency, proportion)
               max_proportion <- max(frequency$proportion)
               major_cancer <- frequency[which(frequency$proportion == max_proportion), "Var1"]
+              if(length(major_cancer) > 1){
+                major_cancer <- major_cancer[1]
+              }
               seurat_object@meta.data[row.names(predicted_cancer_new),"scATOMIC_pred"] <- major_cancer
               seurat_object@meta.data[,"pan_cancer_cluster"] <- "Normal"
               seurat_object@meta.data[row.names(predicted_cancer_new),"pan_cancer_cluster"] <- "Cancer"
@@ -1565,6 +1588,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               frequency <- cbind(frequency, proportion)
               max_proportion <- max(frequency$proportion)
               major_cancer <- frequency[which(frequency$proportion == max_proportion), "Var1"]
+              if(length(major_cancer) > 1){
+                major_cancer <- major_cancer[1]
+              }
               index_non_breast <- row.names(predicted_cancer_new)[-which(predicted_cancer_new$scATOMIC_pred %in% c("ER+ Breast Cancer Cell",
                                                                                                                    "HER2+ Breast Cancer Cell","TNBC Breast Cancer Cell",
                                                                                                                    "Her2+ Breast Cancer Cell", "Breast Cancer Cell") )]
@@ -1589,6 +1615,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               frequency <- cbind(frequency, proportion)
               max_proportion <- max(frequency$proportion)
               major_cancer <- frequency[which(frequency$proportion == max_proportion), "Var1"]
+              if(length(major_cancer) > 1){
+                major_cancer <- major_cancer[1]
+              }
               seurat_object@meta.data[row.names(predicted_cancer_new),"scATOMIC_pred"] <- major_cancer
               seurat_object@meta.data[,"pan_cancer_cluster"] <- "Normal"
               seurat_object@meta.data[row.names(predicted_cancer_new),"pan_cancer_cluster"] <- "Cancer"
@@ -1598,6 +1627,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               frequency <- cbind(frequency, proportion)
               max_proportion <- max(frequency$proportion)
               major_cancer <- frequency[which(frequency$proportion == max_proportion), "Var1"]
+              if(length(major_cancer) > 1){
+                major_cancer <- major_cancer[1]
+              }
               index_non_breast <- row.names(predicted_cancer_new)[-which(predicted_cancer_new$scATOMIC_pred %in% c("ER+ Breast Cancer Cell",
                                                                                                                    "HER2+ Breast Cancer Cell","TNBC Breast Cancer Cell",
                                                                                                                    "Her2+ Breast Cancer Cell", "Breast Cancer Cell") )]
@@ -1620,6 +1652,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
           frequency <- cbind(frequency, proportion)
           max_proportion <- max(frequency$proportion)
           major_cancer <- frequency[which(frequency$proportion == max_proportion), "Var1"]
+          if(length(major_cancer) > 1){
+            major_cancer <- major_cancer[1]
+          }
           seurat_object@meta.data[row.names(predicted_cancer_new),"scATOMIC_pred"] <- major_cancer
           seurat_object@meta.data[,"pan_cancer_cluster"] <- "Normal"
           seurat_object@meta.data[row.names(predicted_cancer_new),"pan_cancer_cluster"] <- "Cancer"
