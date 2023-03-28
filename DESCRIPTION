@@ -1,6 +1,6 @@
 Package: scATOMIC
 Title: What the Package Does (One Line, Title Case)
-Version: 1.1.3
+Version: 1.1.4
 Authors@R: 
     person(given = "First",
            family = "Last",
