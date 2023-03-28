@@ -534,9 +534,15 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         genes_downreg_shared <- intersect(row.names(raw_counts), cancer_specific_downreg)
         index_cancer <- row.names(predicted_cancer)
         count_matrix_up_reg <- raw_counts[c(genes_upreg_shared),index_cancer]
+        if(length(index_cancer) == 1){
+          count_matrix_up_reg <- matrix(count_matrix_up_reg, nrow = length(count_matrix_up_reg), ncol = length(index_cancer), dimnames = list(names(count_matrix_up_reg), index_cancer))
+        }
         frequency_per_row_nozero <- apply(count_matrix_up_reg,1,function(x){length(which(x!=0))})/ncol(count_matrix_up_reg)
         genes_upreg_shared <- names(frequency_per_row_nozero)[which(frequency_per_row_nozero > 0)]
         count_matrix_down_reg <- raw_counts[c(genes_downreg_shared),index_cancer]
+        if(length(index_cancer) == 1){
+          count_matrix_down_reg <- matrix(count_matrix_down_reg, nrow = length(count_matrix_down_reg), ncol = length(index_cancer), dimnames = list(names(count_matrix_down_reg), index_cancer))
+        }
         frequency_per_row_nozero <- apply(count_matrix_down_reg,1,function(x){length(which(x!=0))})/ncol(count_matrix_down_reg)
         genes_downreg_shared <- names(frequency_per_row_nozero)[which(frequency_per_row_nozero > 0)]
         cancer_subset <- seurat_object
@@ -1397,9 +1403,15 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         genes_downreg_shared <- intersect(row.names(raw_counts), cancer_specific_downreg)
         index_cancer <- row.names(predicted_cancer)
         count_matrix_up_reg <- raw_counts[c(genes_upreg_shared),index_cancer]
+        if(length(index_cancer) == 1){
+          count_matrix_up_reg <- matrix(count_matrix_up_reg, nrow = length(count_matrix_up_reg), ncol = length(index_cancer), dimnames = list(names(count_matrix_up_reg), index_cancer))
+        }
         frequency_per_row_nozero <- apply(count_matrix_up_reg,1,function(x){length(which(x!=0))})/ncol(count_matrix_up_reg)
         genes_upreg_shared <- names(frequency_per_row_nozero)[which(frequency_per_row_nozero > 0)]
         count_matrix_down_reg <- raw_counts[c(genes_downreg_shared),index_cancer]
+        if(length(index_cancer) == 1){
+          count_matrix_down_reg <- matrix(count_matrix_down_reg, nrow = length(count_matrix_down_reg), ncol = length(index_cancer), dimnames = list(names(count_matrix_down_reg), index_cancer))
+        }
         frequency_per_row_nozero <- apply(count_matrix_down_reg,1,function(x){length(which(x!=0))})/ncol(count_matrix_down_reg)
         genes_downreg_shared <- names(frequency_per_row_nozero)[which(frequency_per_row_nozero > 0)]
         cancer_subset <- seurat_object
