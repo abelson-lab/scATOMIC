@@ -9,16 +9,20 @@ always_allow_html: yes
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# scATOMIC
+# Pan cancer classification of single cells using scATOMIC
 
 <!-- badges: start -->
 <!-- badges: end -->
-**S**ingle **C**ell **A**nnotation of **T**um**O**ur **M**icroenvironments **I**n pan-**C**ancer settings
+This repository contains installation instructions and tutorials to run **S**ingle **C**ell **A**nnotation of **T**um**O**ur **M**icroenvironments **I**n pan-**C**ancer settings
+For more information please check out our manuscript at https://www.nature.com/articles/s41467-023-37353-8
 
 ![](img/scATOMIC_pipeline.png)
 
 
+## Citing scATOMIC
 
+If you are using scATOMIC in your research please cite the corresponding manuscript:
+[Nofech-Mozes, et al., Nature Communications](https://www.nature.com/articles/s41467-023-37353-8)
 
 ## Installation and System Requirements
 
@@ -26,7 +30,7 @@ This tutorial has been tested on MacOS (Montery), Linux (Ubuntu 18.04.6 LTS), an
 Note: Windows does not natively perform parallel functions and thus takes longer to run.
 Note: Mac users require Xcode Command Line Tools for the installation. 
 
-To check if these are installed run the following in terminal:
+To check if Xcode Command Line Tools are installed run the following in terminal:
 
 ```{bash}
 xcode-select -p
@@ -42,8 +46,8 @@ xcode-select --install
 
 
 To install scATOMIC you will need to use the devtools package. We recommend you install other dependencies before installing scATOMIC.
-Note that packages DLM and RMagic were removed from CRAN in October 2022 so we installed the archived package.
-Note: The package "cutoff" we use is a developer package that is different from the CRAN "cutoff" package.
+Note that packages DLM and RMagic were removed from CRAN in October 2022 so we install the archived package.
+Note: The package [cutoff](https://github.com/choisy/cutoff) we use is a developer package that is different from the CRAN "cutoff" package.
 Installation of scATOMIC may take several minutes, as the package contains the pre-trained random forest models. 
 
 ```{r, results='hide', eval=FALSE}
@@ -52,9 +56,6 @@ devtools::install_version("Rmagic", version = "2.0.3", repos = "http://cran.us.r
 if(!require(devtools)) install.packages("devtools")
 if(!require(cutoff)) devtools::install_github("choisy/cutoff")
 if(!require(scATOMIC)) devtools::install_github("abelson-lab/scATOMIC")
-
-
-
 ```
 
 if installation has the error due to the large size of the package:
@@ -70,7 +71,7 @@ devtools::install_github("abelson-lab/scATOMIC")
 ```
 
 
-In scATOMIC we rely on the Rmagic package to impute values.
+In scATOMIC we use the Rmagic package to impute values.
 
 To use MAGIC, you will need to install both the R and Python packages.
 
@@ -108,15 +109,28 @@ pymagic_is_available()
 
 For more information visit https://rdrr.io/cran/Rmagic/f/README.md#installation
 
+## Whats new in scATOMIC v2
+
+1. We have updated scATOMIC to classify additional subclasses of cells. Specifically, subtypes of macrophages, monocytes, cDCs and cancer associated fibroblasts are now included by default.
+![](img/new_hierarchy.png)
+
+   
+2. We have added the normal_tissue parameter in the create_summary_matrix when inputted samples represent non-cancer, in this case any cancer cell label is converted to normal tissue cell. [See this new vignette](#Running-scATOMIC-on-normal-tissue-samples)
+
+3. We have added the known_cancer_type parameter in the create_summary_matrix when the cancer type is already known. In this case any cancer cell label is converted to the known cancer type. [See this new vignette](#Running-scATOMIC-on-known-cancer-type-samples)
+
+4. We have added a low resolution mode to output broader subtypes of non malignant cells.
+
 ## Tutorial for scATOMIC
 ### Applications
 
+Inter-patient cancer cell specific effects can interfere with scATOMICs cancer signature scoring module and confidence in classifications.
 We strongly recommend running scATOMIC only on individual patient/biopsy samples.
 For most datasets the scATOMIC should run in ~5-10 minutes on a standard 16GB RAM laptop. 
 For larger datasets (> 15,000 cells) we recommend using a machine with greater RAM. 
-scATOMIC's model assumes the presence at least some cancer cells in a biopsy and should not be used in normal tissue applications. 
+The default scATOMIC model assumes the presence of at least some cancer cells in a biopsy and should not be used in normal tissue applications. In version 2 we have added the normal_tissue parameter for normal tissue samples. 
 
-scATOMIC is designed to classify cells within the pan cancer TME hierarchy:
+scATOMIC is designed to classify cells within the following pan cancer TME hierarchy:
 
 ![](img/hierarchy.png)
 
@@ -128,7 +142,7 @@ For a full list of subtypes included in scATOMIC's reference see Table S2 in the
 
 ### Loading dependencies
 
-First we load all needed packages
+First we load all dependency packages
 ```{r, results='hide', message=FALSE}
 library(scATOMIC)
 library(plyr)
@@ -158,7 +172,7 @@ To convert a regular matrix or dataframe to a sparse matrix run:
 sparse_matrix <- as(as.matrix(input_matrix), "sparseMatrix")
 ```
 
-To extract raw count sparse matrices from Seurat objects run:
+To extract raw count sparse matrices directly from Seurat objects run:
 
 ```{r, eval= FALSE}
 #where seurat_object is any scRNA-seq Seurat object
@@ -190,14 +204,15 @@ lung_cancer_demo_data <- lung_cancer_demo_data[, intersect(names(which(nFeatureR
 ### Running scATOMIC
 To run scATOMIC we use the run_scATOMIC() function to generate a detailed annotation object. 
 To run with default settings simply use: 
-```{r,  message=FALSE,results='hide'}
+```{r,  message=FALSE,results='hide', warning=FALSE}
 cell_predictions <- run_scATOMIC(lung_cancer_demo_data)
 ```
 
 Ignore warnings regarding unexpressed genes.
+Ignore warnings 'In xtfrm.data.frame(x) : cannot xtfrm data frames'
 This returns a list object with predictions for each cell at each layer of the hierarchy. 
 
-Other relevant parameters of run_scATOMIC whether to use imputation (default = TRUE), how many cores to use, and the threshold for classifying cells.
+Other relevant parameters of run_scATOMIC are whether to use imputation (default = TRUE), how many cores to use, and the threshold for classifying cells.
 
 
 
@@ -348,6 +363,7 @@ index_subset <- c()
 for(i in 1:length(cancer_types)){
   index_cancer <- row.names(Wu_et_al_breast_metadata)[which(Wu_et_al_breast_metadata$subtype == cancer_types[i])]
   if(length(index_cancer) > 3000){
+    set.seed(123)
     index_subset <- c(index_subset, index_cancer[sample(1:length(index_cancer), size = 3000)])
   } else{
     index_subset <- c(index_subset, index_cancer)
@@ -361,7 +377,7 @@ Wu_et_al_breast_metadata <- Wu_et_al_breast_metadata[index_subset,]
 
 To train a new layer we must create a directory to save the model to and we run the get_new_scATOMIC_layer() function
 To speed up the demo we use only 100 trees here
-```{r, eval=FALSE}
+```{r, eval=F}
 #change "~/Downloads" to path containing "Wu_etal_2021_BRCA_scRNASeq/"
 dir.create("~/Downloads/Wu_etal_2021_BRCA_scRNASeq/breast_subclassification_layer")
 
@@ -425,6 +441,62 @@ table(results_Pal_0125$scATOMIC_pred)
 
 
 The breast cancer cells are now classified as ER+ cells. 
+
+
+## Running scATOMIC on normal tissue samples
+
+Although scATOMIC is designed for cancer samples, one can use it to annotate non-cancerous samples.
+This can be particularly useful in the context of comparing tumour microenvironments to normal tissue environments where both data would be annotated in the same way.
+
+In this example we use a matched normal lung sample downloaded from [Kim et al](https://www.nature.com/articles/s41467-020-16164-1)
+For the convenience of this tutorial, the count matrix in h5 format can be downloaded from this [Google Drive link](https://drive.google.com/file/d/1EPljBN5l5txqAr2j8hiuc4rAWRoGVOXL/view?usp=sharing) 
+
+Run the standard pipeline for scATOMIC
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+normal_lungdata <- Read10X_h5("~/Downloads/LUNG_N01_sparse_count_mat.h5")
+
+pct_mt <- colSums(normal_lungdata[grep("^MT-", row.names(normal_lungdata)),])/colSums(normal_lungdata) * 100
+nFeatureRNA <- colSums(normal_lungdata > 0)
+normal_lungdata <- normal_lungdata[, names(which(pct_mt < 25))]
+normal_lungdata <- normal_lungdata[, intersect(names(which(nFeatureRNA > 500)), colnames(normal_lungdata))]
+cell_predictions_normal_lung <- run_scATOMIC(normal_lungdata)
+results_normal_lung <- create_summary_matrix(prediction_list = cell_predictions_normal_lung,  raw_counts = normal_lungdata, normal_tissue = T)
+```
+
+As you can see there are no cancer cells labelled.
+
+```{r}
+table(results_normal_lung$scATOMIC_pred)
+```
+
+All cells that received a classification that was referring to a cancer cell type in layer 6 was converted to normal tissue cell in scATOMIC's final prediction
+
+```{r}
+table(results_normal_lung[which(results_normal_lung$scATOMIC_pred == "Normal Tissue Cell"), "layer_6"])
+```
+
+## Running scATOMIC on known cancer type samples
+
+Although scATOMIC can predict cancer type well without any prior knowledge, not all cancer types are captured in the training model and it can occasionally make misclassifications.
+As such we now allows users to input a ground truth for the cancer type if it is known using the known_cancer_type parameter in the create_summary_matrix function. 
+
+We showcase this functionality in the demo_lung_cancer dataset.
+In this example we provide the function knowledge that the sample is "LUAD"
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+lung_cancer_demo_data <- demo_lung_data
+pct_mt <- colSums(lung_cancer_demo_data[grep("^MT-", row.names(lung_cancer_demo_data)),])/colSums(lung_cancer_demo_data) * 100
+nFeatureRNA <- colSums(lung_cancer_demo_data > 0)
+lung_cancer_demo_data <- lung_cancer_demo_data[, names(which(pct_mt < 25))]
+lung_cancer_demo_data <- lung_cancer_demo_data[, intersect(names(which(nFeatureRNA > 500)), colnames(lung_cancer_demo_data))]
+cell_predictions <- run_scATOMIC(lung_cancer_demo_data)
+results_lung <- create_summary_matrix(prediction_list = cell_predictions, raw_counts = lung_cancer_demo_data, known_cancer_type = "LUAD cell" )
+
+```
+```{r}
+table(results_lung$scATOMIC_pred)
+```
 
 
 ## Other Considerations

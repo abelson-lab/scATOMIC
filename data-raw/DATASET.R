@@ -195,7 +195,34 @@ rm(list = ls())
 
 
 
+load(paste0("~/Documents/myeloid_subclass/training_data_CAFs/classifier_layer_4_CAF_subtypes.RData"))
+top_genes_unlisted_layer_4_CAFs <- top_genes_unlisted
+model_layer_4_CAFs <- rf_classifier_cell_lines
+usethis::use_data(top_genes_unlisted_layer_4_CAFs, overwrite = TRUE)
+usethis::use_data(model_layer_4_CAFs, overwrite = TRUE)
+rm(list = ls())
 
+
+load(paste0("~/Documents/myeloid_subclass/classifier_outputs_myeloid/classifier_layer_5_cDC_subtypes.RData"))
+top_genes_unlisted_layer_5_cDC <- top_genes_unlisted
+model_layer_5_cDC <- rf_classifier_cell_lines
+usethis::use_data(top_genes_unlisted_layer_5_cDC, overwrite = TRUE)
+usethis::use_data(model_layer_5_cDC, overwrite = TRUE)
+rm(list = ls())
+
+load(paste0("~/Documents/myeloid_subclass/classifier_outputs_myeloid/classifier_layer_5_macrophage_subtypes.RData"))
+top_genes_unlisted_layer_5_macrophage <- top_genes_unlisted
+model_layer_5_macrophage <- rf_classifier_cell_lines
+usethis::use_data(top_genes_unlisted_layer_5_macrophage, overwrite = TRUE)
+usethis::use_data(model_layer_5_macrophage, overwrite = TRUE)
+rm(list = ls())
+
+load(paste0("~/Documents/myeloid_subclass/classifier_outputs_myeloid/classifier_layer_5_monocyte_subtypes.RData"))
+top_genes_unlisted_layer_5_monocyte <- top_genes_unlisted
+model_layer_5_monocyte <- rf_classifier_cell_lines
+usethis::use_data(top_genes_unlisted_layer_5_monocyte, overwrite = TRUE)
+usethis::use_data(model_layer_5_monocyte, overwrite = TRUE)
+rm(list = ls())
 
 
 

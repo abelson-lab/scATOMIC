@@ -37,7 +37,7 @@ classify_cells_RNA_no_scale <- function(rna_counts, imputation, model, genes_in_
         filtered_counts <- t(as.matrix(filtered_counts))
         defaultW <- getOption("warn")
         options(warn = -1)
-        sc_magic <- Rmagic::magic(filtered_counts,verbose = F)
+        sc_magic <- Rmagic::magic(filtered_counts,verbose = F, seed=123)
         options(warn = defaultW)
         filtered_counts <- as.data.frame(t(as.data.frame(sc_magic)))
         if(ref_based == TRUE){
@@ -92,7 +92,7 @@ classify_cells_RNA_no_scale <- function(rna_counts, imputation, model, genes_in_
       #run magic imputation or not
       if(imputation == TRUE){
         filtered_counts <- t(as.matrix(filtered_counts))
-        sc_magic <- Rmagic::magic(filtered_counts,verbose = F)
+        sc_magic <- Rmagic::magic(filtered_counts,verbose = F, seed = 123)
         filtered_counts <- as.data.frame(t(as.data.frame(sc_magic)))
         filtered_counts <- filtered_counts[,cells_to_use]
       }

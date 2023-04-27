@@ -9,13 +9,16 @@ create_summary_matrix(
   prediction_list,
   use_CNVs = FALSE,
   modify_results = TRUE,
-  mc.cores = (parallel::detectCores() - 1),
+  mc.cores = 1,
   min_prop = 0.5,
   breast_mode = F,
   fine_grained_T = T,
   confidence_cutoff = T,
   pan_cancer = F,
-  cancer_confidence = "default"
+  cancer_confidence = "default",
+  normal_tissue = F,
+  low_res_mode = FALSE,
+  known_cancer_type = NULL
 )
 }
 \arguments{
@@ -27,7 +30,7 @@ create_summary_matrix(
 
 \item{modify_results}{logical whether to assume one cancer in the sample and reassign minority cancer calls as Unknown cells}
 
-\item{mc.cores}{number of cores to use in CNV analysis}
+\item{mc.cores}{number of cores to use in parallel analysis}
 
 \item{min_prop}{minimum \% of major cancer class for modifications}
 
@@ -40,6 +43,12 @@ create_summary_matrix(
 \item{pan_cancer}{logical to use pan cancer features or cancer specific features}
 
 \item{cancer_confidence}{assesing whether a cancer prediction should be interpreted as confident. by default we use layer specific cutoff derived from our paper that optimally split true positives and true negatives. Set to a numeric from 0-1 to set a hard cutoff for all layers.}
+
+\item{normal_tissue}{Set to true if you know the sample is only normal cells, will convert all cancer annotations to normal tissue cell}
+
+\item{low_res_mode}{Set to true to convert all high res subtypes into low res cell types}
+
+\item{known_cancer_type}{converts all cancer cell type annotations to provided string, recommended if one knows with 100\% certainty what the cancer type is.}
 }
 \value{
 dataframe of cell names and final prediction

@@ -13,7 +13,7 @@
 #' @param linkLength length of the horizontal links that connect nodes in pixels
 #' @param ncell_size logical whether to scale size of dots in interactive mode by number of cells (set to false if using relatively homogeneous dataset)
 #'
-#' @return returns a visualization of annotations
+#' @return returns an interactive visualization of results
 #' @export
 #'
 #' @examples
@@ -53,6 +53,10 @@ scATOMICTree <- function(predictions_list, summary_matrix, interactive_mode = T,
     #get IQR for each number and take max
     for(m in 1:length(predicted_cells)){
       cell_use <- predicted_cells[m]
+
+      if(cell_use == "Cell low quality"){
+        next
+      }
       numeric_column_index <- colnames(select_if(layer_pred, is.numeric))
       layer_pred_cell_use <- layer_pred[which(layer_pred$predicted_tissue_with_cutoff == cell_use), numeric_column_index]
       per_cell_type_median_score[m] <- max(unlist(lapply(layer_pred_cell_use, median), use.names = T))[1]

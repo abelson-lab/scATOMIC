@@ -117,7 +117,7 @@ add_class_per_layer <- function(layer_predictions, layer){
                   "layer_6_soft_tissue", "layer_6_brain_nbm",
                   "layer_5_digestive", "layer_5_breast_lung_prostate",
                   "layer_5_ov_endo_kid", "layer_4_CD4_CD8","layer_4_CD8_NK",
-                  "layer_6_breast", "layer_5_CD4", "layer_5_CD8")){
+                  "layer_6_breast", "layer_5_CD4", "layer_5_CD8", "layer_4_CAF", "layer_5_cDC", "layer_5_macrophage", "layer_5_monocyte")){
     print("nothing to score in this layer")
     layer_classes <- layer_predictions
   }

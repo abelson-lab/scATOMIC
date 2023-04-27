@@ -1,15 +1,24 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# scATOMIC
+# Pan cancer classification of single cells using scATOMIC
 
 <!-- badges: start -->
 <!-- badges: end -->
 
+This repository contains installation instructions and tutorials to run
 **S**ingle **C**ell **A**nnotation of **T**um**O**ur
-**M**icroenvironments **I**n pan-**C**ancer settings
+**M**icroenvironments **I**n pan-**C**ancer settings For more
+information please check out our manuscript at
+<https://www.nature.com/articles/s41467-023-37353-8>
 
 ![](img/scATOMIC_pipeline.png)
+
+## Citing scATOMIC
+
+If you are using scATOMIC in your research please cite the corresponding
+manuscript: [Nofech-Mozes, et al., Nature
+Communications](https://www.nature.com/articles/s41467-023-37353-8)
 
 ## Installation and System Requirements
 
@@ -18,7 +27,8 @@ LTS), and Windows. Note: Windows does not natively perform parallel
 functions and thus takes longer to run. Note: Mac users require Xcode
 Command Line Tools for the installation.
 
-To check if these are installed run the following in terminal:
+To check if Xcode Command Line Tools are installed run the following in
+terminal:
 
 ``` bash
 xcode-select -p
@@ -36,10 +46,11 @@ xcode-select --install
 To install scATOMIC you will need to use the devtools package. We
 recommend you install other dependencies before installing scATOMIC.
 Note that packages DLM and RMagic were removed from CRAN in October 2022
-so we installed the archived package. Note: The package “cutoff” we use
-is a developer package that is different from the CRAN “cutoff” package.
-Installation of scATOMIC may take several minutes, as the package
-contains the pre-trained random forest models.
+so we install the archived package. Note: The package
+[cutoff](https://github.com/choisy/cutoff) we use is a developer package
+that is different from the CRAN “cutoff” package. Installation of
+scATOMIC may take several minutes, as the package contains the
+pre-trained random forest models.
 
 ``` r
 devtools::install_version("dlm", version = "1.1.5", repos = "http://cran.us.r-project.org")
@@ -62,7 +73,7 @@ options(timeout=9999999)
 devtools::install_github("abelson-lab/scATOMIC")
 ```
 
-In scATOMIC we rely on the Rmagic package to impute values.
+In scATOMIC we use the Rmagic package to impute values.
 
 To use MAGIC, you will need to install both the R and Python packages.
 
@@ -103,19 +114,43 @@ pymagic_is_available()
 For more information visit
 <https://rdrr.io/cran/Rmagic/f/README.md#installation>
 
+## Whats new in scATOMIC v2
+
+1.  We have updated scATOMIC to classify additional subclasses of cells.
+    Specifically, subtypes of macrophages, monocytes, cDCs and cancer
+    associated fibroblasts are now included by default.
+    ![](img/new_hierarchy.png)
+
+2.  We have added the normal_tissue parameter in the
+    create_summary_matrix when inputted samples represent non-cancer, in
+    this case any cancer cell label is converted to normal tissue cell.
+    [See this new vignette](#Running-scATOMIC-on-normal-tissue-samples)
+
+3.  We have added the known_cancer_type parameter in the
+    create_summary_matrix when the cancer type is already known. In this
+    case any cancer cell label is converted to the known cancer type.
+    [See this new
+    vignette](#Running-scATOMIC-on-known-cancer-type-samples)
+
+4.  We have added a low resolution mode to output broader subtypes of
+    non malignant cells.
+
 ## Tutorial for scATOMIC
 
 ### Applications
 
-We strongly recommend running scATOMIC only on individual patient/biopsy
+Inter-patient cancer cell specific effects can interfere with scATOMICs
+cancer signature scoring module and confidence in classifications. We
+strongly recommend running scATOMIC only on individual patient/biopsy
 samples. For most datasets the scATOMIC should run in \~5-10 minutes on
 a standard 16GB RAM laptop. For larger datasets (\> 15,000 cells) we
-recommend using a machine with greater RAM. scATOMIC’s model assumes the
-presence at least some cancer cells in a biopsy and should not be used
-in normal tissue applications.
+recommend using a machine with greater RAM. The default scATOMIC model
+assumes the presence of at least some cancer cells in a biopsy and
+should not be used in normal tissue applications. In version 2 we have
+added the normal_tissue parameter for normal tissue samples.
 
-scATOMIC is designed to classify cells within the pan cancer TME
-hierarchy:
+scATOMIC is designed to classify cells within the following pan cancer
+TME hierarchy:
 
 ![](img/hierarchy.png)
 
@@ -130,7 +165,7 @@ see Table S2 in the manuscript.
 
 ### Loading dependencies
 
-First we load all needed packages
+First we load all dependency packages
 
 ``` r
 library(scATOMIC)
@@ -161,7 +196,7 @@ memory. To convert a regular matrix or dataframe to a sparse matrix run:
 sparse_matrix <- as(as.matrix(input_matrix), "sparseMatrix")
 ```
 
-To extract raw count sparse matrices from Seurat objects run:
+To extract raw count sparse matrices directly from Seurat objects run:
 
 ``` r
 #where seurat_object is any scRNA-seq Seurat object
@@ -202,10 +237,11 @@ detailed annotation object. To run with default settings simply use:
 cell_predictions <- run_scATOMIC(lung_cancer_demo_data)
 ```
 
-Ignore warnings regarding unexpressed genes. This returns a list object
-with predictions for each cell at each layer of the hierarchy.
+Ignore warnings regarding unexpressed genes. Ignore warnings ‘In
+xtfrm.data.frame(x) : cannot xtfrm data frames’ This returns a list
+object with predictions for each cell at each layer of the hierarchy.
 
-Other relevant parameters of run_scATOMIC whether to use imputation
+Other relevant parameters of run_scATOMIC are whether to use imputation
 (default = TRUE), how many cores to use, and the threshold for
 classifying cells.
 
@@ -229,45 +265,53 @@ table(results_lung$scATOMIC_pred)
 
     ## 
     ##                      Any Cell                        B Cell 
-    ##                             9                           157 
-    ##                    Blood Cell Cancer Associated Fibroblasts 
-    ##                            18                           182 
-    ##             CD4 or CD8 T cell                   CD4+ T cell 
-    ##                            21                            92 
-    ##              CD8 T or NK cell                   CD8+ T cell 
-    ##                            10                            46 
-    ##                           cDC                Dendritic Cell 
-    ##                            71                             1 
-    ##  Effector/Memory CD4+ T cells  Effector/Memory CD8+ T cells 
-    ##                           176                           231 
-    ##             Endothelial Cells        Exhausted CD8+ T cells 
-    ##                           109                            30 
+    ##                            10                           158 
+    ##                    Blood Cell                        CAFadi 
+    ##                            10                            13 
+    ##                      CAFinfla                        CAFmyo 
+    ##                            51                            94 
+    ## Cancer Associated Fibroblasts             CD4 or CD8 T cell 
+    ##                            24                            21 
+    ##                   CD4+ T cell              CD8 T or NK cell 
+    ##                            95                            10 
+    ##                   CD8+ T cell                           cDC 
+    ##                            46                             3 
+    ##                          cDC1                          cDC2 
+    ##                             9                            56 
+    ##                Dendritic Cell  Effector/Memory CD4+ T cells 
+    ##                             1                           175 
+    ##  Effector/Memory CD8+ T cells             Endothelial Cells 
+    ##                           229                           110 
+    ##        Exhausted CD8+ T cells                     LAMP3 cDC 
+    ##                            30                             3 
     ##              Lung Cancer Cell                    Macrophage 
-    ##                           604                           607 
+    ##                           599                            11 
     ##  Macrophage or Dendritic Cell                     Mast cell 
-    ##                            36                            80 
+    ##                            35                            80 
     ##            Naive CD4+ T cells           Natural killer cell 
     ##                             6                           101 
-    ##                Non Blood Cell              Non Stromal Cell 
-    ##                            94                             1 
-    ##            Normal Tissue Cell                           pDC 
-    ##                            37                            18 
-    ##                   Plasmablast                  T or NK Cell 
-    ##                            89                             2 
+    ##                Non Blood Cell            Normal Tissue Cell 
+    ##                            66                            69 
+    ##                           pDC       Phagocytosis Macrophage 
+    ##                            18                           319 
+    ##                   Plasmablast   Pro-angiogenesis Macrophage 
+    ##                            91                           252 
+    ##   Pro-inflammatory Macrophage                  T or NK Cell 
+    ##                            28                             2 
     ##            T regulatory cells   Tfh/Th1 helper CD4+ T cells 
-    ##                           143                            26
+    ##                           144                            28
 
 ``` r
 head(results_lung)
 ```
 
-    ##                       orig.ident nCount_RNA nFeature_RNA         cell_names
-    ## AAACCTGAGACCGGAT-1 SeuratProject       7088         2072 AAACCTGAGACCGGAT-1
-    ## AAACCTGCAGTCACTA-1 SeuratProject       4985         1269 AAACCTGCAGTCACTA-1
-    ## AAACCTGGTAAGTAGT-1 SeuratProject      10007         2543 AAACCTGGTAAGTAGT-1
-    ## AAACCTGTCGAATGCT-1 SeuratProject      18045         4597 AAACCTGTCGAATGCT-1
-    ## AAACCTGTCTGAGGGA-1 SeuratProject       4937         1492 AAACCTGTCTGAGGGA-1
-    ## AAACGGGAGTAGATGT-1 SeuratProject      12569         3856 AAACGGGAGTAGATGT-1
+    ##                       orig.ident         cell_names
+    ## AAACCTGAGACCGGAT-1 SeuratProject AAACCTGAGACCGGAT-1
+    ## AAACCTGCAGTCACTA-1 SeuratProject AAACCTGCAGTCACTA-1
+    ## AAACCTGGTAAGTAGT-1 SeuratProject AAACCTGGTAAGTAGT-1
+    ## AAACCTGTCGAATGCT-1 SeuratProject AAACCTGTCGAATGCT-1
+    ## AAACCTGTCTGAGGGA-1 SeuratProject AAACCTGTCTGAGGGA-1
+    ## AAACGGGAGTAGATGT-1 SeuratProject AAACGGGAGTAGATGT-1
     ##                                         layer_1                      layer_2
     ## AAACCTGAGACCGGAT-1                   Blood_Cell macrophage_or_dendritic_cell
     ## AAACCTGCAGTCACTA-1                   Blood_Cell           T_or_NK_lymphocyte
@@ -282,34 +326,41 @@ head(results_lung)
     ## AAACCTGTCGAATGCT-1 Non GI Epithelial Cell Breast/Lung/Prostate Cell
     ## AAACCTGTCTGAGGGA-1              Mast cell                 Mast cell
     ## AAACGGGAGTAGATGT-1 Non GI Epithelial Cell Breast/Lung/Prostate Cell
-    ##                             layer_5          layer_6 median_score_class_layer_1
-    ## AAACCTGAGACCGGAT-1       Macrophage       Macrophage                      0.926
-    ## AAACCTGCAGTCACTA-1      CD4+ T cell      CD4+ T cell                      0.926
-    ## AAACCTGGTAAGTAGT-1       Macrophage       Macrophage                      0.926
-    ## AAACCTGTCGAATGCT-1 Lung Cancer Cell Lung Cancer Cell                      0.980
-    ## AAACCTGTCTGAGGGA-1        Mast cell        Mast cell                      0.926
-    ## AAACGGGAGTAGATGT-1 Lung Cancer Cell Lung Cancer Cell                      0.980
-    ##                    median_score_class_layer_2 median_score_class_layer_3
-    ## AAACCTGAGACCGGAT-1                      0.998                      0.984
-    ## AAACCTGCAGTCACTA-1                      0.860                      0.996
-    ## AAACCTGGTAAGTAGT-1                      0.998                      0.984
-    ## AAACCTGTCGAATGCT-1                      0.874                      0.574
-    ## AAACCTGTCTGAGGGA-1                      0.968                      0.968
-    ## AAACGGGAGTAGATGT-1                      0.874                      0.574
-    ##                    median_score_class_layer_4 median_score_class_layer_5
+    ##                                    layer_5                 layer_6
+    ## AAACCTGAGACCGGAT-1 Phagocytosis Macrophage Phagocytosis Macrophage
+    ## AAACCTGCAGTCACTA-1             CD4+ T cell             CD4+ T cell
+    ## AAACCTGGTAAGTAGT-1 Phagocytosis Macrophage Phagocytosis Macrophage
+    ## AAACCTGTCGAATGCT-1        Lung Cancer Cell        Lung Cancer Cell
+    ## AAACCTGTCTGAGGGA-1               Mast cell               Mast cell
+    ## AAACGGGAGTAGATGT-1        Lung Cancer Cell        Lung Cancer Cell
+    ##                    median_score_class_layer_1 median_score_class_layer_2
+    ## AAACCTGAGACCGGAT-1                      0.926                      0.998
+    ## AAACCTGCAGTCACTA-1                      0.926                      0.858
+    ## AAACCTGGTAAGTAGT-1                      0.926                      0.998
+    ## AAACCTGTCGAATGCT-1                      0.980                      0.874
+    ## AAACCTGTCTGAGGGA-1                      0.926                      0.970
+    ## AAACGGGAGTAGATGT-1                      0.980                      0.874
+    ##                    median_score_class_layer_3 median_score_class_layer_4
+    ## AAACCTGAGACCGGAT-1                      0.984                      1.000
+    ## AAACCTGCAGTCACTA-1                      0.996                      0.977
+    ## AAACCTGGTAAGTAGT-1                      0.984                      1.000
+    ## AAACCTGTCGAATGCT-1                      0.574                      0.812
+    ## AAACCTGTCTGAGGGA-1                      0.970                      0.970
+    ## AAACGGGAGTAGATGT-1                      0.574                      0.812
+    ##                    median_score_class_layer_5 median_score_class_layer_6
     ## AAACCTGAGACCGGAT-1                      1.000                      1.000
-    ## AAACCTGCAGTCACTA-1                      0.976                      0.976
+    ## AAACCTGCAGTCACTA-1                      0.977                      0.977
     ## AAACCTGGTAAGTAGT-1                      1.000                      1.000
-    ## AAACCTGTCGAATGCT-1                      0.808                      0.872
-    ## AAACCTGTCTGAGGGA-1                      0.968                      0.968
-    ## AAACGGGAGTAGATGT-1                      0.808                      0.872
-    ##                    median_score_class_layer_6    scATOMIC_pred      S.Score
-    ## AAACCTGAGACCGGAT-1                      1.000       Macrophage -0.006630921
-    ## AAACCTGCAGTCACTA-1                      0.976      CD4+ T cell -0.046677709
-    ## AAACCTGGTAAGTAGT-1                      1.000       Macrophage  0.015462403
-    ## AAACCTGTCGAATGCT-1                      0.872 Lung Cancer Cell -0.049247934
-    ## AAACCTGTCTGAGGGA-1                      0.968        Mast cell -0.025618571
-    ## AAACGGGAGTAGATGT-1                      0.872 Lung Cancer Cell -0.038660836
+    ## AAACCTGTCGAATGCT-1                      0.872                      0.872
+    ## AAACCTGTCTGAGGGA-1                      0.970                      0.970
+    ## AAACGGGAGTAGATGT-1                      0.872                      0.872
+    ##                              scATOMIC_pred nCount_RNA nFeature_RNA      S.Score
+    ## AAACCTGAGACCGGAT-1 Phagocytosis Macrophage       7088         2072 -0.006630921
+    ## AAACCTGCAGTCACTA-1             CD4+ T cell       4985         1269 -0.046677709
+    ## AAACCTGGTAAGTAGT-1 Phagocytosis Macrophage      10007         2543  0.015462403
+    ## AAACCTGTCGAATGCT-1        Lung Cancer Cell      18045         4597 -0.049247934
+    ## AAACCTGTCTGAGGGA-1               Mast cell       4937         1492 -0.025618571
+    ## AAACGGGAGTAGATGT-1        Lung Cancer Cell      12569         3856 -0.038660836
     ##                       G2M.Score Phase     old.ident RNA_snn_res.0.2
     ## AAACCTGAGACCGGAT-1 -0.047453336    G1 SeuratProject               2
     ## AAACCTGCAGTCACTA-1 -0.006673286    G1 SeuratProject               0
@@ -490,6 +541,7 @@ index_subset <- c()
 for(i in 1:length(cancer_types)){
   index_cancer <- row.names(Wu_et_al_breast_metadata)[which(Wu_et_al_breast_metadata$subtype == cancer_types[i])]
   if(length(index_cancer) > 3000){
+    set.seed(123)
     index_subset <- c(index_subset, index_cancer[sample(1:length(index_cancer), size = 3000)])
   } else{
     index_subset <- c(index_subset, index_cancer)
@@ -565,45 +617,198 @@ table(results_Pal_0125$scATOMIC_pred)
 
     ## 
     ##                                   Any Cell 
-    ##                                          5 
+    ##                                          8 
     ##                                 Blood Cell 
-    ##                                         31 
-    ##              Cancer Associated Fibroblasts 
-    ##                                        197 
-    ##                          CD4 or CD8 T cell 
-    ##                                          4 
-    ##                                        cDC 
-    ##                                         33 
-    ##               Effector/Memory CD4+ T cells 
-    ##                                          5 
-    ##               Effector/Memory CD8+ T cells 
-    ##                                         27 
-    ##                          Endothelial Cells 
-    ##                                         15 
-    ##                                        ER+ 
-    ##                                       3704 
-    ##                                 Macrophage 
-    ##                                         35 
-    ##               Macrophage or Dendritic Cell 
+    ##                                         30 
+    ##                                     CAFadi 
+    ##                                         23 
+    ##                                   CAFendmt 
     ##                                          1 
+    ##                                   CAFinfla 
+    ##                                         65 
+    ##                                     CAFmyo 
+    ##                                         25 
+    ##              Cancer Associated Fibroblasts 
+    ##                                         29 
+    ##                          CD4 or CD8 T cell 
+    ##                                          5 
+    ##                                       cDC1 
+    ##                                          2 
+    ##                                       cDC2 
+    ##                                         34 
+    ##               Effector/Memory CD4+ T cells 
+    ##                                          6 
+    ##               Effector/Memory CD8+ T cells 
+    ##                                         29 
+    ##                          Endothelial Cells 
+    ##                                         16 
+    ##                                        ER+ 
+    ##                                       3677 
+    ##               Macrophage or Dendritic Cell 
+    ##                                          2 
     ##                         Naive CD4+ T cells 
     ##                                         13 
     ##                        Natural killer cell 
     ##                                          3 
     ##                             Non Blood Cell 
-    ##                                         33 
+    ##                                         38 
+    ##                          Normal Fibroblast 
+    ##                                         60 
     ##                         Normal Tissue Cell 
-    ##                                        114 
-    ##                               Stromal Cell 
-    ##                                          1 
+    ##                                        123 
+    ##                    Phagocytosis Macrophage 
+    ##                                         34 
+    ##                Pro-angiogenesis Macrophage 
+    ##                                          2 
     ##                         T regulatory cells 
     ##                                          7 
     ##                Tfh/Th1 helper CD4+ T cells 
     ##                                          1 
     ## Unclassified_Cell_from_Breast Cancer Cells 
-    ##                                          8
+    ##                                          4
 
 The breast cancer cells are now classified as ER+ cells.
+
+## Running scATOMIC on normal tissue samples
+
+Although scATOMIC is designed for cancer samples, one can use it to
+annotate non-cancerous samples. This can be particularly useful in the
+context of comparing tumour microenvironments to normal tissue
+environments where both data would be annotated in the same way.
+
+In this example we use a matched normal lung sample downloaded from [Kim
+et al](https://www.nature.com/articles/s41467-020-16164-1) For the
+convenience of this tutorial, the count matrix in h5 format can be
+downloaded from this [Google Drive
+link](https://drive.google.com/file/d/1EPljBN5l5txqAr2j8hiuc4rAWRoGVOXL/view?usp=sharing)
+
+Run the standard pipeline for scATOMIC
+
+``` r
+normal_lungdata <- Read10X_h5("~/Downloads/LUNG_N01_sparse_count_mat.h5")
+
+pct_mt <- colSums(normal_lungdata[grep("^MT-", row.names(normal_lungdata)),])/colSums(normal_lungdata) * 100
+nFeatureRNA <- colSums(normal_lungdata > 0)
+normal_lungdata <- normal_lungdata[, names(which(pct_mt < 25))]
+normal_lungdata <- normal_lungdata[, intersect(names(which(nFeatureRNA > 500)), colnames(normal_lungdata))]
+cell_predictions_normal_lung <- run_scATOMIC(normal_lungdata)
+results_normal_lung <- create_summary_matrix(prediction_list = cell_predictions_normal_lung,  raw_counts = normal_lungdata, normal_tissue = T)
+```
+
+As you can see there are no cancer cells labelled.
+
+``` r
+table(results_normal_lung$scATOMIC_pred)
+```
+
+    ## 
+    ##                     Any Cell                       B Cell 
+    ##                            5                           43 
+    ##                   Blood Cell            CD4 or CD8 T cell 
+    ##                           68                           23 
+    ##                  CD4+ T cell             CD8 T or NK cell 
+    ##                           17                           30 
+    ##                  CD8+ T cell                          cDC 
+    ##                           17                            5 
+    ##                         cDC1                         cDC2 
+    ##                           10                          112 
+    ## Effector/Memory CD4+ T cells Effector/Memory CD8+ T cells 
+    ##                          148                          617 
+    ##            Endothelial Cells                    LAMP3 cDC 
+    ##                           30                           13 
+    ##                   Macrophage Macrophage or Dendritic Cell 
+    ##                          170                           28 
+    ##                   MAIT cells                    Mast cell 
+    ##                            1                          220 
+    ##           Naive CD4+ T cells          Natural killer cell 
+    ##                            2                          394 
+    ##            Normal Fibroblast           Normal Tissue Cell 
+    ##                           44                          167 
+    ##                          pDC      Phagocytosis Macrophage 
+    ##                           31                           64 
+    ##  Pro-angiogenesis Macrophage  Pro-inflammatory Macrophage 
+    ##                          662                          247 
+    ##                 Stromal Cell                 T or NK Cell 
+    ##                            1                            1 
+    ##           T regulatory cells 
+    ##                            7
+
+All cells that received a classification that was referring to a cancer
+cell type in layer 6 was converted to normal tissue cell in scATOMIC’s
+final prediction
+
+``` r
+table(results_normal_lung[which(results_normal_lung$scATOMIC_pred == "Normal Tissue Cell"), "layer_6"])
+```
+
+    ## 
+    ## Breast/Lung/Prostate      Epithelial Cell     Lung Cancer Cell 
+    ##                    2                    5                  147 
+    ##       Non Blood Cell     Non Stromal Cell 
+    ##                    6                    7
+
+## Running scATOMIC on known cancer type samples
+
+Although scATOMIC can predict cancer type well without any prior
+knowledge, not all cancer types are captured in the training model and
+it can occasionally make misclassifications. As such we now allows users
+to input a ground truth for the cancer type if it is known using the
+known_cancer_type parameter in the create_summary_matrix function.
+
+We showcase this functionality in the demo_lung_cancer dataset. In this
+example we provide the function knowledge that the sample is “LUAD”
+
+``` r
+lung_cancer_demo_data <- demo_lung_data
+pct_mt <- colSums(lung_cancer_demo_data[grep("^MT-", row.names(lung_cancer_demo_data)),])/colSums(lung_cancer_demo_data) * 100
+nFeatureRNA <- colSums(lung_cancer_demo_data > 0)
+lung_cancer_demo_data <- lung_cancer_demo_data[, names(which(pct_mt < 25))]
+lung_cancer_demo_data <- lung_cancer_demo_data[, intersect(names(which(nFeatureRNA > 500)), colnames(lung_cancer_demo_data))]
+cell_predictions <- run_scATOMIC(lung_cancer_demo_data)
+results_lung <- create_summary_matrix(prediction_list = cell_predictions, raw_counts = lung_cancer_demo_data, known_cancer_type = "LUAD cell" )
+```
+
+``` r
+table(results_lung$scATOMIC_pred)
+```
+
+    ## 
+    ##                      Any Cell                        B Cell 
+    ##                            10                           158 
+    ##                    Blood Cell                        CAFadi 
+    ##                            10                            13 
+    ##                      CAFinfla                        CAFmyo 
+    ##                            51                            94 
+    ## Cancer Associated Fibroblasts             CD4 or CD8 T cell 
+    ##                            24                            21 
+    ##                   CD4+ T cell              CD8 T or NK cell 
+    ##                            95                             8 
+    ##                   CD8+ T cell                           cDC 
+    ##                            46                             3 
+    ##                          cDC1                          cDC2 
+    ##                             9                            56 
+    ##                Dendritic Cell  Effector/Memory CD4+ T cells 
+    ##                             1                           175 
+    ##  Effector/Memory CD8+ T cells             Endothelial Cells 
+    ##                           231                           110 
+    ##        Exhausted CD8+ T cells                     LAMP3 cDC 
+    ##                            30                             3 
+    ##                     LUAD cell                    Macrophage 
+    ##                           599                            11 
+    ##  Macrophage or Dendritic Cell                     Mast cell 
+    ##                            35                            80 
+    ##            Naive CD4+ T cells           Natural killer cell 
+    ##                             6                           101 
+    ##                Non Blood Cell            Normal Tissue Cell 
+    ##                            66                            69 
+    ##                           pDC       Phagocytosis Macrophage 
+    ##                            18                           319 
+    ##                   Plasmablast   Pro-angiogenesis Macrophage 
+    ##                            91                           252 
+    ##   Pro-inflammatory Macrophage                  T or NK Cell 
+    ##                            28                             2 
+    ##            T regulatory cells   Tfh/Th1 helper CD4+ T cells 
+    ##                           144                            28
 
 ## Other Considerations
 
@@ -631,70 +836,75 @@ the base model.
 sessionInfo()
 ```
 
-    ## R version 4.0.4 (2021-02-15)
+    ## R version 4.2.2 (2022-10-31)
     ## Platform: x86_64-apple-darwin17.0 (64-bit)
-    ## Running under: macOS Big Sur 10.16
+    ## Running under: macOS Big Sur ... 10.16
     ## 
     ## Matrix products: default
-    ## BLAS:   /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRblas.dylib
-    ## LAPACK: /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRlapack.dylib
+    ## BLAS:   /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRblas.0.dylib
+    ## LAPACK: /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRlapack.dylib
     ## 
     ## locale:
-    ## [1] en_CA.UTF-8/en_CA.UTF-8/en_CA.UTF-8/C/en_CA.UTF-8/en_CA.UTF-8
+    ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
     ## 
     ## attached base packages:
     ## [1] parallel  stats     graphics  grDevices utils     datasets  methods  
     ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] copykat_1.0.5       cutoff_0.1.0        agrmt_1.42.4       
-    ##  [4] SeuratObject_4.0.0  Seurat_4.0.1        Rmagic_2.0.3       
-    ##  [7] Matrix_1.3-2        reticulate_1.18     caret_6.0-86       
-    ## [10] ggplot2_3.3.6       lattice_0.20-41     randomForest_4.6-14
-    ## [13] data.table_1.14.0   dplyr_1.0.10        plyr_1.8.6         
-    ## [16] scATOMIC_1.1.0     
+    ##  [1] copykat_1.1.0           cutoff_0.1.0            agrmt_1.42.8           
+    ##  [4] Seurat_4.9.9.9041       SeuratObject_4.9.9.9081 sp_1.5-1               
+    ##  [7] Rmagic_2.0.3            Matrix_1.5-3            reticulate_1.27        
+    ## [10] caret_6.0-93            lattice_0.20-45         ggplot2_3.4.0          
+    ## [13] randomForest_4.7-1.1    data.table_1.14.6       dplyr_1.0.10           
+    ## [16] plyr_1.8.8              scATOMIC_1.1.4         
     ## 
     ## loaded via a namespace (and not attached):
-    ##   [1] igraph_1.2.6          lazyeval_0.2.2        splines_4.0.4        
-    ##   [4] listenv_0.8.0         scattermore_0.7       amap_0.8-18          
-    ##   [7] digest_0.6.27         foreach_1.5.1         htmltools_0.5.3      
-    ##  [10] fansi_0.4.2           magrittr_2.0.1        tensor_1.5           
-    ##  [13] cluster_2.1.1         ROCR_1.0-11           recipes_0.1.15       
-    ##  [16] globals_0.14.0        gower_0.2.2           matrixStats_0.58.0   
-    ##  [19] bdsmatrix_1.3-4       spatstat.sparse_3.0-0 colorspace_2.0-0     
-    ##  [22] ggrepel_0.9.1         xfun_0.31             crayon_1.4.1         
-    ##  [25] jsonlite_1.7.2        spatstat.data_3.0-0   survival_3.2-10      
-    ##  [28] zoo_1.8-9             iterators_1.0.13      glue_1.6.2           
-    ##  [31] polyclip_1.10-0       gtable_0.3.0          ipred_0.9-11         
-    ##  [34] leiden_0.3.7          future.apply_1.7.0    abind_1.4-5          
-    ##  [37] scales_1.1.1          mvtnorm_1.1-1         data.tree_1.0.0      
-    ##  [40] DBI_1.1.1             miniUI_0.1.1.1        Rcpp_1.0.7           
-    ##  [43] viridisLite_0.4.0     xtable_1.8-4          spatstat.core_1.65-5 
-    ##  [46] stats4_4.0.4          lava_1.6.9            prodlim_2019.11.13   
-    ##  [49] htmlwidgets_1.5.3     httr_1.4.2            DiagrammeR_1.0.6.1   
-    ##  [52] RColorBrewer_1.1-2    ellipsis_0.3.2        ica_1.0-2            
-    ##  [55] farver_2.1.0          pkgconfig_2.0.3       nnet_7.3-15          
-    ##  [58] uwot_0.1.10           deldir_1.0-6          utf8_1.2.1           
-    ##  [61] tidyselect_1.2.0      labeling_0.4.2        rlang_1.0.6          
-    ##  [64] reshape2_1.4.4        later_1.1.0.1         visNetwork_2.1.0     
-    ##  [67] munsell_0.5.0         tools_4.0.4           cli_3.4.1            
-    ##  [70] generics_0.1.0        ggridges_0.5.3        evaluate_0.14        
-    ##  [73] stringr_1.4.0         fastmap_1.1.0         yaml_2.2.1           
-    ##  [76] goftest_1.2-2         tree_1.0-40           ModelMetrics_1.2.2.2 
-    ##  [79] knitr_1.31            fitdistrplus_1.1-3    purrr_0.3.4          
-    ##  [82] RANN_2.6.1            pbapply_1.4-3         future_1.21.0        
-    ##  [85] nlme_3.1-152          mime_0.10             compiler_4.0.4       
-    ##  [88] rstudioapi_0.13       plotly_4.9.3          png_0.1-7            
-    ##  [91] spatstat.utils_3.0-1  tibble_3.1.0          stringi_1.5.3        
-    ##  [94] highr_0.8             vctrs_0.5.0           pillar_1.6.0         
-    ##  [97] lifecycle_1.0.3       spatstat.geom_3.0-3   lmtest_0.9-38        
-    ## [100] RcppAnnoy_0.0.18      cowplot_1.1.1         irlba_2.3.3          
-    ## [103] httpuv_1.5.5          patchwork_1.1.1       R6_2.5.0             
-    ## [106] promises_1.2.0.1      KernSmooth_2.23-18    gridExtra_2.3        
-    ## [109] parallelly_1.24.0     codetools_0.2-18      MASS_7.3-54          
-    ## [112] assertthat_0.2.1      withr_2.4.1           sctransform_0.3.2    
-    ## [115] collapsibleTree_0.1.7 mgcv_1.8-34           grid_4.0.4           
-    ## [118] rpart_4.1-15          timeDate_3043.102     tidyr_1.1.3          
-    ## [121] class_7.3-18          rmarkdown_2.14        Rtsne_0.15           
-    ## [124] bbmle_1.0.23.1        pROC_1.17.0.1         numDeriv_2016.8-1.1  
-    ## [127] shiny_1.6.0           lubridate_1.7.10
+    ##   [1] spam_2.9-1             igraph_1.3.5           lazyeval_0.2.2        
+    ##   [4] splines_4.2.2          RcppHNSW_0.4.1         listenv_0.9.0         
+    ##   [7] scattermore_0.8        amap_0.8-19            digest_0.6.31         
+    ##  [10] foreach_1.5.2          htmltools_0.5.4        fansi_1.0.3           
+    ##  [13] magrittr_2.0.3         tensor_1.5             cluster_2.1.4         
+    ##  [16] ROCR_1.0-11            recipes_1.0.3          globals_0.16.2        
+    ##  [19] gower_1.0.1            matrixStats_0.63.0     R.utils_2.12.2        
+    ##  [22] bdsmatrix_1.3-6        hardhat_1.2.0          timechange_0.1.1      
+    ##  [25] spatstat.sparse_3.0-0  colorspace_2.0-3       ggrepel_0.9.2         
+    ##  [28] xfun_0.36              jsonlite_1.8.4         progressr_0.12.0      
+    ##  [31] spatstat.data_3.0-0    survival_3.4-0         zoo_1.8-11            
+    ##  [34] iterators_1.0.14       glue_1.6.2             polyclip_1.10-4       
+    ##  [37] gtable_0.3.1           ipred_0.9-13           leiden_0.4.3          
+    ##  [40] future.apply_1.10.0    abind_1.4-5            scales_1.2.1          
+    ##  [43] mvtnorm_1.1-3          data.tree_1.0.0        DBI_1.1.3             
+    ##  [46] spatstat.random_3.0-1  miniUI_0.1.1.1         Rcpp_1.0.9            
+    ##  [49] viridisLite_0.4.1      xtable_1.8-4           bit_4.0.5             
+    ##  [52] dotCall64_1.0-2        stats4_4.2.2           lava_1.7.1            
+    ##  [55] prodlim_2019.11.13     htmlwidgets_1.6.1      httr_1.4.4            
+    ##  [58] DiagrammeR_1.0.9       RColorBrewer_1.1-3     ellipsis_0.3.2        
+    ##  [61] ica_1.0-3              R.methodsS3_1.8.2      farver_2.1.1          
+    ##  [64] pkgconfig_2.0.3        uwot_0.1.14            nnet_7.3-18           
+    ##  [67] deldir_1.0-6           utf8_1.2.2             here_1.0.1            
+    ##  [70] labeling_0.4.2         tidyselect_1.2.0       rlang_1.0.6           
+    ##  [73] reshape2_1.4.4         later_1.3.0            visNetwork_2.1.2      
+    ##  [76] munsell_0.5.0          tools_4.2.2            cli_3.6.0             
+    ##  [79] generics_0.1.3         ggridges_0.5.4         evaluate_0.19         
+    ##  [82] stringr_1.5.0          fastmap_1.1.0          tree_1.0-42           
+    ##  [85] yaml_2.3.6             goftest_1.2-3          bit64_4.0.5           
+    ##  [88] ModelMetrics_1.2.2.2   knitr_1.41             fitdistrplus_1.1-8    
+    ##  [91] purrr_1.0.0            RANN_2.6.1             pbapply_1.6-0         
+    ##  [94] future_1.30.0          nlme_3.1-161           mime_0.12             
+    ##  [97] R.oo_1.25.0            hdf5r_1.3.7            compiler_4.2.2        
+    ## [100] rstudioapi_0.14        plotly_4.10.1          png_0.1-8             
+    ## [103] spatstat.utils_3.0-1   tibble_3.1.8           stringi_1.7.8         
+    ## [106] highr_0.10             RSpectra_0.16-1        vctrs_0.5.1           
+    ## [109] pillar_1.8.1           lifecycle_1.0.3        spatstat.geom_3.0-3   
+    ## [112] lmtest_0.9-40          RcppAnnoy_0.0.20       cowplot_1.1.1         
+    ## [115] irlba_2.3.5.1          httpuv_1.6.7           patchwork_1.1.2       
+    ## [118] R6_2.5.1               promises_1.2.0.1       KernSmooth_2.23-20    
+    ## [121] gridExtra_2.3          parallelly_1.33.0      codetools_0.2-18      
+    ## [124] fastDummies_1.6.3      MASS_7.3-58.1          assertthat_0.2.1      
+    ## [127] rprojroot_2.0.3        withr_2.5.0            sctransform_0.3.5     
+    ## [130] collapsibleTree_0.1.7  grid_4.2.2             rpart_4.1.19          
+    ## [133] timeDate_4022.108      tidyr_1.2.1            class_7.3-20          
+    ## [136] rmarkdown_2.19         Rtsne_0.16             bbmle_1.0.25          
+    ## [139] spatstat.explore_3.0-5 pROC_1.18.0            numDeriv_2016.8-1.1   
+    ## [142] shiny_1.7.4            lubridate_1.9.0

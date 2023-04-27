@@ -379,5 +379,37 @@ score_class <- function(cell_name, predictions, layer){
       predicted_class <- colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
     }
   }
+  if(layer == "layer_4_CAF"){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
+      predicted_class <- "Cell low quality"
+    }
+    else{
+      predicted_class <- colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
+    }
+  }
+  if(layer == "layer_5_cDC"){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
+      predicted_class <- "Cell low quality"
+    }
+    else{
+      predicted_class <- colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
+    }
+  }
+  if(layer == "layer_5_macrophage"){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
+      predicted_class <- "Cell low quality"
+    }
+    else{
+      predicted_class <- colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
+    }
+  }
+  if(layer == "layer_5_monocyte"){
+    if(levels(as.factor(is.na(layer_predictions) %in% TRUE))){
+      predicted_class <- "Cell low quality"
+    }
+    else{
+      predicted_class <- colnames(sort(layer_predictions[which(lapply(layer_predictions, class) == "numeric")], decreasing = T)[1])
+    }
+  }
   return(predicted_class)
 }

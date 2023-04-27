@@ -24,7 +24,7 @@
 #' lung_cancer_demo_data <- lung_cancer_demo_data[, intersect(names(which(nFeatureRNA > 500)), colnames(lung_cancer_demo_data))]
 #' cell_predictions <- run_scATOMIC(lung_cancer_demo_data)
 #' }
-run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores = (parallel::detectCores()-1), unimodal_nsd = 3, bimodal_nsd = 2, breast_mode = F, confidence_cutoff = T, fine_grained_T = T){
+run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores = 1, unimodal_nsd = 3, bimodal_nsd = 2, breast_mode = F, confidence_cutoff = T, fine_grained_T = T){
   if(.Platform$OS.type == "windows"){
     mc.cores = 1
   }
@@ -233,6 +233,19 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                    model = model_layer_3_stromal, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
         print("Done Layer 3 Normal Stromal")
+        CAF_predicted <- row.names(prediction_list[["layer_3_stromal"]])[
+          which(prediction_list[["layer_3_stromal"]]$predicted_tissue_with_cutoff == "Cancer Associated Fibroblasts")]
+        if (length(CAF_predicted) > 0){
+          print("Starting Layer 4 CAFs")
+          prediction_list[["layer_4_CAF"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = CAF_predicted,
+                                                                                  layer = "layer_4_CAF", imputation = F,
+                                                                                  genes_in_model = top_genes_unlisted_layer_4_CAFs,
+                                                                                  model = model_layer_4_CAFs,
+                                                                                  ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                  bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+
+          print("Done Layer 4 CAFs")
+        }
       }
     }
     if (length(blood_cells_predicted) > 0){
@@ -299,7 +312,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                    ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
-            print("Done Layer 4 CD8 NK")
+            print("Done Layer 5 CD4")
           }
           if (length(CD8_cells_predicted) > 0){
             print("Starting Layer 5 CD8")
@@ -310,7 +323,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                    ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
-            print("Done Layer 4 CD8 NK")
+            print("Done Layer 5 CD8")
           }
 
 
@@ -344,6 +357,20 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                        bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 Dendritic")
+          cDC_predicted <- row.names(prediction_list[["layer_4_dendritic"]])[
+            which(prediction_list[["layer_4_dendritic"]]$predicted_tissue_with_cutoff == "cDC")]
+          if (length(cDC_predicted) > 0){
+            print("Starting Layer 5 cDC")
+            prediction_list[["layer_5_cDC"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = cDC_predicted,
+                                                                                   layer = "layer_5_cDC", imputation = F,
+                                                                                   genes_in_model = top_genes_unlisted_layer_5_cDC,
+                                                                                   model = model_layer_5_cDC,
+                                                                                   ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                   bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+
+            print("Done Layer 5 cDC")
+          }
+
         }
         if (length(macrophage_monocyte_predicted) > 0){
           print("Starting Layer 4 Macrophage Monocyte")
@@ -355,6 +382,32 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                         bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 Macrophage Monocyte")
+          macrophage_predicted <- row.names(prediction_list[["layer_4_macrophage"]])[
+            which(prediction_list[["layer_4_macrophage"]]$predicted_tissue_with_cutoff == "Macrophage")]
+          monocyte_predicted <- row.names(prediction_list[["layer_4_macrophage"]])[
+            which(prediction_list[["layer_4_macrophage"]]$predicted_tissue_with_cutoff == "Monocyte")]
+          if (length(macrophage_predicted) > 0){
+            print("Starting Layer 5 Macrophage")
+            prediction_list[["layer_5_macrophage"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = macrophage_predicted,
+                                                                             layer = "layer_5_macrophage", imputation = F,
+                                                                             genes_in_model = top_genes_unlisted_layer_5_macrophage,
+                                                                             model = model_layer_5_macrophage,
+                                                                             ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                             bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+
+            print("Done Layer 5 Macrophage")
+          }
+          if (length(monocyte_predicted) > 0){
+            print("Starting Layer 5 Monocyte")
+            prediction_list[["layer_5_monocyte"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = monocyte_predicted,
+                                                                                    layer = "layer_5_monocyte", imputation = F,
+                                                                                    genes_in_model = top_genes_unlisted_layer_5_monocyte,
+                                                                                    model = model_layer_5_monocyte,
+                                                                                    ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+
+            print("Done Layer 5 Monocyte")
+          }
         }
 
       }
@@ -571,6 +624,19 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                              model = model_layer_3_stromal, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                              bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
         print("Done Layer 3 Normal Stromal")
+        CAF_predicted <- row.names(prediction_list[["layer_3_stromal"]])[
+          which(prediction_list[["layer_3_stromal"]]$predicted_class == "Cancer Associated Fibroblasts")]
+        if (length(CAF_predicted) > 0){
+          print("Starting Layer 4 CAFs")
+          prediction_list[["layer_4_CAF"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = CAF_predicted,
+                                                                           layer = "layer_4_CAF", imputation = F,
+                                                                           genes_in_model = top_genes_unlisted_layer_4_CAFs,
+                                                                           model = model_layer_4_CAFs,
+                                                                           ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                           bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+
+          print("Done Layer 4 CAFs")
+        }
       }
     }
     if (length(blood_cells_predicted) > 0){
@@ -638,7 +704,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                              ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                              bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
-            print("Done Layer 4 CD8 NK")
+            print("Done Layer 5 CD4")
           }
           if (length(CD8_cells_predicted) > 0){
             print("Starting Layer 5 CD8")
@@ -649,7 +715,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                              ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                              bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
-            print("Done Layer 4 CD8 NK")
+            print("Done Layer 5 CD8")
           }
 
 
@@ -685,6 +751,19 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                  bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 Dendritic")
+          cDC_predicted <- row.names(prediction_list[["layer_4_dendritic"]])[
+            which(prediction_list[["layer_4_dendritic"]]$predicted_class == "cDC")]
+          if (length(cDC_predicted) > 0){
+            print("Starting Layer 5 cDC")
+            prediction_list[["layer_5_cDC"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = cDC_predicted,
+                                                                             layer = "layer_5_cDC", imputation = F,
+                                                                             genes_in_model = top_genes_unlisted_layer_5_cDC,
+                                                                             model = model_layer_5_cDC,
+                                                                             ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                             bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+
+            print("Done Layer 5 cDC")
+          }
         }
         if (length(macrophage_monocyte_predicted) > 0){
           print("Starting Layer 4 Macrophage Monocyte")
@@ -696,6 +775,32 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                   bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 Macrophage Monocyte")
+          macrophage_predicted <- row.names(prediction_list[["layer_4_macrophage"]])[
+            which(prediction_list[["layer_4_macrophage"]]$predicted_class == "Macrophage")]
+          monocyte_predicted <- row.names(prediction_list[["layer_4_macrophage"]])[
+            which(prediction_list[["layer_4_macrophage"]]$predicted_class == "Monocyte")]
+          if (length(macrophage_predicted) > 0){
+            print("Starting Layer 5 Macrophage")
+            prediction_list[["layer_5_macrophage"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = macrophage_predicted,
+                                                                                    layer = "layer_5_macrophage", imputation = F,
+                                                                                    genes_in_model = top_genes_unlisted_layer_5_macrophage,
+                                                                                    model = model_layer_5_macrophage,
+                                                                                    ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+
+            print("Done Layer 5 Macrophage")
+          }
+          if (length(monocyte_predicted) > 0){
+            print("Starting Layer 5 Monocyte")
+            prediction_list[["layer_5_monocyte"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = monocyte_predicted,
+                                                                                  layer = "layer_5_monocyte", imputation = F,
+                                                                                  genes_in_model = top_genes_unlisted_layer_5_monocyte,
+                                                                                  model = model_layer_5_monocyte,
+                                                                                  ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                  bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+
+            print("Done Layer 5 Monocyte")
+          }
         }
 
       }

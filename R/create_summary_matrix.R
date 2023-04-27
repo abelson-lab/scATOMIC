@@ -3,7 +3,7 @@
 #' @param prediction_list output from run_classifier()
 #' @param use_CNVs logical whether to use CNVs inference to validate cancer cluster - note takes long time
 #' @param modify_results logical whether to assume one cancer in the sample and reassign minority cancer calls as Unknown cells
-#' @param mc.cores number of cores to use in CNV analysis
+#' @param mc.cores number of cores to use in parallel analysis
 #' @param raw_counts gene by cell count matrix
 #' @param min_prop minimum % of major cancer class for modifications
 #' @param breast_mode run breast subclassfication
@@ -11,6 +11,9 @@
 #' @param confidence_cutoff logical to use confidence cutoffs
 #' @param pan_cancer logical to use pan cancer features or cancer specific features
 #' @param cancer_confidence assesing whether a cancer prediction should be interpreted as confident. by default we use layer specific cutoff derived from our paper that optimally split true positives and true negatives. Set to a numeric from 0-1 to set a hard cutoff for all layers.
+#' @param normal_tissue Set to true if you know the sample is only normal cells, will convert all cancer annotations to normal tissue cell
+#' @param low_res_mode Set to true to convert all high res subtypes into low res cell types
+#' @param known_cancer_type converts all cancer cell type annotations to provided string, recommended if one knows with 100% certainty what the cancer type is.
 #'
 #' @return dataframe of cell names and final prediction
 #' @export
@@ -29,8 +32,10 @@
 #' #create results matrix with CNV corrections
 #' results_lung_CNV <- create_summary_matrix(prediction_list = cell_predictions, use_CNVs = T, modify_results = T, mc.cores = 6, raw_counts = lung_cancer_demo_data, min_prop = 0.5 )
 #' }
-create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE, modify_results = TRUE, mc.cores = (parallel::detectCores()-1),
-                                  min_prop = 0.5, breast_mode = F, fine_grained_T = T, confidence_cutoff = T, pan_cancer = F, cancer_confidence = "default"){
+create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE, modify_results = TRUE, mc.cores = 1,
+                                  min_prop = 0.5, breast_mode = F, fine_grained_T = T, confidence_cutoff = T, pan_cancer = F,
+                                  cancer_confidence = "default", normal_tissue = F, low_res_mode = FALSE,
+                                  known_cancer_type = NULL){
   if(.Platform$OS.type == "windows"){
     mc.cores = 1
   }
@@ -135,11 +140,11 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         layer_4[i] <- as.character(prediction_list[["layer_4_CD8_NK"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
         median_score_class_layer_3[i] <- median(as.numeric(prediction_list[["layer_3_TNK"]][which(prediction_list[["layer_3_TNK"]]$predicted_tissue_with_cutoff %in% c("Natural killer cell", "NK or CD8 T cell")),"NK_CD8_score"]))
 
-      }else if (summary_master[i, "layer_3"] == "Dendritic Cell") {
+      } else if (summary_master[i, "layer_3"] == "Dendritic Cell") {
         layer_4[i] <- as.character(prediction_list[["layer_4_dendritic"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
         median_score_class_layer_3[i] <- median(as.numeric(prediction_list[["layer_3_myeloid"]][which(prediction_list[["layer_3_myeloid"]]$predicted_tissue_with_cutoff %in% c("Dendritic Cell")),"DC_score"]))
 
-      }else if (summary_master[i, "layer_3"] == "Macrophage or Monocyte") {
+      } else if (summary_master[i, "layer_3"] == "Macrophage or Monocyte") {
         layer_4[i] <- as.character(prediction_list[["layer_4_macrophage"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
         median_score_class_layer_3[i] <- median(as.numeric(prediction_list[["layer_3_myeloid"]][which(prediction_list[["layer_3_myeloid"]]$predicted_tissue_with_cutoff %in% c("Macrophage or Monocyte")),"macrophage_score"]))
 
@@ -169,6 +174,11 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
                                                                                                                                                                                        "Sarcoma", "Soft Tissue or Neuro Cancer Cell")),"soft_tissue_neuro_score"]))
 
 
+
+      } else if(summary_master[i, "layer_3"] %in% c("Cancer Associated Fibroblasts")){
+        layer_4[i] <- as.character(prediction_list[["layer_4_CAF"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+
+        median_score_class_layer_3[i] <- median(as.numeric(prediction_list[["layer_3_stromal"]][which(prediction_list[["layer_3_stromal"]]$predicted_tissue_with_cutoff %in% c("Cancer Associated Fibroblasts")),"Cancer Associated Fibroblasts"]))
 
       } else if(summary_master[i, "layer_3"] == "Cell low quality"){
         summary_master[i, "layer_3"] <- summary_master[i, "layer_2"]
@@ -239,6 +249,21 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_soft_tissue_neuro"]][which(prediction_list[["layer_4_soft_tissue_neuro"]]$predicted_tissue_with_cutoff %in% c("Bone Cancer","Brain Cancer",
                                                                                                                                                                                                    "Neuroblastoma",
                                                                                                                                                                                                    "Sarcoma", "Soft Tissue or Neuro Cancer Cell", "Soft Tissue or Neuro Cancer Cell")),"soft_tissue_neuro_score"]))
+
+      } else if(summary_master[i, "layer_4"] %in% c("cDC")){
+        layer_5[i] <- as.character(prediction_list[["layer_5_cDC"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+
+        median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_dendritic"]][which(prediction_list[["layer_4_dendritic"]]$predicted_tissue_with_cutoff %in% c("cDC")),"cDC"]))
+
+      } else if(summary_master[i, "layer_4"] %in% c("Macrophage")){
+        layer_5[i] <- as.character(prediction_list[["layer_5_macrophage"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+
+        median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_macrophage"]][which(prediction_list[["layer_4_macrophage"]]$predicted_tissue_with_cutoff %in% c("Macrophage")),"Macrophage"]))
+
+      } else if(summary_master[i, "layer_4"] %in% c("Monocyte")){
+        layer_5[i] <- as.character(prediction_list[["layer_5_monocyte"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+
+        median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_macrophage"]][which(prediction_list[["layer_4_macrophage"]]$predicted_tissue_with_cutoff %in% c("Monocyte")),"Monocyte"]))
 
       } else if(summary_master[i, "layer_4"] %in% c("CD4+ T cell")){
         if(fine_grained_T == T){
@@ -403,6 +428,8 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
     summary_master$layer_6 <- gsub("unclassified_macrophage_or_DC", "Macrophage or Dendritic Cell", summary_master$layer_6)
     summary_master$layer_6 <- gsub("unclassified_non_GI_epithelial_cell", "Epithelial Cell", summary_master$layer_6)
     summary_master$layer_6 <- gsub("unclassified_GI_epithelial_cell", "GI Tract Cell", summary_master$layer_6)
+    summary_master$layer_6 <- gsub("^NF$", "Normal Fibroblast", summary_master$layer_6)
+
     if(modify_results == TRUE){
       scATOMIC_pred <- summary_master$layer_6
       summary_master <- cbind(summary_master, scATOMIC_pred)
@@ -546,7 +573,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         frequency_per_row_nozero <- apply(count_matrix_down_reg,1,function(x){length(which(x!=0))})/ncol(count_matrix_down_reg)
         genes_downreg_shared <- names(frequency_per_row_nozero)[which(frequency_per_row_nozero > 0)]
         cancer_subset <- seurat_object
-        cancer_subset <- magic(cancer_subset)
+        cancer_subset <- magic(cancer_subset, seed = 123)
         #cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = genes_upreg_shared, verbose = F, name = "upreg_genes", assay = "MAGIC_RNA")
         #cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = genes_downreg_shared, verbose = F, name = "downreg_genes", assay = "MAGIC_RNA")
         cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = list(upreg_genes = genes_upreg_shared, downreg_genes = genes_downreg_shared), verbose = F, name = c("upreg_genes", "downreg_genes"), assay = "MAGIC_RNA")
@@ -615,7 +642,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               cancer_subset <- subset(seurat_object, cells = index_cancer)
               cancer_subset <- Seurat::NormalizeData(cancer_subset, verbose = F)
               cancer_subset <- Seurat::ScaleData(cancer_subset, verbose = F)
-              cancer_subset <- magic(cancer_subset)
+              cancer_subset <- magic(cancer_subset, seed = 123)
               cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = list(upreg_genes = genes_upreg_shared, downreg_genes = genes_downreg_shared), verbose = F, name = c("upreg_genes", "downreg_genes"), assay = "MAGIC_RNA")
 
               dist_cancer_signature <- amap::Dist(cancer_subset@meta.data[,c("upreg_genes1", "downreg_genes2")], method = "euclidean", nbproc = mc.cores) # distance matrix
@@ -892,6 +919,59 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
 
 
     }
+    if(normal_tissue == T){
+      index_potential_cancer <- which(summary_master$scATOMIC_pred %in% c("Bile Duct Cancer Cell","Bladder Cancer Cell",
+                                                                          "Bone Cancer Cell","Brain Cancer Cell"    ,
+                                                                          "Breast Cancer Cell","Colon/Colorectal Cancer Cell"   ,
+                                                                           "Endometrial/Uterine Cancer Cell","Esophageal Cancer Cell"   ,
+                                                                           "Gallbladder Cancer Cell","Gastric Cancer Cell"     ,
+                                                                           "Kidney Cancer Cell","Liver Cancer Cell"   ,
+                                                                           "Lung Cancer Cell","Neuroblastoma"       ,
+                                                                           "Ovarian Cancer Cell","Pancreatic Cancer Cell"  ,
+                                                                          "Prostate Cancer Cell","Sarcoma"     ,
+                                                                          "Skin Cancer Cell","Breast/Lung/Prostate"    ,
+                                                                           "Ovarian/Endometrial/Kidney","Endometrial Cancer Cell"    ,
+                                                                          "Biliary/Hepatic Cancer Cell","Brain/Neuroblastoma Cancer Cell",
+                                                                          "Digestive Tract Cancer Cell","Soft Tissue Cancer Cell" ,
+                                                                           "Soft Tissue or Neuro Cancer Cell","Unclassified Soft Tissue or Neuro Cancer Cell",
+                                                                           "ER+ Breast Cancer Cell","HER2+ Breast Cancer Cell" ,
+                                                                           "Her2+ Breast Cancer Cell","TNBC Breast Cancer Cell", "Epithelial Cell","GI Tract Cell",
+                                                                          "Non Blood Cell","Non Stromal Cell"))
+      if(length(index_potential_cancer) > 0){
+        summary_master[index_potential_cancer, "scATOMIC_pred"] <- "Normal Tissue Cell"
+      }
+      index_CAF <- which(summary_master$layer_3 %in% c("Cancer Associated Fibroblasts"))
+      if(length(index_CAF) > 0){
+        summary_master[index_CAF, "scATOMIC_pred"] <- "Normal Fibroblast"
+      }
+    }
+    if(low_res_mode == T){
+      #index CD8 T cells
+      index_CD8 <- which(summary_master$layer_4 %in% c("CD8+ T cell"))
+      if(length(index_CD8) > 0){
+        summary_master[index_CD8, "scATOMIC_pred"] <- "CD8+ T cell"
+      }
+      #index CD4 T cells
+      index_CD4 <- which(summary_master$layer_4 %in% c("CD4+ T cell"))
+      if(length(index_CD4) > 0){
+        summary_master[index_CD4, "scATOMIC_pred"] <- "CD4+ T cell"
+      }
+      #index macrophages
+      index_macro <- which(summary_master$layer_4 %in% c("Macrophage"))
+      if(length(index_macro) > 0){
+        summary_master[index_macro, "scATOMIC_pred"] <- "Macrophage"
+      }
+      #index fibroblasts
+      index_CAF <- which(summary_master$layer_3 %in% c("Cancer Associated Fibroblasts") & summary_master$scATOMIC_pred != "Normal Fibroblast")
+      if(length(index_CAF) > 0){
+        summary_master[index_CAF, "scATOMIC_pred"] <- "Cancer Associated Fibroblasts"
+      }
+      #index cDCs
+      index_cDC <- which(summary_master$layer_4 %in% c("cDC"))
+      if(length(index_cDC) > 0){
+        summary_master[index_cDC, "scATOMIC_pred"] <- "cDC"
+      }
+    }
     percent_confident <- round(length(which(summary_master$classification_confidence == "confident"))/nrow(summary_master), digits = 2)
     if(percent_confident == 1){
       print(paste0("Sample classification confidence = 1.00"))
@@ -900,6 +980,19 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
     }
     if(percent_confident < 0.75){
       warning("Sample classification confidence is low")
+    }
+    if(length(known_cancer_type) == 1){
+      index_cancer_predicted <- which(summary_master$scATOMIC_pred %in% c("Bile Duct Cancer Cell", "Bladder Cancer Cell", "Bone Cancer Cell",
+                                                                   "Brain Cancer Cell", "Breast Cancer Cell", "Colon/Colorectal Cancer Cell",
+                                                                   "Endometrial/Uterine Cancer Cell", "Esophageal Cancer Cell", "Gallbladder Cancer Cell",
+                                                                   "Gastric Cancer Cell", "Kidney Cancer Cell", "Liver Cancer Cell", "Lung Cancer Cell",
+                                                                   "Neuroblastoma", "Ovarian Cancer Cell", "Pancreatic Cancer Cell", "Prostate Cancer Cell",
+                                                                   "Sarcoma", "Skin Cancer Cell", "Breast/Lung/Prostate", "Ovarian/Endometrial/Kidney",
+                                                                   "Endometrial Cancer Cell", "Biliary/Hepatic Cancer Cell", "Brain/Neuroblastoma Cancer Cell",
+                                                                   "Digestive Tract Cancer Cell", "Soft Tissue Cancer Cell", "Soft Tissue or Neuro Cancer Cell",
+                                                                   "Unclassified Soft Tissue or Neuro Cancer Cell", "ER+ Breast Cancer Cell", "HER2+ Breast Cancer Cell",
+                                                                   "Her2+ Breast Cancer Cell", "TNBC Breast Cancer Cell", "Epithelial Cell", "GI Tract Cell"))
+      summary_master[index_cancer_predicted, "scATOMIC_pred"] <- known_cancer_type
     }
     return(summary_master)
 
@@ -1041,6 +1134,11 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
 
 
 
+      } else if(summary_master[i, "layer_3"] %in% c("Cancer Associated Fibroblasts")){
+        layer_4[i] <- as.character(prediction_list[["layer_4_CAF"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+
+        median_score_class_layer_3[i] <- median(as.numeric(prediction_list[["layer_3_stromal"]][which(prediction_list[["layer_3_stromal"]]$predicted_tissue_with_cutoff %in% c("Cancer Associated Fibroblasts")),"Cancer Associated Fibroblasts"]))
+
       } else if(summary_master[i, "layer_3"] == "Cell low quality"){
         summary_master[i, "layer_3"] <- summary_master[i, "layer_2"]
         layer_4[i] <- summary_master[i, "layer_2"]
@@ -1110,6 +1208,21 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_soft_tissue_neuro"]][which(prediction_list[["layer_4_soft_tissue_neuro"]]$predicted_tissue_with_cutoff %in% c("Bone Cancer","Brain Cancer",
                                                                                                                                                                                                    "Neuroblastoma",
                                                                                                                                                                                                    "Sarcoma", "Soft Tissue or Neuro Cancer Cell", "Soft Tissue or Neuro Cancer Cell")),"soft_tissue_neuro_score"]))
+
+      }  else if(summary_master[i, "layer_4"] %in% c("cDC")){
+        layer_5[i] <- as.character(prediction_list[["layer_5_cDC"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+
+        median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_dendritic"]][which(prediction_list[["layer_4_dendritic"]]$predicted_tissue_with_cutoff %in% c("cDC")),"cDC"]))
+
+      } else if(summary_master[i, "layer_4"] %in% c("Macrophage")){
+        layer_5[i] <- as.character(prediction_list[["layer_5_macrophage"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+
+        median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_macrophage"]][which(prediction_list[["layer_4_macrophage"]]$predicted_tissue_with_cutoff %in% c("Macrophage")),"Macrophage"]))
+
+      } else if(summary_master[i, "layer_4"] %in% c("Monocyte")){
+        layer_5[i] <- as.character(prediction_list[["layer_5_monocyte"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+
+        median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_macrophage"]][which(prediction_list[["layer_4_macrophage"]]$predicted_tissue_with_cutoff %in% c("Monocyte")),"Monocyte"]))
 
       } else if(summary_master[i, "layer_4"] %in% c("CD4+ T cell")){
         if(fine_grained_T == T){
@@ -1272,6 +1385,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
     summary_master$layer_6 <- gsub("unclassified_macrophage_or_DC", "Macrophage or Dendritic Cell", summary_master$layer_6)
     summary_master$layer_6 <- gsub("unclassified_non_GI_epithelial_cell", "Epithelial Cell", summary_master$layer_6)
     summary_master$layer_6 <- gsub("unclassified_GI_epithelial_cell", "GI Tract Cell", summary_master$layer_6)
+    summary_master$layer_6 <- gsub("^NF$", "Normal Fibroblast", summary_master$layer_6)
     if(modify_results == TRUE){
       scATOMIC_pred <- summary_master$layer_6
       summary_master <- cbind(summary_master, scATOMIC_pred)
@@ -1415,7 +1529,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         frequency_per_row_nozero <- apply(count_matrix_down_reg,1,function(x){length(which(x!=0))})/ncol(count_matrix_down_reg)
         genes_downreg_shared <- names(frequency_per_row_nozero)[which(frequency_per_row_nozero > 0)]
         cancer_subset <- seurat_object
-        cancer_subset <- magic(cancer_subset)
+        cancer_subset <- magic(cancer_subset, seed = 123)
         #cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = genes_upreg_shared, verbose = F, name = "upreg_genes", assay = "MAGIC_RNA")
         #cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = genes_downreg_shared, verbose = F, name = "downreg_genes", assay = "MAGIC_RNA")
         cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = list(upreg_genes = genes_upreg_shared, downreg_genes = genes_downreg_shared), verbose = F, name = c("upreg_genes", "downreg_genes"), assay = "MAGIC_RNA")
@@ -1485,7 +1599,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               cancer_subset <- subset(seurat_object, cells = index_cancer)
               cancer_subset <- Seurat::NormalizeData(cancer_subset, verbose = F)
               cancer_subset <- Seurat::ScaleData(cancer_subset, verbose = F)
-              cancer_subset <- magic(cancer_subset)
+              cancer_subset <- magic(cancer_subset, seed = 123)
               cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = list(upreg_genes = genes_upreg_shared, downreg_genes = genes_downreg_shared), verbose = F, name = c("upreg_genes", "downreg_genes"), assay = "MAGIC_RNA")
 
               dist_cancer_signature <- amap::Dist(cancer_subset@meta.data[,c("upreg_genes1", "downreg_genes2")], method = "euclidean", nbproc = mc.cores) # distance matrix
@@ -1758,6 +1872,60 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
 
 
     }
+    if(normal_tissue == T){
+      index_potential_cancer <- which(summary_master$scATOMIC_pred %in% c("Bile Duct Cancer Cell","Bladder Cancer Cell",
+                                                                          "Bone Cancer Cell","Brain Cancer Cell"    ,
+                                                                          "Breast Cancer Cell","Colon/Colorectal Cancer Cell"   ,
+                                                                          "Endometrial/Uterine Cancer Cell","Esophageal Cancer Cell"   ,
+                                                                          "Gallbladder Cancer Cell","Gastric Cancer Cell"     ,
+                                                                          "Kidney Cancer Cell","Liver Cancer Cell"   ,
+                                                                          "Lung Cancer Cell","Neuroblastoma"       ,
+                                                                          "Ovarian Cancer Cell","Pancreatic Cancer Cell"  ,
+                                                                          "Prostate Cancer Cell","Sarcoma"     ,
+                                                                          "Skin Cancer Cell","Breast/Lung/Prostate"    ,
+                                                                          "Ovarian/Endometrial/Kidney","Endometrial Cancer Cell"    ,
+                                                                          "Biliary/Hepatic Cancer Cell","Brain/Neuroblastoma Cancer Cell",
+                                                                          "Digestive Tract Cancer Cell","Soft Tissue Cancer Cell" ,
+                                                                          "Soft Tissue or Neuro Cancer Cell","Unclassified Soft Tissue or Neuro Cancer Cell",
+                                                                          "ER+ Breast Cancer Cell","HER2+ Breast Cancer Cell" ,
+                                                                          "Her2+ Breast Cancer Cell","TNBC Breast Cancer Cell", "Epithelial Cell","GI Tract Cell",
+                                                                          "Non Blood Cell","Non Stromal Cell"))
+      if(length(index_potential_cancer) > 0){
+        summary_master[index_potential_cancer, "scATOMIC_pred"] <- "Normal Tissue Cell"
+      }
+      index_CAF <- which(summary_master$layer_3 %in% c("Cancer Associated Fibroblasts"))
+      if(length(index_CAF) > 0){
+        summary_master[index_CAF, "scATOMIC_pred"] <- "Normal Fibroblast"
+      }
+
+    }
+    if(low_res_mode == T){
+      #index CD8 T cells
+      index_CD8 <- which(summary_master$layer_4 %in% c("CD8+ T cell"))
+      if(length(index_CD8) > 0){
+        summary_master[index_CD8, "scATOMIC_pred"] <- "CD8+ T cell"
+      }
+      #index CD4 T cells
+      index_CD4 <- which(summary_master$layer_4 %in% c("CD4+ T cell"))
+      if(length(index_CD4) > 0){
+        summary_master[index_CD4, "scATOMIC_pred"] <- "CD4+ T cell"
+      }
+      #index macrophages
+      index_macro <- which(summary_master$layer_4 %in% c("Macrophage"))
+      if(length(index_macro) > 0){
+        summary_master[index_macro, "scATOMIC_pred"] <- "Macrophage"
+      }
+      #index fibroblasts
+      index_CAF <- which(summary_master$layer_3 %in% c("Cancer Associated Fibroblasts") & summary_master$scATOMIC_pred != "Normal Fibroblast")
+      if(length(index_CAF) > 0){
+        summary_master[index_CAF, "scATOMIC_pred"] <- "Cancer Associated Fibroblasts"
+      }
+      #index cDCs
+      index_cDC <- which(summary_master$layer_4 %in% c("cDC"))
+      if(length(index_cDC) > 0){
+        summary_master[index_cDC, "scATOMIC_pred"] <- "cDC"
+      }
+    }
     percent_confident <- round(length(which(summary_master$classification_confidence == "confident"))/nrow(summary_master), digits = 2)
     if(percent_confident == 1){
       print(paste0("Sample classification confidence = 1.00"))
@@ -1766,6 +1934,19 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
     }
     if(percent_confident < 0.75){
       warning("Sample classification confidence is low")
+    }
+    if(length(known_cancer_type) == 1){
+      index_cancer_predicted <- which(summary_master$scATOMIC_pred %in% c("Bile Duct Cancer Cell", "Bladder Cancer Cell", "Bone Cancer Cell",
+                                                                          "Brain Cancer Cell", "Breast Cancer Cell", "Colon/Colorectal Cancer Cell",
+                                                                          "Endometrial/Uterine Cancer Cell", "Esophageal Cancer Cell", "Gallbladder Cancer Cell",
+                                                                          "Gastric Cancer Cell", "Kidney Cancer Cell", "Liver Cancer Cell", "Lung Cancer Cell",
+                                                                          "Neuroblastoma", "Ovarian Cancer Cell", "Pancreatic Cancer Cell", "Prostate Cancer Cell",
+                                                                          "Sarcoma", "Skin Cancer Cell", "Breast/Lung/Prostate", "Ovarian/Endometrial/Kidney",
+                                                                          "Endometrial Cancer Cell", "Biliary/Hepatic Cancer Cell", "Brain/Neuroblastoma Cancer Cell",
+                                                                          "Digestive Tract Cancer Cell", "Soft Tissue Cancer Cell", "Soft Tissue or Neuro Cancer Cell",
+                                                                          "Unclassified Soft Tissue or Neuro Cancer Cell", "ER+ Breast Cancer Cell", "HER2+ Breast Cancer Cell",
+                                                                          "Her2+ Breast Cancer Cell", "TNBC Breast Cancer Cell", "Epithelial Cell", "GI Tract Cell"))
+      summary_master[index_cancer_predicted, "scATOMIC_pred"] <- known_cancer_type
     }
     return(summary_master)
   }

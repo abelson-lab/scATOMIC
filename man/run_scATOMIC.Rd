@@ -8,7 +8,7 @@ run_scATOMIC(
   rna_counts,
   imputation = TRUE,
   ref_based = F,
-  mc.cores = (parallel::detectCores() - 1),
+  mc.cores = 1,
   unimodal_nsd = 3,
   bimodal_nsd = 2,
   breast_mode = F,
