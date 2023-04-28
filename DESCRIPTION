@@ -30,7 +30,7 @@ Imports:
     randomForest,
     caret,
     plyr,
-    cutoff,
+    cutoff.scATOMIC,
     copykat,
     ROCit,
     set,
@@ -47,5 +47,5 @@ Imports:
     bbmle,
     DiagrammeR
 Remotes: 
-    choisy/cutoff, 
+    inofechm/cutoff.scATOMIC, 
     navinlabcode/copykat

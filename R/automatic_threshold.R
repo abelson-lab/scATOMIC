@@ -41,7 +41,7 @@ automatic_threshold <- function(score, unimodal_nsd, bimodal_nsd){
 
       }
 
-      mixed_model <- cutoff::em(score,"normal","normal")
+      mixed_model <- cutoff.scATOMIC::em(score,"normal","normal")
       mu1 <- mixed_model$param[1]
       sigma1 <- mixed_model$param[2]
       mu2 <- mixed_model$param[3]

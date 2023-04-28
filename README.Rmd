@@ -47,14 +47,14 @@ xcode-select --install
 
 To install scATOMIC you will need to use the devtools package. We recommend you install other dependencies before installing scATOMIC.
 Note that packages DLM and RMagic were removed from CRAN in October 2022 so we install the archived package.
-Note: The package [cutoff](https://github.com/choisy/cutoff) we use is a developer package that is different from the CRAN "cutoff" package.
+Note: In v2 we switch to using a [fork](https://github.com/inofechm/cutoff.scATOMIC) of the package [cutoff](https://github.com/choisy/cutoff) where the package name is changed to avoid conflicting names with the unrelated CRAN cutoff package. 
 Installation of scATOMIC may take several minutes, as the package contains the pre-trained random forest models. 
 
 ```{r, results='hide', eval=FALSE}
 devtools::install_version("dlm", version = "1.1.5", repos = "http://cran.us.r-project.org")
 devtools::install_version("Rmagic", version = "2.0.3", repos = "http://cran.us.r-project.org")
 if(!require(devtools)) install.packages("devtools")
-if(!require(cutoff)) devtools::install_github("choisy/cutoff")
+if(!require(cutoff.scATOMIC)) devtools::install_github("inofechm/cutoff.scATOMIC")
 if(!require(scATOMIC)) devtools::install_github("abelson-lab/scATOMIC")
 ```
 
@@ -121,6 +121,8 @@ For more information visit https://rdrr.io/cran/Rmagic/f/README.md#installation
 
 4. We have added a low resolution mode to output broader subtypes of non malignant cells.
 
+5. We have switched to using a fork of the cutoff package called cutoff.scATOMIC to avoid conflicting package names with the CRAN cutoff package.
+
 ## Tutorial for scATOMIC
 ### Applications
 
@@ -156,7 +158,7 @@ library(Rmagic)
 library(Matrix)
 library(Seurat)
 library(agrmt)
-library(cutoff)
+library(cutoff.scATOMIC)
 library(copykat)
 library(ggplot2)
 
