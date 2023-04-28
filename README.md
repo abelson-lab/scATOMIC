@@ -11,7 +11,7 @@ This repository contains installation instructions and tutorials to run
 **M**icroenvironments **I**n pan-**C**ancer settings For more
 information please check out our manuscript at
 <https://www.nature.com/articles/s41467-023-37353-8>
-[![DOI](https://zenodo.org/badge/7876787.svg)](https://zenodo.org/badge/latestdoi/7876787)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7876787.svg)](https://doi.org/10.5281/zenodo.7876787)
 
 ![](img/scATOMIC_pipeline.png)
 
