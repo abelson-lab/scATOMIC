@@ -20,6 +20,9 @@ automatic_threshold <- function(score, unimodal_nsd, bimodal_nsd){
       rounded_collapsed_freq_vector <- agrmt::collapse(score)
     }
     modality <- agrmt::ajus(rounded_collapsed_freq_vector)[["type"]]
+    if(diff(range(score)) < 0.1){
+      modality = "A"
+    }
     if(is.na(modality)){
       modality = "S"
     }
