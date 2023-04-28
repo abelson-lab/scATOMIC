@@ -46,17 +46,18 @@ xcode-select --install
 To install scATOMIC you will need to use the devtools package. We
 recommend you install other dependencies before installing scATOMIC.
 Note that packages DLM and RMagic were removed from CRAN in October 2022
-so we install the archived package. Note: The package
-[cutoff](https://github.com/choisy/cutoff) we use is a developer package
-that is different from the CRAN “cutoff” package. Installation of
-scATOMIC may take several minutes, as the package contains the
-pre-trained random forest models.
+so we install the archived package. Note: In v2 we switch to using a
+[fork](https://github.com/inofechm/cutoff.scATOMIC) of the package
+[cutoff](https://github.com/choisy/cutoff) where the package name is
+changed to avoid conflicting names with the unrelated CRAN cutoff
+package. Installation of scATOMIC may take several minutes, as the
+package contains the pre-trained random forest models.
 
 ``` r
 devtools::install_version("dlm", version = "1.1.5", repos = "http://cran.us.r-project.org")
 devtools::install_version("Rmagic", version = "2.0.3", repos = "http://cran.us.r-project.org")
 if(!require(devtools)) install.packages("devtools")
-if(!require(cutoff)) devtools::install_github("choisy/cutoff")
+if(!require(cutoff.scATOMIC)) devtools::install_github("inofechm/cutoff.scATOMIC")
 if(!require(scATOMIC)) devtools::install_github("abelson-lab/scATOMIC")
 ```
 
@@ -135,6 +136,10 @@ For more information visit
 4.  We have added a low resolution mode to output broader subtypes of
     non malignant cells.
 
+5.  We have switched to using a fork of the cutoff package called
+    cutoff.scATOMIC to avoid conflicting package names with the CRAN
+    cutoff package.
+
 ## Tutorial for scATOMIC
 
 ### Applications
@@ -180,7 +185,7 @@ library(Rmagic)
 library(Matrix)
 library(Seurat)
 library(agrmt)
-library(cutoff)
+library(cutoff.scATOMIC)
 library(copykat)
 library(ggplot2)
 ```
@@ -275,13 +280,13 @@ table(results_lung$scATOMIC_pred)
     ##                   CD4+ T cell              CD8 T or NK cell 
     ##                            95                            10 
     ##                   CD8+ T cell                           cDC 
-    ##                            46                             3 
+    ##                            49                             3 
     ##                          cDC1                          cDC2 
     ##                             9                            56 
     ##                Dendritic Cell  Effector/Memory CD4+ T cells 
     ##                             1                           175 
     ##  Effector/Memory CD8+ T cells             Endothelial Cells 
-    ##                           229                           110 
+    ##                           226                           110 
     ##        Exhausted CD8+ T cells                     LAMP3 cDC 
     ##                            30                             3 
     ##              Lung Cancer Cell                    Macrophage 
@@ -852,12 +857,12 @@ sessionInfo()
     ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] copykat_1.1.0           cutoff_0.1.0            agrmt_1.42.8           
+    ##  [1] copykat_1.1.0           cutoff.scATOMIC_0.1.0   agrmt_1.42.8           
     ##  [4] Seurat_4.9.9.9041       SeuratObject_4.9.9.9081 sp_1.5-1               
     ##  [7] Rmagic_2.0.3            Matrix_1.5-3            reticulate_1.27        
     ## [10] caret_6.0-93            lattice_0.20-45         ggplot2_3.4.0          
     ## [13] randomForest_4.7-1.1    data.table_1.14.6       dplyr_1.0.10           
-    ## [16] plyr_1.8.8              scATOMIC_1.1.4         
+    ## [16] plyr_1.8.8              scATOMIC_2.0.0         
     ## 
     ## loaded via a namespace (and not attached):
     ##   [1] spam_2.9-1             igraph_1.3.5           lazyeval_0.2.2        
