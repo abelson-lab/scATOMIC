@@ -11,6 +11,7 @@ This repository contains installation instructions and tutorials to run
 **M**icroenvironments **I**n pan-**C**ancer settings For more
 information please check out our manuscript at
 <https://www.nature.com/articles/s41467-023-37353-8>
+For direct questions please email Ido Nofech-Mozes at [inofechmozes@oicr.on.ca](mailto:inofechmozes@oicr.on.ca)
 
 ![](img/scATOMIC_pipeline.png)
 
