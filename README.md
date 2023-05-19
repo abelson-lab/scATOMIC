@@ -8,10 +8,13 @@
 
 This repository contains installation instructions and tutorials to run
 **S**ingle **C**ell **A**nnotation of **T**um**O**ur
-**M**icroenvironments **I**n pan-**C**ancer settings For more
-information please check out our manuscript at
+**M**icroenvironments **I**n pan-**C**ancer settings
+
+For more information please check out our manuscript at
 <https://www.nature.com/articles/s41467-023-37353-8>
-For direct questions please email Ido Nofech-Mozes at [inofechmozes@oicr.on.ca](mailto:inofechmozes@oicr.on.ca)
+
+For direct questions please email Ido Nofech-Mozes at
+<inofechmozes@oicr.on.ca>
 
 ![](img/scATOMIC_pipeline.png)
 
@@ -275,19 +278,19 @@ table(results_lung$scATOMIC_pred)
     ##                    Blood Cell                        CAFadi 
     ##                            10                            13 
     ##                      CAFinfla                        CAFmyo 
-    ##                            51                            94 
+    ##                            51                            93 
     ## Cancer Associated Fibroblasts             CD4 or CD8 T cell 
-    ##                            24                            21 
+    ##                            25                            21 
     ##                   CD4+ T cell              CD8 T or NK cell 
     ##                            95                            10 
     ##                   CD8+ T cell                           cDC 
-    ##                            49                             3 
+    ##                            44                             3 
     ##                          cDC1                          cDC2 
     ##                             9                            56 
     ##                Dendritic Cell  Effector/Memory CD4+ T cells 
     ##                             1                           175 
     ##  Effector/Memory CD8+ T cells             Endothelial Cells 
-    ##                           226                           110 
+    ##                           231                           110 
     ##        Exhausted CD8+ T cells                     LAMP3 cDC 
     ##                            30                             3 
     ##              Lung Cancer Cell                    Macrophage 
@@ -748,10 +751,8 @@ table(results_normal_lung[which(results_normal_lung$scATOMIC_pred == "Normal Tis
 ```
 
     ## 
-    ## Breast/Lung/Prostate      Epithelial Cell     Lung Cancer Cell 
-    ##                    2                    5                  147 
-    ##       Non Blood Cell     Non Stromal Cell 
-    ##                    6                    7
+    ##  Epithelial Cell Lung Cancer Cell   Non Blood Cell 
+    ##                5              156                6
 
 ## Running scATOMIC on known cancer type samples
 
@@ -788,7 +789,7 @@ table(results_lung$scATOMIC_pred)
     ## Cancer Associated Fibroblasts             CD4 or CD8 T cell 
     ##                            24                            21 
     ##                   CD4+ T cell              CD8 T or NK cell 
-    ##                            95                             8 
+    ##                            95                            10 
     ##                   CD8+ T cell                           cDC 
     ##                            46                             3 
     ##                          cDC1                          cDC2 
@@ -796,7 +797,7 @@ table(results_lung$scATOMIC_pred)
     ##                Dendritic Cell  Effector/Memory CD4+ T cells 
     ##                             1                           175 
     ##  Effector/Memory CD8+ T cells             Endothelial Cells 
-    ##                           231                           110 
+    ##                           229                           110 
     ##        Exhausted CD8+ T cells                     LAMP3 cDC 
     ##                            30                             3 
     ##                     LUAD cell                    Macrophage 
