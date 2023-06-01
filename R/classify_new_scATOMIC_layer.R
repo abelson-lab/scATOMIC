@@ -41,8 +41,8 @@ classify_new_scATOMIC_layer <- function(rf_model, selected_features, rna_counts,
     predicted_class <- unlist(parallel::mclapply(row.names(layer_predictions),
                                                  function (cell_name, predictions)
                                                  {    layer_predictions <- predictions[cell_name, ]
-                                                 predicted_class <- colnames(sort(layer_predictions[which(lapply(layer_predictions,
-                                                                                                                 class) == "numeric")], decreasing = T)[1])}, predictions = layer_predictions,
+                                                 predicted_class <- names(sort(unlist(as.vector(layer_predictions[,colnames(layer_predictions)[which(lapply(layer_predictions, class) == "numeric")]])),
+                                                                               decreasing = T)[1])}, predictions = layer_predictions,
                                                  mc.cores = mc.cores), use.names = F)
     layer_predictions <- cbind(layer_predictions, predicted_class)
     layer_predictions$predicted_class <- as.character(predicted_class)
