@@ -356,6 +356,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
       } else if(summary_master[i, "layer_5"] == "Cell low quality"){
         summary_master[i, "layer_5"] <- summary_master[i, "layer_4"]
         layer_6[i] <- summary_master[i, "layer_4"]
+        median_score_class_layer_5[i] <- NA
       } else {
         layer_6[i] <- as.character(layer_5[i])
         if(layer_5[i] == "Lung Cancer Cell" & layer_4[i] == "Breast/Lung/Prostate Cell"){
@@ -1315,6 +1316,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
       } else if(summary_master[i, "layer_5"] == "Cell low quality"){
         summary_master[i, "layer_5"] <- summary_master[i, "layer_4"]
         layer_6[i] <- summary_master[i, "layer_4"]
+        median_score_class_layer_5[i] <- NA
       } else {
         layer_6[i] <- as.character(layer_5[i])
         if(layer_5[i] == "Lung Cancer Cell" & layer_4[i] == "Breast/Lung/Prostate Cell"){
