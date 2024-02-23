@@ -36,6 +36,7 @@
 #' @importFrom Seurat NormalizeData
 #' @importFrom Seurat RunPCA
 #' @importFrom Seurat ScaleData
+#' @importFrom Seurat VariableFeatures
 #' @importFrom stringr str_count
 #' @importFrom stringr str_replace
 ## usethis namespace: end
