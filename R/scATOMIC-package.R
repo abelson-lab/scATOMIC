@@ -26,6 +26,7 @@
 #' @importFrom Rmagic library.size.normalize
 #' @importFrom Rmagic magic
 #' @importFrom scales hue_pal
+#' @importFrom Seurat AddMetaData
 #' @importFrom Seurat AddModuleScore
 #' @importFrom Seurat CellCycleScoring
 #' @importFrom Seurat CreateSeuratObject
