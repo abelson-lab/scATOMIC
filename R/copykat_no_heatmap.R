@@ -104,7 +104,7 @@ copy_kat_no_heatmap <- function (rawmat = rawdata,summary_matrix,  id.type = "S"
   print("step 4: measuring baselines ...")
   if (cell.line == "yes") {
     print("running pure cell line mode")
-    relt <- baseline.synthetic(norm.mat = norm.mat.smooth,
+    relt <- copykat:::baseline.synthetic(norm.mat = norm.mat.smooth,
                                min.cells = 10, n.cores = n.cores)
     norm.mat.relat <- relt$expr.relat
     CL <- relt$cl
@@ -139,7 +139,7 @@ copy_kat_no_heatmap <- function (rawmat = rawdata,summary_matrix,  id.type = "S"
     norm.mat.relat <- norm.mat.smooth - basel
   }
   else {
-    basa <- baseline.norm.cl(norm.mat.smooth = norm.mat.smooth,
+    basa <- copykat::baseline.norm.cl(norm.mat.smooth = norm.mat.smooth,
                              min.cells = 5, n.cores = n.cores)
     basel <- basa$basel
     WNS <- basa$WNS
@@ -160,7 +160,7 @@ copy_kat_no_heatmap <- function (rawmat = rawdata,summary_matrix,  id.type = "S"
                                                  preN)], 1, mean)
       }
       else {
-        basa <- baseline.GMM(CNA.mat = norm.mat.smooth,
+        basa <- copykat::baseline.GMM(CNA.mat = norm.mat.smooth,
                              max.normal = 5, mu.cut = 0.05, Nfraq.cut = 0.99,
                              RE.before = basa, n.cores = n.cores)
         basel <- basa$basel
@@ -198,16 +198,16 @@ copy_kat_no_heatmap <- function (rawmat = rawdata,summary_matrix,  id.type = "S"
   CL <- CL[which(names(CL) %in% colnames(norm.mat.relat))]
   CL <- CL[order(match(names(CL), colnames(norm.mat.relat)))]
   print("step 5: segmentation...")
-  results <- CNA.MCMC(clu = CL, fttmat = norm.mat.relat, bins = win.size,
+  results <- copykat::CNA.MCMC(clu = CL, fttmat = norm.mat.relat, bins = win.size,
                       cut.cor = KS.cut, n.cores = n.cores)
   if (length(results$breaks) < 25) {
     print("too few breakpoints detected; decreased KS.cut to 50%")
-    results <- CNA.MCMC(clu = CL, fttmat = norm.mat.relat,
+    results <- copykat::CNA.MCMC(clu = CL, fttmat = norm.mat.relat,
                         bins = win.size, cut.cor = 0.5 * KS.cut, n.cores = n.cores)
   }
   if (length(results$breaks) < 25) {
     print("too few breakpoints detected; decreased KS.cut to 75%")
-    results <- CNA.MCMC(clu = CL, fttmat = norm.mat.relat,
+    results <- copykat::CNA.MCMC(clu = CL, fttmat = norm.mat.relat,
                         bins = win.size, cut.cor = 0.5 * 0.5 * KS.cut, n.cores = n.cores)
   }
   if (length(results$breaks) < 25)
@@ -218,7 +218,7 @@ copy_kat_no_heatmap <- function (rawmat = rawdata,summary_matrix,  id.type = "S"
   RNA.copycat <- cbind(anno.mat2[, 1:7], results.com)
 
   print("step 6: convert to genomic bins...")
-  Aj <- convert.all.bins.hg20(DNA.mat = DNA.hg20, RNA.mat = RNA.copycat,
+  Aj <- copykat::convert.all.bins.hg20(DNA.mat = DNA.hg20, RNA.mat = RNA.copycat,
                               n.cores = n.cores)
   uber.mat.adj <- data.matrix(Aj$RNA.adj[, 4:ncol(Aj$RNA.adj)])
   print("step 7: adjust baseline ...")

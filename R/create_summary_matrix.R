@@ -574,7 +574,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         frequency_per_row_nozero <- apply(count_matrix_down_reg,1,function(x){length(which(x!=0))})/ncol(count_matrix_down_reg)
         genes_downreg_shared <- names(frequency_per_row_nozero)[which(frequency_per_row_nozero > 0)]
         cancer_subset <- seurat_object
-        cancer_subset <- magic(cancer_subset, seed = 123)
+        cancer_subset <- Rmagic::magic(cancer_subset, seed = 123)
         #cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = genes_upreg_shared, verbose = F, name = "upreg_genes", assay = "MAGIC_RNA")
         #cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = genes_downreg_shared, verbose = F, name = "downreg_genes", assay = "MAGIC_RNA")
         cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = list(upreg_genes = genes_upreg_shared, downreg_genes = genes_downreg_shared), verbose = F, name = c("upreg_genes", "downreg_genes"), assay = "MAGIC_RNA")
@@ -643,7 +643,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               cancer_subset <- subset(seurat_object, cells = index_cancer)
               cancer_subset <- Seurat::NormalizeData(cancer_subset, verbose = F)
               cancer_subset <- Seurat::ScaleData(cancer_subset, verbose = F)
-              cancer_subset <- magic(cancer_subset, seed = 123)
+              cancer_subset <- Rmagic::magic(cancer_subset, seed = 123)
               cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = list(upreg_genes = genes_upreg_shared, downreg_genes = genes_downreg_shared), verbose = F, name = c("upreg_genes", "downreg_genes"), assay = "MAGIC_RNA")
 
               dist_cancer_signature <- amap::Dist(cancer_subset@meta.data[,c("upreg_genes1", "downreg_genes2")], method = "euclidean", nbproc = mc.cores) # distance matrix

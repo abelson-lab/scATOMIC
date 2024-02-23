@@ -45,7 +45,9 @@ Imports:
     amap,
     tibble,
     bbmle,
-    DiagrammeR
+    DiagrammeR,
+    dlm,
+    parallelDist
 Remotes: 
     inofechm/cutoff.scATOMIC, 
     navinlabcode/copykat
