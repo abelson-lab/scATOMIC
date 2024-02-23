@@ -166,6 +166,15 @@ library(copykat)
 library(ggplot2)
 
 ```
+
+As of version 2.0.3 required libraries and/or their functions can all be imported when simply running:
+
+```{r}
+library(scATOMIC)
+```
+
+
+
 ### Input data
 
 scATOMIC is run directly on gene by cell count matrices. 

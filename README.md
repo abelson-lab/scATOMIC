@@ -151,8 +151,8 @@ For more information visit
 Inter-patient cancer cell specific effects can interfere with scATOMICs
 cancer signature scoring module and confidence in classifications. We
 strongly recommend running scATOMIC only on individual patient/biopsy
-samples. For most datasets the scATOMIC should run in \~5-10 minutes on
-a standard 16GB RAM laptop. For larger datasets (\> 15,000 cells) we
+samples. For most datasets the scATOMIC should run in ~5-10 minutes on a
+standard 16GB RAM laptop. For larger datasets (\> 15,000 cells) we
 recommend using a machine with greater RAM. The default scATOMIC model
 assumes the presence of at least some cancer cells in a biopsy and
 should not be used in normal tissue applications. In version 2 we have
@@ -192,6 +192,13 @@ library(agrmt)
 library(cutoff.scATOMIC)
 library(copykat)
 library(ggplot2)
+```
+
+As of version 2.0.3 required libraries and/or their functions can all be
+imported when simply running:
+
+``` r
+library(scATOMIC)
 ```
 
 ### Input data
@@ -282,25 +289,25 @@ table(results_lung$scATOMIC_pred)
     ## Cancer Associated Fibroblasts             CD4 or CD8 T cell 
     ##                            25                            21 
     ##                   CD4+ T cell              CD8 T or NK cell 
-    ##                            95                            10 
+    ##                            95                             9 
     ##                   CD8+ T cell                           cDC 
-    ##                            44                             3 
+    ##                            41                             3 
     ##                          cDC1                          cDC2 
     ##                             9                            56 
     ##                Dendritic Cell  Effector/Memory CD4+ T cells 
     ##                             1                           175 
     ##  Effector/Memory CD8+ T cells             Endothelial Cells 
-    ##                           231                           110 
+    ##                           235                           110 
     ##        Exhausted CD8+ T cells                     LAMP3 cDC 
     ##                            30                             3 
     ##              Lung Cancer Cell                    Macrophage 
-    ##                           599                            11 
+    ##                           598                            11 
     ##  Macrophage or Dendritic Cell                     Mast cell 
     ##                            35                            80 
     ##            Naive CD4+ T cells           Natural killer cell 
     ##                             6                           101 
     ##                Non Blood Cell            Normal Tissue Cell 
-    ##                            66                            69 
+    ##                            95                            41 
     ##                           pDC       Phagocytosis Macrophage 
     ##                            18                           319 
     ##                   Plasmablast   Pro-angiogenesis Macrophage 
@@ -314,13 +321,13 @@ table(results_lung$scATOMIC_pred)
 head(results_lung)
 ```
 
-    ##                       orig.ident         cell_names
-    ## AAACCTGAGACCGGAT-1 SeuratProject AAACCTGAGACCGGAT-1
-    ## AAACCTGCAGTCACTA-1 SeuratProject AAACCTGCAGTCACTA-1
-    ## AAACCTGGTAAGTAGT-1 SeuratProject AAACCTGGTAAGTAGT-1
-    ## AAACCTGTCGAATGCT-1 SeuratProject AAACCTGTCGAATGCT-1
-    ## AAACCTGTCTGAGGGA-1 SeuratProject AAACCTGTCTGAGGGA-1
-    ## AAACGGGAGTAGATGT-1 SeuratProject AAACGGGAGTAGATGT-1
+    ##                       orig.ident nCount_RNA nFeature_RNA         cell_names
+    ## AAACCTGAGACCGGAT-1 SeuratProject       7088         2072 AAACCTGAGACCGGAT-1
+    ## AAACCTGCAGTCACTA-1 SeuratProject       4985         1269 AAACCTGCAGTCACTA-1
+    ## AAACCTGGTAAGTAGT-1 SeuratProject      10007         2543 AAACCTGGTAAGTAGT-1
+    ## AAACCTGTCGAATGCT-1 SeuratProject      18045         4597 AAACCTGTCGAATGCT-1
+    ## AAACCTGTCTGAGGGA-1 SeuratProject       4937         1492 AAACCTGTCTGAGGGA-1
+    ## AAACGGGAGTAGATGT-1 SeuratProject      12569         3856 AAACGGGAGTAGATGT-1
     ##                                         layer_1                      layer_2
     ## AAACCTGAGACCGGAT-1                   Blood_Cell macrophage_or_dendritic_cell
     ## AAACCTGCAGTCACTA-1                   Blood_Cell           T_or_NK_lymphocyte
@@ -353,37 +360,37 @@ head(results_lung)
     ## AAACCTGAGACCGGAT-1                      0.984                      1.000
     ## AAACCTGCAGTCACTA-1                      0.996                      0.977
     ## AAACCTGGTAAGTAGT-1                      0.984                      1.000
-    ## AAACCTGTCGAATGCT-1                      0.574                      0.812
+    ## AAACCTGTCGAATGCT-1                      0.574                      0.810
     ## AAACCTGTCTGAGGGA-1                      0.970                      0.970
-    ## AAACGGGAGTAGATGT-1                      0.574                      0.812
+    ## AAACGGGAGTAGATGT-1                      0.574                      0.810
     ##                    median_score_class_layer_5 median_score_class_layer_6
     ## AAACCTGAGACCGGAT-1                      1.000                      1.000
     ## AAACCTGCAGTCACTA-1                      0.977                      0.977
     ## AAACCTGGTAAGTAGT-1                      1.000                      1.000
-    ## AAACCTGTCGAATGCT-1                      0.872                      0.872
+    ## AAACCTGTCGAATGCT-1                      0.874                      0.874
     ## AAACCTGTCTGAGGGA-1                      0.970                      0.970
-    ## AAACGGGAGTAGATGT-1                      0.872                      0.872
-    ##                              scATOMIC_pred nCount_RNA nFeature_RNA      S.Score
-    ## AAACCTGAGACCGGAT-1 Phagocytosis Macrophage       7088         2072 -0.006630921
-    ## AAACCTGCAGTCACTA-1             CD4+ T cell       4985         1269 -0.046677709
-    ## AAACCTGGTAAGTAGT-1 Phagocytosis Macrophage      10007         2543  0.015462403
-    ## AAACCTGTCGAATGCT-1        Lung Cancer Cell      18045         4597 -0.049247934
-    ## AAACCTGTCTGAGGGA-1               Mast cell       4937         1492 -0.025618571
-    ## AAACGGGAGTAGATGT-1        Lung Cancer Cell      12569         3856 -0.038660836
-    ##                       G2M.Score Phase     old.ident RNA_snn_res.0.2
-    ## AAACCTGAGACCGGAT-1 -0.047453336    G1 SeuratProject               2
-    ## AAACCTGCAGTCACTA-1 -0.006673286    G1 SeuratProject               0
-    ## AAACCTGGTAAGTAGT-1  0.063293498   G2M SeuratProject               2
-    ## AAACCTGTCGAATGCT-1 -0.064310971    G1 SeuratProject               1
-    ## AAACCTGTCTGAGGGA-1 -0.023923499    G1 SeuratProject               9
-    ## AAACGGGAGTAGATGT-1 -0.129262025    G1 SeuratProject               1
-    ##                    seurat_clusters pan_cancer_cluster classification_confidence
-    ## AAACCTGAGACCGGAT-1               2             Normal                 confident
-    ## AAACCTGCAGTCACTA-1               0             Normal                 confident
-    ## AAACCTGGTAAGTAGT-1               2             Normal                 confident
-    ## AAACCTGTCGAATGCT-1               1             Cancer                 confident
-    ## AAACCTGTCTGAGGGA-1               9             Normal                 confident
-    ## AAACGGGAGTAGATGT-1               1             Cancer                 confident
+    ## AAACGGGAGTAGATGT-1                      0.874                      0.874
+    ##                              scATOMIC_pred      S.Score    G2M.Score Phase
+    ## AAACCTGAGACCGGAT-1 Phagocytosis Macrophage -0.006630921 -0.047453336    G1
+    ## AAACCTGCAGTCACTA-1             CD4+ T cell -0.046677709 -0.006673286    G1
+    ## AAACCTGGTAAGTAGT-1 Phagocytosis Macrophage  0.015462403  0.063293498   G2M
+    ## AAACCTGTCGAATGCT-1        Lung Cancer Cell -0.049247934 -0.064310971    G1
+    ## AAACCTGTCTGAGGGA-1               Mast cell -0.025618571 -0.023923499    G1
+    ## AAACGGGAGTAGATGT-1        Lung Cancer Cell -0.038660836 -0.129262025    G1
+    ##                        old.ident RNA_snn_res.0.2 seurat_clusters
+    ## AAACCTGAGACCGGAT-1 SeuratProject               2               2
+    ## AAACCTGCAGTCACTA-1 SeuratProject               0               0
+    ## AAACCTGGTAAGTAGT-1 SeuratProject               2               2
+    ## AAACCTGTCGAATGCT-1 SeuratProject               1               1
+    ## AAACCTGTCTGAGGGA-1 SeuratProject               9               9
+    ## AAACGGGAGTAGATGT-1 SeuratProject               1               1
+    ##                    pan_cancer_cluster classification_confidence
+    ## AAACCTGAGACCGGAT-1             Normal                 confident
+    ## AAACCTGCAGTCACTA-1             Normal                 confident
+    ## AAACCTGGTAAGTAGT-1             Normal                 confident
+    ## AAACCTGTCGAATGCT-1             Cancer                 confident
+    ## AAACCTGTCTGAGGGA-1             Normal                 confident
+    ## AAACGGGAGTAGATGT-1             Cancer                 confident
 
 ## scATOMIC CNV mode
 
@@ -478,7 +485,7 @@ We can plot our results via:
 DimPlot(lung_seurat, group.by = "scATOMIC_pred") + ggtitle("Lung Demo Dataset") + labs(fill="scATOMIC Annotations") 
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
 
 ## Training new subclassification layers
 
@@ -843,75 +850,78 @@ the base model.
 sessionInfo()
 ```
 
-    ## R version 4.2.2 (2022-10-31)
-    ## Platform: x86_64-apple-darwin17.0 (64-bit)
-    ## Running under: macOS Big Sur ... 10.16
+    ## R version 4.3.2 (2023-10-31)
+    ## Platform: x86_64-apple-darwin20 (64-bit)
+    ## Running under: macOS Ventura 13.6.3
     ## 
     ## Matrix products: default
-    ## BLAS:   /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRblas.0.dylib
-    ## LAPACK: /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRlapack.dylib
+    ## BLAS:   /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRblas.0.dylib 
+    ## LAPACK: /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
     ## 
     ## locale:
     ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+    ## 
+    ## time zone: America/Toronto
+    ## tzcode source: internal
     ## 
     ## attached base packages:
     ## [1] parallel  stats     graphics  grDevices utils     datasets  methods  
     ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] copykat_1.1.0           cutoff.scATOMIC_0.1.0   agrmt_1.42.8           
-    ##  [4] Seurat_4.9.9.9041       SeuratObject_4.9.9.9081 sp_1.5-1               
-    ##  [7] Rmagic_2.0.3            Matrix_1.5-3            reticulate_1.27        
-    ## [10] caret_6.0-93            lattice_0.20-45         ggplot2_3.4.0          
-    ## [13] randomForest_4.7-1.1    data.table_1.14.6       dplyr_1.0.10           
-    ## [16] plyr_1.8.8              scATOMIC_2.0.0         
+    ##  [1] cutoff.scATOMIC_0.1.0 agrmt_1.42.12         Seurat_5.0.1         
+    ##  [4] SeuratObject_5.0.1    sp_2.1-2              Rmagic_2.0.3         
+    ##  [7] Matrix_1.6-4          caret_6.0-94          lattice_0.22-5       
+    ## [10] ggplot2_3.4.4         data.table_1.14.10    dplyr_1.1.4          
+    ## [13] plyr_1.8.9            scATOMIC_2.0.3        copykat_1.1.0        
+    ## [16] reticulate_1.34.0     randomForest_4.7-1.1 
     ## 
     ## loaded via a namespace (and not attached):
-    ##   [1] spam_2.9-1             igraph_1.3.5           lazyeval_0.2.2        
-    ##   [4] splines_4.2.2          RcppHNSW_0.4.1         listenv_0.9.0         
-    ##   [7] scattermore_0.8        amap_0.8-19            digest_0.6.31         
-    ##  [10] foreach_1.5.2          htmltools_0.5.4        fansi_1.0.3           
-    ##  [13] magrittr_2.0.3         tensor_1.5             cluster_2.1.4         
-    ##  [16] ROCR_1.0-11            recipes_1.0.3          globals_0.16.2        
-    ##  [19] gower_1.0.1            matrixStats_0.63.0     R.utils_2.12.2        
-    ##  [22] bdsmatrix_1.3-6        hardhat_1.2.0          timechange_0.1.1      
-    ##  [25] spatstat.sparse_3.0-0  colorspace_2.0-3       ggrepel_0.9.2         
-    ##  [28] xfun_0.36              jsonlite_1.8.4         progressr_0.12.0      
-    ##  [31] spatstat.data_3.0-0    survival_3.4-0         zoo_1.8-11            
-    ##  [34] iterators_1.0.14       glue_1.6.2             polyclip_1.10-4       
-    ##  [37] gtable_0.3.1           ipred_0.9-13           leiden_0.4.3          
-    ##  [40] future.apply_1.10.0    abind_1.4-5            scales_1.2.1          
-    ##  [43] mvtnorm_1.1-3          data.tree_1.0.0        DBI_1.1.3             
-    ##  [46] spatstat.random_3.0-1  miniUI_0.1.1.1         Rcpp_1.0.9            
-    ##  [49] viridisLite_0.4.1      xtable_1.8-4           bit_4.0.5             
-    ##  [52] dotCall64_1.0-2        stats4_4.2.2           lava_1.7.1            
-    ##  [55] prodlim_2019.11.13     htmlwidgets_1.6.1      httr_1.4.4            
-    ##  [58] DiagrammeR_1.0.9       RColorBrewer_1.1-3     ellipsis_0.3.2        
-    ##  [61] ica_1.0-3              R.methodsS3_1.8.2      farver_2.1.1          
-    ##  [64] pkgconfig_2.0.3        uwot_0.1.14            nnet_7.3-18           
-    ##  [67] deldir_1.0-6           utf8_1.2.2             here_1.0.1            
-    ##  [70] labeling_0.4.2         tidyselect_1.2.0       rlang_1.0.6           
-    ##  [73] reshape2_1.4.4         later_1.3.0            visNetwork_2.1.2      
-    ##  [76] munsell_0.5.0          tools_4.2.2            cli_3.6.0             
-    ##  [79] generics_0.1.3         ggridges_0.5.4         evaluate_0.19         
-    ##  [82] stringr_1.5.0          fastmap_1.1.0          tree_1.0-42           
-    ##  [85] yaml_2.3.6             goftest_1.2-3          bit64_4.0.5           
-    ##  [88] ModelMetrics_1.2.2.2   knitr_1.41             fitdistrplus_1.1-8    
-    ##  [91] purrr_1.0.0            RANN_2.6.1             pbapply_1.6-0         
-    ##  [94] future_1.30.0          nlme_3.1-161           mime_0.12             
-    ##  [97] R.oo_1.25.0            hdf5r_1.3.7            compiler_4.2.2        
-    ## [100] rstudioapi_0.14        plotly_4.10.1          png_0.1-8             
-    ## [103] spatstat.utils_3.0-1   tibble_3.1.8           stringi_1.7.8         
-    ## [106] highr_0.10             RSpectra_0.16-1        vctrs_0.5.1           
-    ## [109] pillar_1.8.1           lifecycle_1.0.3        spatstat.geom_3.0-3   
-    ## [112] lmtest_0.9-40          RcppAnnoy_0.0.20       cowplot_1.1.1         
-    ## [115] irlba_2.3.5.1          httpuv_1.6.7           patchwork_1.1.2       
-    ## [118] R6_2.5.1               promises_1.2.0.1       KernSmooth_2.23-20    
-    ## [121] gridExtra_2.3          parallelly_1.33.0      codetools_0.2-18      
-    ## [124] fastDummies_1.6.3      MASS_7.3-58.1          assertthat_0.2.1      
-    ## [127] rprojroot_2.0.3        withr_2.5.0            sctransform_0.3.5     
-    ## [130] collapsibleTree_0.1.7  grid_4.2.2             rpart_4.1.19          
-    ## [133] timeDate_4022.108      tidyr_1.2.1            class_7.3-20          
-    ## [136] rmarkdown_2.19         Rtsne_0.16             bbmle_1.0.25          
-    ## [139] spatstat.explore_3.0-5 pROC_1.18.0            numDeriv_2016.8-1.1   
-    ## [142] shiny_1.7.4            lubridate_1.9.0
+    ##   [1] RcppAnnoy_0.0.21       splines_4.3.2          later_1.3.2           
+    ##   [4] R.oo_1.25.0            tibble_3.2.1           polyclip_1.10-6       
+    ##   [7] hardhat_1.3.0          pROC_1.18.5            rpart_4.1.23          
+    ##  [10] fastDummies_1.7.3      lifecycle_1.0.4        rprojroot_2.0.4       
+    ##  [13] hdf5r_1.3.8            globals_0.16.2         MASS_7.3-60           
+    ##  [16] tree_1.0-43            magrittr_2.0.3         plotly_4.10.3         
+    ##  [19] rmarkdown_2.25         yaml_2.3.8             httpuv_1.6.13         
+    ##  [22] sctransform_0.4.1      spam_2.10-0            spatstat.sparse_3.0-3 
+    ##  [25] cowplot_1.1.2          pbapply_1.7-2          RColorBrewer_1.1-3    
+    ##  [28] lubridate_1.9.3        abind_1.4-5            Rtsne_0.17            
+    ##  [31] R.utils_2.12.3         purrr_1.0.2            nnet_7.3-19           
+    ##  [34] ipred_0.9-14           lava_1.7.3             data.tree_1.1.0       
+    ##  [37] ggrepel_0.9.4          irlba_2.3.5.1          listenv_0.9.0         
+    ##  [40] spatstat.utils_3.0-4   goftest_1.2-3          RSpectra_0.16-1       
+    ##  [43] spatstat.random_3.2-2  fitdistrplus_1.1-11    parallelly_1.36.0     
+    ##  [46] leiden_0.4.3.1         codetools_0.2-19       tidyselect_1.2.0      
+    ##  [49] farver_2.1.1           matrixStats_1.2.0      stats4_4.3.2          
+    ##  [52] spatstat.explore_3.2-5 jsonlite_1.8.8         ellipsis_0.3.2        
+    ##  [55] progressr_0.14.0       ggridges_0.5.5         survival_3.5-7        
+    ##  [58] iterators_1.0.14       bbmle_1.0.25.1         foreach_1.5.2         
+    ##  [61] tools_4.3.2            ica_1.0-3              Rcpp_1.0.11           
+    ##  [64] glue_1.6.2             prodlim_2023.08.28     gridExtra_2.3         
+    ##  [67] dlm_1.1-6              xfun_0.41              here_1.0.1            
+    ##  [70] amap_0.8-19            withr_2.5.2            numDeriv_2016.8-1.1   
+    ##  [73] fastmap_1.1.1          fansi_1.0.6            digest_0.6.33         
+    ##  [76] parallelDist_0.2.6     timechange_0.2.0       R6_2.5.1              
+    ##  [79] mime_0.12              colorspace_2.1-0       scattermore_1.2       
+    ##  [82] tensor_1.5             spatstat.data_3.0-3    R.methodsS3_1.8.2     
+    ##  [85] DiagrammeR_1.0.10      utf8_1.2.4             tidyr_1.3.0           
+    ##  [88] generics_0.1.3         recipes_1.0.9          class_7.3-22          
+    ##  [91] httr_1.4.7             htmlwidgets_1.6.4      uwot_0.1.16           
+    ##  [94] ModelMetrics_1.2.2.2   pkgconfig_2.0.3        gtable_0.3.4          
+    ##  [97] timeDate_4032.109      lmtest_0.9-40          htmltools_0.5.7       
+    ## [100] dotCall64_1.1-1        scales_1.3.0           png_0.1-8             
+    ## [103] gower_1.0.1            knitr_1.45             rstudioapi_0.15.0     
+    ## [106] reshape2_1.4.4         visNetwork_2.1.2       nlme_3.1-164          
+    ## [109] bdsmatrix_1.3-6        zoo_1.8-12             stringr_1.5.1         
+    ## [112] KernSmooth_2.23-22     miniUI_0.1.1.1         pillar_1.9.0          
+    ## [115] grid_4.3.2             vctrs_0.6.5            RANN_2.6.1            
+    ## [118] promises_1.2.1         xtable_1.8-4           cluster_2.1.6         
+    ## [121] evaluate_0.23          mvtnorm_1.2-4          cli_3.6.2             
+    ## [124] compiler_4.3.2         rlang_1.1.2            future.apply_1.11.1   
+    ## [127] labeling_0.4.3         stringi_1.8.3          viridisLite_0.4.2     
+    ## [130] deldir_2.0-2           munsell_0.5.0          lazyeval_0.2.2        
+    ## [133] spatstat.geom_3.2-7    RcppHNSW_0.5.0         patchwork_1.1.3       
+    ## [136] bit64_4.0.5            future_1.33.1          shiny_1.8.0           
+    ## [139] highr_0.10             ROCR_1.0-11            igraph_1.6.0          
+    ## [142] RcppParallel_5.1.7     collapsibleTree_0.1.8  bit_4.0.5

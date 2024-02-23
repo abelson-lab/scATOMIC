@@ -440,7 +440,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         seurat_object <- Seurat::FindVariableFeatures(seurat_object, selection.method = "vst", nfeatures = 2000)
         all.genes <- rownames(seurat_object)
         seurat_object <- Seurat::ScaleData(seurat_object, features = all.genes)
-        seurat_object <- Seurat::RunPCA(seurat_object, features = VariableFeatures(object = seurat_object))
+        seurat_object <- Seurat::RunPCA(seurat_object, features = Seurat::VariableFeatures(object = seurat_object))
         seurat_object <- Seurat::FindNeighbors(seurat_object, dims = 1:50)
         seurat_object <- Seurat::FindClusters(seurat_object, resolution = 0.5)
         summary_master <- cbind(summary_master, seurat_object@meta.data[row.names(summary_master), "seurat_clusters"])
@@ -574,7 +574,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         frequency_per_row_nozero <- apply(count_matrix_down_reg,1,function(x){length(which(x!=0))})/ncol(count_matrix_down_reg)
         genes_downreg_shared <- names(frequency_per_row_nozero)[which(frequency_per_row_nozero > 0)]
         cancer_subset <- seurat_object
-        cancer_subset <- magic(cancer_subset, seed = 123)
+        cancer_subset <- Rmagic::magic(cancer_subset, seed = 123)
         #cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = genes_upreg_shared, verbose = F, name = "upreg_genes", assay = "MAGIC_RNA")
         #cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = genes_downreg_shared, verbose = F, name = "downreg_genes", assay = "MAGIC_RNA")
         cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = list(upreg_genes = genes_upreg_shared, downreg_genes = genes_downreg_shared), verbose = F, name = c("upreg_genes", "downreg_genes"), assay = "MAGIC_RNA")
@@ -583,7 +583,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         fit_clusters <- hclust(dist_cancer_signature, method="ward.D2")
 
         groups <- cutree(fit_clusters, k=2)
-        cancer_subset <- AddMetaData(cancer_subset, groups, "pan_cancer_cluster")
+        cancer_subset <- Seurat::AddMetaData(cancer_subset, groups, "pan_cancer_cluster")
         index_normal <- unique(c(row.names(cancer_subset@meta.data)[which(cancer_subset@meta.data$upreg_genes1 <
                                                                             cancer_subset@meta.data$downreg_genes2)],
                                  row.names(cancer_subset@meta.data)[-which(cancer_subset@meta.data$scATOMIC_pred %in% cancer_classes)]))
@@ -591,9 +591,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         pct_normal_cluster_1 <- length(intersect(index_normal, row.names(cancer_subset@meta.data)[which(cancer_subset@meta.data$pan_cancer_cluster == 1)]))/length(which(cancer_subset@meta.data$pan_cancer_cluster == 1))
 
         pct_normal_cluster_2 <- length(intersect(index_normal, row.names(cancer_subset@meta.data)[which(cancer_subset@meta.data$pan_cancer_cluster == 2)]))/length(which(cancer_subset@meta.data$pan_cancer_cluster == 2))
-        DimPlot(cancer_subset, group.by = "pan_cancer_cluster")
-        DimPlot(cancer_subset, group.by = "scATOMIC_pred", label = T) + NoLegend()
-        DimPlot(cancer_subset, cells.highlight =  index_normal)
+        # DimPlot(cancer_subset, group.by = "pan_cancer_cluster")
+        # DimPlot(cancer_subset, group.by = "scATOMIC_pred", label = T) + NoLegend()
+        # DimPlot(cancer_subset, cells.highlight =  index_normal)
         if (max(c(pct_normal_cluster_1,pct_normal_cluster_2)) - min(c(pct_normal_cluster_1,pct_normal_cluster_2)) < 0.1){
           clust_1_cancer <- length(which(cancer_subset@meta.data$pan_cancer_cluster == 1 &
                                            cancer_subset@meta.data$scATOMIC_pred %in% cancer_classes ))/nrow(cancer_subset@meta.data)
@@ -643,7 +643,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               cancer_subset <- subset(seurat_object, cells = index_cancer)
               cancer_subset <- Seurat::NormalizeData(cancer_subset, verbose = F)
               cancer_subset <- Seurat::ScaleData(cancer_subset, verbose = F)
-              cancer_subset <- magic(cancer_subset, seed = 123)
+              cancer_subset <- Rmagic::magic(cancer_subset, seed = 123)
               cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = list(upreg_genes = genes_upreg_shared, downreg_genes = genes_downreg_shared), verbose = F, name = c("upreg_genes", "downreg_genes"), assay = "MAGIC_RNA")
 
               dist_cancer_signature <- amap::Dist(cancer_subset@meta.data[,c("upreg_genes1", "downreg_genes2")], method = "euclidean", nbproc = mc.cores) # distance matrix
@@ -653,13 +653,13 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               fit_clusters <- hclust(dist_cancer_signature, method="ward.D2")
 
               groups <- cutree(fit_clusters, k=2)
-              cancer_subset <- AddMetaData(cancer_subset, groups, "pan_cancer_cluster")
-              DimPlot(cancer_subset,group.by = "pan_cancer_cluster" )
+              cancer_subset <- Seurat::AddMetaData(cancer_subset, groups, "pan_cancer_cluster")
+              # DimPlot(cancer_subset,group.by = "pan_cancer_cluster" )
               index_normal <- unique(c(row.names(cancer_subset@meta.data)[which(cancer_subset@meta.data$upreg_genes1 <
                                                                                   cancer_subset@meta.data$downreg_genes2)],
                                        row.names(cancer_subset@meta.data)[-which(cancer_subset@meta.data$scATOMIC_pred %in% cancer_classes)]))
               index_non_normal <- outersect(row.names(cancer_subset@meta.data), index_normal)
-              DimPlot(cancer_subset, cells.highlight =  index_normal)
+              # DimPlot(cancer_subset, cells.highlight =  index_normal)
 
               pct_normal_cluster_1 <- length(intersect(index_normal, row.names(cancer_subset@meta.data)[which(cancer_subset@meta.data$pan_cancer_cluster == 1)]))/length(which(cancer_subset@meta.data$pan_cancer_cluster == 1))
 
@@ -1540,7 +1540,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         fit_clusters <- hclust(dist_cancer_signature, method="ward.D2")
 
         groups <- cutree(fit_clusters, k=2)
-        cancer_subset <- AddMetaData(cancer_subset, groups, "pan_cancer_cluster")
+        cancer_subset <- Seurat::AddMetaData(cancer_subset, groups, "pan_cancer_cluster")
         index_normal <- unique(c(row.names(cancer_subset@meta.data)[which(cancer_subset@meta.data$upreg_genes1 <
                                                                             cancer_subset@meta.data$downreg_genes2)],
                                  row.names(cancer_subset@meta.data)[-which(cancer_subset@meta.data$scATOMIC_pred %in% cancer_classes)]))
@@ -1548,9 +1548,9 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         pct_normal_cluster_1 <- length(intersect(index_normal, row.names(cancer_subset@meta.data)[which(cancer_subset@meta.data$pan_cancer_cluster == 1)]))/length(which(cancer_subset@meta.data$pan_cancer_cluster == 1))
 
         pct_normal_cluster_2 <- length(intersect(index_normal, row.names(cancer_subset@meta.data)[which(cancer_subset@meta.data$pan_cancer_cluster == 2)]))/length(which(cancer_subset@meta.data$pan_cancer_cluster == 2))
-        DimPlot(cancer_subset, group.by = "pan_cancer_cluster")
-        DimPlot(cancer_subset, group.by = "scATOMIC_pred", label = T) + NoLegend()
-        DimPlot(cancer_subset, cells.highlight =  index_normal)
+        # DimPlot(cancer_subset, group.by = "pan_cancer_cluster")
+        # DimPlot(cancer_subset, group.by = "scATOMIC_pred", label = T) + NoLegend()
+        # DimPlot(cancer_subset, cells.highlight =  index_normal)
 
         if (max(c(pct_normal_cluster_1,pct_normal_cluster_2)) - min(c(pct_normal_cluster_1,pct_normal_cluster_2)) < 0.1){
           clust_1_cancer <- length(which(cancer_subset@meta.data$pan_cancer_cluster == 1 &
@@ -1611,13 +1611,13 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               fit_clusters <- hclust(dist_cancer_signature, method="ward.D2")
 
               groups <- cutree(fit_clusters, k=2)
-              cancer_subset <- AddMetaData(cancer_subset, groups, "pan_cancer_cluster")
-              DimPlot(cancer_subset,group.by = "pan_cancer_cluster" )
+              cancer_subset <- Seurat::AddMetaData(cancer_subset, groups, "pan_cancer_cluster")
+              # DimPlot(cancer_subset,group.by = "pan_cancer_cluster" )
               index_normal <- unique(c(row.names(cancer_subset@meta.data)[which(cancer_subset@meta.data$upreg_genes1 <
                                                                                   cancer_subset@meta.data$downreg_genes2)],
                                        row.names(cancer_subset@meta.data)[-which(cancer_subset@meta.data$scATOMIC_pred %in% cancer_classes)]))
               index_non_normal <- outersect(row.names(cancer_subset@meta.data), index_normal)
-              DimPlot(cancer_subset, cells.highlight =  index_normal)
+              #DimPlot(cancer_subset, cells.highlight =  index_normal)
 
               pct_normal_cluster_1 <- length(intersect(index_normal, row.names(cancer_subset@meta.data)[which(cancer_subset@meta.data$pan_cancer_cluster == 1)]))/length(which(cancer_subset@meta.data$pan_cancer_cluster == 1))
 

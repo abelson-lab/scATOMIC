@@ -1,6 +1,6 @@
 Package: scATOMIC
 Title: What the Package Does (One Line, Title Case)
-Version: 2.0.2
+Version: 2.0.3
 Authors@R: 
     person(given = "First",
            family = "Last",
@@ -15,7 +15,10 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
+    randomForest,
+    reticulate,
+    copykat
 Imports: 
     reticulate,
     dplyr,
@@ -45,7 +48,9 @@ Imports:
     amap,
     tibble,
     bbmle,
-    DiagrammeR
+    DiagrammeR,
+    dlm,
+    parallelDist
 Remotes: 
     inofechm/cutoff.scATOMIC, 
     navinlabcode/copykat
