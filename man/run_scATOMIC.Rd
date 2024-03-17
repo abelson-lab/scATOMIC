@@ -7,7 +7,6 @@
 run_scATOMIC(
   rna_counts,
   imputation = TRUE,
-  ref_based = F,
   mc.cores = 1,
   unimodal_nsd = 3,
   bimodal_nsd = 2,
@@ -20,8 +19,6 @@ run_scATOMIC(
 \item{rna_counts}{count matrix}
 
 \item{imputation}{whether to apply MAGIC imputation - recommended}
-
-\item{ref_based}{whether to use ref based - currently depreceated}
 
 \item{mc.cores}{number of cores}
 

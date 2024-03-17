@@ -19,7 +19,7 @@ classify_layer <- function(rna_counts, cells_to_use, imputation = TRUE, genes_in
   if(.Platform$OS.type == "windows"){
     mc.cores = 1
   }
-  layer_predictions <- classify_cells_RNA_no_scale(rna_counts = rna_counts, imputation = imputation,
+  layer_predictions <- classify_cells_RNA_no_scale( imputation = imputation,
                                                                        genes_in_model = genes_in_model,
                                                                        model = model, cells_to_use = cells_to_use,
                                                                        normalized_counts=normalized_counts, mc.cores = mc.cores)

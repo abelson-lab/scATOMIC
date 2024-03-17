@@ -5,19 +5,15 @@
 \title{classify_cells_RNA_no_scale}
 \usage{
 classify_cells_RNA_no_scale(
-  rna_counts,
   imputation,
   model,
   genes_in_model,
   cells_to_use,
-  ref_based,
   normalized_counts,
   mc.cores = (parallel::detectCores() - 1)
 )
 }
 \arguments{
-\item{rna_counts}{A matrix from the SCT counts slot of a seurat sctransformed object}
-
 \item{imputation}{TRUE or FALSE for whether to perform imputation}
 
 \item{model}{Path to RF model to use}
@@ -25,8 +21,6 @@ classify_cells_RNA_no_scale(
 \item{genes_in_model}{Vector of genes to use in the model}
 
 \item{cells_to_use}{Vector of cell names to use from the rna_counts, refers to their column names}
-
-\item{ref_based}{TRUE or FALSE whether reference based imputation will be used}
 
 \item{normalized_counts}{library-size normalized counts}
 

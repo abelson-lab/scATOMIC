@@ -5,12 +5,10 @@
 \title{classify_layer_no_cutoff}
 \usage{
 classify_layer_no_cutoff(
-  rna_counts,
   cells_to_use,
   imputation = TRUE,
   genes_in_model,
   model,
-  ref_based = F,
   mc.cores = (parallel::detectCores() - 1),
   unimodal_nsd = 3,
   bimodal_nsd = 2,
@@ -19,8 +17,6 @@ classify_layer_no_cutoff(
 )
 }
 \arguments{
-\item{rna_counts}{count matrix}
-
 \item{cells_to_use}{vector indicating which cells to classify in layer}
 
 \item{imputation}{whether to apply MAGIC imputation - recommended}
@@ -28,8 +24,6 @@ classify_layer_no_cutoff(
 \item{genes_in_model}{genes used in the model}
 
 \item{model}{model}
-
-\item{ref_based}{whether to use ref based - currently depreceated}
 
 \item{mc.cores}{number of cores}
 

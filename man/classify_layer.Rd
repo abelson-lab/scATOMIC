@@ -10,7 +10,6 @@ classify_layer(
   imputation = TRUE,
   genes_in_model,
   model,
-  ref_based = F,
   mc.cores = (parallel::detectCores() - 1),
   unimodal_nsd = 3,
   bimodal_nsd = 2,
@@ -28,8 +27,6 @@ classify_layer(
 \item{genes_in_model}{genes used in the model}
 
 \item{model}{model}
-
-\item{ref_based}{whether to use ref based - currently depreceated}
 
 \item{mc.cores}{number of cores}
 
