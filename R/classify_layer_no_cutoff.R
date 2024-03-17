@@ -1,5 +1,6 @@
 #' classify_layer_no_cutoff
 #'
+#' @param rna_counts count matrix
 #' @param cells_to_use vector indicating which cells to classify in layer
 #' @param imputation whether to apply MAGIC imputation - recommended
 #' @param genes_in_model genes used in the model
@@ -12,7 +13,7 @@
 #' @return returns a prediction matrix for a layer - used in run_scATOMIC
 #' @export
 
-classify_layer_no_cutoff <- function( cells_to_use, imputation = TRUE, genes_in_model, model,
+classify_layer_no_cutoff <- function(rna_counts, cells_to_use, imputation = TRUE, genes_in_model, model,
                                      mc.cores = (parallel::detectCores()-1), unimodal_nsd = 3, bimodal_nsd = 2,
                                      layer, normalized_counts){
   if(.Platform$OS.type == "windows"){

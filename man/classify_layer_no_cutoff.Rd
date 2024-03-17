@@ -5,6 +5,7 @@
 \title{classify_layer_no_cutoff}
 \usage{
 classify_layer_no_cutoff(
+  rna_counts,
   cells_to_use,
   imputation = TRUE,
   genes_in_model,
@@ -17,6 +18,8 @@ classify_layer_no_cutoff(
 )
 }
 \arguments{
+\item{rna_counts}{count matrix}
+
 \item{cells_to_use}{vector indicating which cells to classify in layer}
 
 \item{imputation}{whether to apply MAGIC imputation - recommended}
