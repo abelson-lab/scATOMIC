@@ -18,7 +18,9 @@ Depends:
     R (>= 2.10),
     randomForest,
     reticulate,
-    copykat
+    copykat,
+    org.Hs.eg.db,
+    Matrix
 Imports: 
     reticulate,
     dplyr,
@@ -50,7 +52,8 @@ Imports:
     bbmle,
     DiagrammeR,
     dlm,
-    parallelDist
+    parallelDist,
+    org.Hs.eg.db
 Remotes: 
     inofechm/cutoff.scATOMIC, 
     navinlabcode/copykat

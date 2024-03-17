@@ -447,10 +447,10 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         colnames(summary_master)[ncol(summary_master)] <- "seurat_clusters"
 
         copy_kat_res <- scATOMIC::copy_kat_no_heatmap(rawmat = raw_counts, summary_matrix = summary_master,
-                                                                id.type = "S", cell.line = "no",
-                                                                ngene.chr = 5, LOW.DR = 0.05, UP.DR = 0.1,
-                                                                win.size = 25, KS.cut = 0.1, sam.name = "", distance = "euclidean",
-                                                                n.cores = mc.cores)
+                                                      id.type = "S", cell.line = "no",
+                                                      ngene.chr = 5, LOW.DR = 0.05, UP.DR = 0.1,
+                                                      win.size = 25, KS.cut = 0.1, sam.name = "", distance = "euclidean",
+                                                      n.cores = mc.cores)
         copy_kat_res <- as.data.frame(copy_kat_res[,"copykat.pred"], row.names = row.names(copy_kat_res))
         colnames(copy_kat_res) <- "CNV_status"
         summary_master <- merge(summary_master,copy_kat_res,by="row.names",all.x=TRUE)
@@ -499,53 +499,53 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         }
         #if there is more than 1 seurat cluster for cancer we want to split into normal and cancer
         if(major_cancer == "Bile Duct Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "CHOL") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "CHOL")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "CHOL") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "CHOL")),"ensemblID"]
         }else if(major_cancer == "Bladder Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "BLCA") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "BLCA")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "BLCA") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "BLCA")),"ensemblID"]
         } else if(major_cancer == "Bone Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "SARC") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "SARC")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "SARC") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "SARC")),"ensemblID"]
         } else if(major_cancer == "Brain Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "GBM", "LGG") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "GBM", "LGG")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "GBM", "LGG") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "GBM", "LGG")),"ensemblID"]
         } else if(major_cancer %in% c( "Breast Cancer Cell","ER+ Breast Cancer Cell","HER2+ Breast Cancer Cell","TNBC Breast Cancer Cell","Her2+ Breast Cancer Cell"  ) ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "BRCA") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "BRCA")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "BRCA") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "BRCA")),"ensemblID"]
         } else if(major_cancer == "Colon/Colorectal Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "COAD") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "COAD")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "COAD") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "COAD")),"ensemblID"]
         } else if(major_cancer %in% c("Endometrial/Uterine Cancer Cell", "Endometrial Cancer Cell" )){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "UCS", "UCEC") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "UCS", "UCEC")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "UCS", "UCEC") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "UCS", "UCEC")),"ensemblID"]
         } else if(major_cancer == "Gallbladder Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "CHOL") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "CHOL")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "CHOL") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "CHOL")),"ensemblID"]
         } else if(major_cancer == "Kidney Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "KICH", "KIRC", "KIRP") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "KICH", "KIRC", "KIRP")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "KICH", "KIRC", "KIRP") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "KICH", "KIRC", "KIRP")),"ensemblID"]
         } else if(major_cancer == "Liver Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "LIHC") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "LIHC")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "LIHC") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "LIHC")),"ensemblID"]
         } else if(major_cancer == "Lung Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "LUAD") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "LUAD")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "LUAD") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "LUAD")),"ensemblID"]
         } else if(major_cancer == "Ovarian Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "OV") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "OV")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "OV") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "OV")),"ensemblID"]
         } else if(major_cancer == "Pancreatic Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "PAAD") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "PAAD")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "PAAD") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "PAAD")),"ensemblID"]
         } else if(major_cancer == "Prostate Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "PRAD") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "PRAD")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "PRAD") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "PRAD")),"ensemblID"]
         } else if(major_cancer == "Sarcoma" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "SARC") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "SARC")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "SARC") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "SARC")),"ensemblID"]
         } else if(major_cancer == "Skin Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "SKCM") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "SKCM")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "SKCM") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "SKCM")),""]
         } else{
           cancer_specific_upreg <- pan_cancer_upreg
           cancer_specific_downreg <- pan_cancer_downreg
@@ -558,6 +558,72 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
           cancer_specific_upreg <- pan_cancer_upreg
           cancer_specific_downreg <- pan_cancer_downreg
         }
+        #convert to ensembl...
+
+        genes_rna_counts = row.names(seurat_object)
+        if(length(grep('^ENSG', genes_rna_counts)) == 0){
+          print('internally converting to ensemblIDs')
+          annots = select(org.Hs.eg.db, keys = genes_rna_counts, columns=c( "ENSEMBL", "SYMBOL"), keytype = "ALIAS")
+          genes_rna_counts_ensemblID = c()
+          pb = txtProgressBar(min = 0, max = length(genes_rna_counts), style = 3)
+          for(i in 1:length(genes_rna_counts)){
+            index_alias = which(annots$ALIAS == genes_rna_counts[i])
+            index_gene_symbol = which(annots$SYMBOL == genes_rna_counts[i])
+
+            if(length(index_alias)==1 & length(index_gene_symbol)==1){
+              ensemblID = annots$ENSEMBL[index_alias]
+
+            } else if(length(index_alias)>1 & length(index_gene_symbol)==1){
+              ensemblID = annots$ENSEMBL[index_gene_symbol]
+
+            } else if(length(index_gene_symbol) > 1){
+              ensemblID = annots$ENSEMBL[index_gene_symbol[1]]
+            } else if(length(index_gene_symbol) ==0 & length(index_alias) == 1){
+              ensemblID = annots$ENSEMBL[index_alias]
+            } else if(length(index_alias) > 1 & length(index_gene_symbol) == 0){
+              ensemblID = annots$ENSEMBL[index_alias[1]]
+            } else{
+              print(paste0('check ',genes_rna_counts[i]))
+            }
+            if(!is.na(ensemblID)){
+              genes_rna_counts_ensemblID[i] = ensemblID
+            } else{
+              genes_rna_counts_ensemblID[i] = NA
+            }
+            names(genes_rna_counts_ensemblID)[i] = genes_rna_counts[i]
+            setTxtProgressBar(pb, i)
+          }
+          ensembl_IDs_rows = genes_rna_counts_ensemblID[genes_rna_counts]
+          index_na = which(!is.na(ensembl_IDs_rows))
+          seurat_object = subset(seurat_object, features = row.names(seurat_object)[index_na])
+
+          ensembl_IDs_rows = genes_rna_counts_ensemblID[row.names(seurat_object)]
+          index_dup = which(duplicated(ensembl_IDs_rows))
+          #check for duplicates
+          if(length(index_dup)>0){
+            seurat_object = subset(seurat_object, features = row.names(seurat_object)[-index_dup])
+
+            ensembl_IDs_rows = ensembl_IDs_rows[-index_dup]
+          }
+          row.names(seurat_object) = ensembl_IDs_rows
+
+
+
+
+
+
+
+        }
+        raw_counts =raw_counts[names(ensembl_IDs_rows),]
+        row.names(raw_counts) = ensembl_IDs_rows
+
+
+
+
+
+
+
+
         genes_upreg_shared <- intersect(row.names(raw_counts), cancer_specific_upreg)
         genes_downreg_shared <- intersect(row.names(raw_counts), cancer_specific_downreg)
         index_cancer <- row.names(predicted_cancer)
@@ -924,19 +990,19 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
       index_potential_cancer <- which(summary_master$scATOMIC_pred %in% c("Bile Duct Cancer Cell","Bladder Cancer Cell",
                                                                           "Bone Cancer Cell","Brain Cancer Cell"    ,
                                                                           "Breast Cancer Cell","Colon/Colorectal Cancer Cell"   ,
-                                                                           "Endometrial/Uterine Cancer Cell","Esophageal Cancer Cell"   ,
-                                                                           "Gallbladder Cancer Cell","Gastric Cancer Cell"     ,
-                                                                           "Kidney Cancer Cell","Liver Cancer Cell"   ,
-                                                                           "Lung Cancer Cell","Neuroblastoma"       ,
-                                                                           "Ovarian Cancer Cell","Pancreatic Cancer Cell"  ,
+                                                                          "Endometrial/Uterine Cancer Cell","Esophageal Cancer Cell"   ,
+                                                                          "Gallbladder Cancer Cell","Gastric Cancer Cell"     ,
+                                                                          "Kidney Cancer Cell","Liver Cancer Cell"   ,
+                                                                          "Lung Cancer Cell","Neuroblastoma"       ,
+                                                                          "Ovarian Cancer Cell","Pancreatic Cancer Cell"  ,
                                                                           "Prostate Cancer Cell","Sarcoma"     ,
                                                                           "Skin Cancer Cell","Breast/Lung/Prostate"    ,
-                                                                           "Ovarian/Endometrial/Kidney","Endometrial Cancer Cell"    ,
+                                                                          "Ovarian/Endometrial/Kidney","Endometrial Cancer Cell"    ,
                                                                           "Biliary/Hepatic Cancer Cell","Brain/Neuroblastoma Cancer Cell",
                                                                           "Digestive Tract Cancer Cell","Soft Tissue Cancer Cell" ,
-                                                                           "Soft Tissue or Neuro Cancer Cell","Unclassified Soft Tissue or Neuro Cancer Cell",
-                                                                           "ER+ Breast Cancer Cell","HER2+ Breast Cancer Cell" ,
-                                                                           "Her2+ Breast Cancer Cell","TNBC Breast Cancer Cell", "Epithelial Cell","GI Tract Cell",
+                                                                          "Soft Tissue or Neuro Cancer Cell","Unclassified Soft Tissue or Neuro Cancer Cell",
+                                                                          "ER+ Breast Cancer Cell","HER2+ Breast Cancer Cell" ,
+                                                                          "Her2+ Breast Cancer Cell","TNBC Breast Cancer Cell", "Epithelial Cell","GI Tract Cell",
                                                                           "Non Blood Cell","Non Stromal Cell"))
       if(length(index_potential_cancer) > 0){
         summary_master[index_potential_cancer, "scATOMIC_pred"] <- "Normal Tissue Cell"
@@ -984,15 +1050,15 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
     }
     if(length(known_cancer_type) == 1){
       index_cancer_predicted <- which(summary_master$scATOMIC_pred %in% c("Bile Duct Cancer Cell", "Bladder Cancer Cell", "Bone Cancer Cell",
-                                                                   "Brain Cancer Cell", "Breast Cancer Cell", "Colon/Colorectal Cancer Cell",
-                                                                   "Endometrial/Uterine Cancer Cell", "Esophageal Cancer Cell", "Gallbladder Cancer Cell",
-                                                                   "Gastric Cancer Cell", "Kidney Cancer Cell", "Liver Cancer Cell", "Lung Cancer Cell",
-                                                                   "Neuroblastoma", "Ovarian Cancer Cell", "Pancreatic Cancer Cell", "Prostate Cancer Cell",
-                                                                   "Sarcoma", "Skin Cancer Cell", "Breast/Lung/Prostate", "Ovarian/Endometrial/Kidney",
-                                                                   "Endometrial Cancer Cell", "Biliary/Hepatic Cancer Cell", "Brain/Neuroblastoma Cancer Cell",
-                                                                   "Digestive Tract Cancer Cell", "Soft Tissue Cancer Cell", "Soft Tissue or Neuro Cancer Cell",
-                                                                   "Unclassified Soft Tissue or Neuro Cancer Cell", "ER+ Breast Cancer Cell", "HER2+ Breast Cancer Cell",
-                                                                   "Her2+ Breast Cancer Cell", "TNBC Breast Cancer Cell", "Epithelial Cell", "GI Tract Cell"))
+                                                                          "Brain Cancer Cell", "Breast Cancer Cell", "Colon/Colorectal Cancer Cell",
+                                                                          "Endometrial/Uterine Cancer Cell", "Esophageal Cancer Cell", "Gallbladder Cancer Cell",
+                                                                          "Gastric Cancer Cell", "Kidney Cancer Cell", "Liver Cancer Cell", "Lung Cancer Cell",
+                                                                          "Neuroblastoma", "Ovarian Cancer Cell", "Pancreatic Cancer Cell", "Prostate Cancer Cell",
+                                                                          "Sarcoma", "Skin Cancer Cell", "Breast/Lung/Prostate", "Ovarian/Endometrial/Kidney",
+                                                                          "Endometrial Cancer Cell", "Biliary/Hepatic Cancer Cell", "Brain/Neuroblastoma Cancer Cell",
+                                                                          "Digestive Tract Cancer Cell", "Soft Tissue Cancer Cell", "Soft Tissue or Neuro Cancer Cell",
+                                                                          "Unclassified Soft Tissue or Neuro Cancer Cell", "ER+ Breast Cancer Cell", "HER2+ Breast Cancer Cell",
+                                                                          "Her2+ Breast Cancer Cell", "TNBC Breast Cancer Cell", "Epithelial Cell", "GI Tract Cell"))
       summary_master[index_cancer_predicted, "scATOMIC_pred"] <- known_cancer_type
     }
     return(summary_master)
@@ -1404,10 +1470,10 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         colnames(summary_master)[ncol(summary_master)] <- "seurat_clusters"
 
         copy_kat_res <- scATOMIC::copy_kat_no_heatmap(rawmat = raw_counts, summary_matrix = summary_master,
-                                                                id.type = "S", cell.line = "no",
-                                                                ngene.chr = 5, LOW.DR = 0.05, UP.DR = 0.1,
-                                                                win.size = 25, KS.cut = 0.1, sam.name = "", distance = "euclidean",
-                                                                n.cores = mc.cores)
+                                                      id.type = "S", cell.line = "no",
+                                                      ngene.chr = 5, LOW.DR = 0.05, UP.DR = 0.1,
+                                                      win.size = 25, KS.cut = 0.1, sam.name = "", distance = "euclidean",
+                                                      n.cores = mc.cores)
         copy_kat_res <- as.data.frame(copy_kat_res[,"copykat.pred"], row.names = row.names(copy_kat_res))
         colnames(copy_kat_res) <- "CNV_status"
         summary_master <- merge(summary_master,copy_kat_res,by="row.names",all.x=TRUE)
@@ -1456,53 +1522,53 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
 
         #if there is more than 1 seurat cluster for cancer we want to split into normal and cancer
         if(major_cancer == "Bile Duct Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "CHOL") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "CHOL")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "CHOL") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "CHOL")),"ensemblID"]
         }else if(major_cancer == "Bladder Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "BLCA") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "BLCA")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "BLCA") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "BLCA")),"ensemblID"]
         } else if(major_cancer == "Bone Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "SARC") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "SARC")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "SARC") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "SARC")),"ensemblID"]
         } else if(major_cancer == "Brain Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "GBM", "LGG") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "GBM", "LGG")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "GBM", "LGG") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "GBM", "LGG")),"ensemblID"]
         } else if(major_cancer %in% c( "Breast Cancer Cell","ER+ Breast Cancer Cell","HER2+ Breast Cancer Cell","TNBC Breast Cancer Cell","Her2+ Breast Cancer Cell"  ) ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "BRCA") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "BRCA")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "BRCA") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "BRCA")),"ensemblID"]
         } else if(major_cancer == "Colon/Colorectal Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "COAD") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "COAD")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "COAD") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "COAD")),"ensemblID"]
         } else if(major_cancer %in% c("Endometrial/Uterine Cancer Cell", "Endometrial Cancer Cell" )){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "UCS", "UCEC") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "UCS", "UCEC")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "UCS", "UCEC") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "UCS", "UCEC")),"ensemblID"]
         } else if(major_cancer == "Gallbladder Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "CHOL") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "CHOL")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "CHOL") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "CHOL")),"ensemblID"]
         } else if(major_cancer == "Kidney Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "KICH", "KIRC", "KIRP") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "KICH", "KIRC", "KIRP")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "KICH", "KIRC", "KIRP") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "KICH", "KIRC", "KIRP")),"ensemblID"]
         } else if(major_cancer == "Liver Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "LIHC") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "LIHC")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "LIHC") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "LIHC")),"ensemblID"]
         } else if(major_cancer == "Lung Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "LUAD") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "LUAD")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "LUAD") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "LUAD")),"ensemblID"]
         } else if(major_cancer == "Ovarian Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "OV") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "OV")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "OV") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "OV")),"ensemblID"]
         } else if(major_cancer == "Pancreatic Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "PAAD") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "PAAD")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "PAAD") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "PAAD")),"ensemblID"]
         } else if(major_cancer == "Prostate Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "PRAD") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "PRAD")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "PRAD") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "PRAD")),"ensemblID"]
         } else if(major_cancer == "Sarcoma" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "SARC") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "SARC")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "SARC") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "SARC")),"ensemblID"]
         } else if(major_cancer == "Skin Cancer Cell" ){
-          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "SKCM") ),"Gene"]
-          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "SKCM")),"Gene"]
+          cancer_specific_upreg <- upreg_list[which(upreg_list$cancer_type %in% c( "SKCM") ),"ensemblID"]
+          cancer_specific_downreg <- downreg_list[which(downreg_list$cancer_type %in% c( "SKCM")),"ensemblID"]
         } else{
           cancer_specific_upreg <- pan_cancer_upreg
           cancer_specific_downreg <- pan_cancer_downreg
@@ -1515,6 +1581,64 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
           cancer_specific_upreg <- pan_cancer_upreg
           cancer_specific_downreg <- pan_cancer_downreg
         }
+
+        genes_rna_counts = row.names(seurat_object)
+        if(length(grep('^ENSG', genes_rna_counts)) == 0){
+          print('internally converting to ensemblIDs')
+          annots = select(org.Hs.eg.db, keys = genes_rna_counts, columns=c( "ENSEMBL", "SYMBOL"), keytype = "ALIAS")
+          genes_rna_counts_ensemblID = c()
+          pb = txtProgressBar(min = 0, max = length(genes_rna_counts), style = 3)
+          for(i in 1:length(genes_rna_counts)){
+            index_alias = which(annots$ALIAS == genes_rna_counts[i])
+            index_gene_symbol = which(annots$SYMBOL == genes_rna_counts[i])
+
+            if(length(index_alias)==1 & length(index_gene_symbol)==1){
+              ensemblID = annots$ENSEMBL[index_alias]
+
+            } else if(length(index_alias)>1 & length(index_gene_symbol)==1){
+              ensemblID = annots$ENSEMBL[index_gene_symbol]
+
+            } else if(length(index_gene_symbol) > 1){
+              ensemblID = annots$ENSEMBL[index_gene_symbol[1]]
+            } else if(length(index_gene_symbol) ==0 & length(index_alias) == 1){
+              ensemblID = annots$ENSEMBL[index_alias]
+            } else if(length(index_alias) > 1 & length(index_gene_symbol) == 0){
+              ensemblID = annots$ENSEMBL[index_alias[1]]
+            } else{
+              print(paste0('check ',genes_rna_counts[i]))
+            }
+            if(!is.na(ensemblID)){
+              genes_rna_counts_ensemblID[i] = ensemblID
+            } else{
+              genes_rna_counts_ensemblID[i] = NA
+            }
+            names(genes_rna_counts_ensemblID)[i] = genes_rna_counts[i]
+            setTxtProgressBar(pb, i)
+          }
+          ensembl_IDs_rows = genes_rna_counts_ensemblID[genes_rna_counts]
+          index_na = which(!is.na(ensembl_IDs_rows))
+          seurat_object = subset(seurat_object, features = row.names(seurat_object)[index_na])
+
+          ensembl_IDs_rows = genes_rna_counts_ensemblID[row.names(seurat_object)]
+          index_dup = which(duplicated(ensembl_IDs_rows))
+          #check for duplicates
+          if(length(index_dup)>0){
+            seurat_object = subset(seurat_object, features = row.names(seurat_object)[-index_dup])
+
+            ensembl_IDs_rows = ensembl_IDs_rows[-index_dup]
+          }
+          row.names(seurat_object) = ensembl_IDs_rows
+
+
+
+
+
+
+
+        }
+        raw_counts =raw_counts[names(ensembl_IDs_rows),]
+        row.names(raw_counts) = ensembl_IDs_rows
+
         genes_upreg_shared <- intersect(row.names(raw_counts), cancer_specific_upreg)
         genes_downreg_shared <- intersect(row.names(raw_counts), cancer_specific_downreg)
         index_cancer <- row.names(predicted_cancer)
@@ -1531,7 +1655,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         frequency_per_row_nozero <- apply(count_matrix_down_reg,1,function(x){length(which(x!=0))})/ncol(count_matrix_down_reg)
         genes_downreg_shared <- names(frequency_per_row_nozero)[which(frequency_per_row_nozero > 0)]
         cancer_subset <- seurat_object
-        cancer_subset <- magic(cancer_subset, seed = 123)
+        cancer_subset <- Rmagic::magic(cancer_subset, seed = 123)
         #cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = genes_upreg_shared, verbose = F, name = "upreg_genes", assay = "MAGIC_RNA")
         #cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = genes_downreg_shared, verbose = F, name = "downreg_genes", assay = "MAGIC_RNA")
         cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = list(upreg_genes = genes_upreg_shared, downreg_genes = genes_downreg_shared), verbose = F, name = c("upreg_genes", "downreg_genes"), assay = "MAGIC_RNA")
@@ -1601,7 +1725,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
               cancer_subset <- subset(seurat_object, cells = index_cancer)
               cancer_subset <- Seurat::NormalizeData(cancer_subset, verbose = F)
               cancer_subset <- Seurat::ScaleData(cancer_subset, verbose = F)
-              cancer_subset <- magic(cancer_subset, seed = 123)
+              cancer_subset <- Rmagic::magic(cancer_subset, seed = 123)
               cancer_subset <- Seurat::AddModuleScore(cancer_subset, features = list(upreg_genes = genes_upreg_shared, downreg_genes = genes_downreg_shared), verbose = F, name = c("upreg_genes", "downreg_genes"), assay = "MAGIC_RNA")
 
               dist_cancer_signature <- amap::Dist(cancer_subset@meta.data[,c("upreg_genes1", "downreg_genes2")], method = "euclidean", nbproc = mc.cores) # distance matrix

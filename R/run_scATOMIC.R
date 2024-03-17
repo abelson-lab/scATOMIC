@@ -2,7 +2,6 @@
 #'
 #' @param rna_counts count matrix
 #' @param imputation whether to apply MAGIC imputation - recommended
-#' @param ref_based whether to use ref based - currently depreceated
 #' @param mc.cores number of cores
 #' @param unimodal_nsd number of sd for setting threshold in unimodal distributions
 #' @param bimodal_nsd number of sd for setting threshold in bimodal distributions
@@ -24,9 +23,56 @@
 #' lung_cancer_demo_data <- lung_cancer_demo_data[, intersect(names(which(nFeatureRNA > 500)), colnames(lung_cancer_demo_data))]
 #' cell_predictions <- run_scATOMIC(lung_cancer_demo_data)
 #' }
-run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores = 1, unimodal_nsd = 3, bimodal_nsd = 2, breast_mode = F, confidence_cutoff = T, fine_grained_T = T){
+run_scATOMIC <- function(rna_counts, imputation = TRUE, mc.cores = 1, unimodal_nsd = 3, bimodal_nsd = 2, breast_mode = F, confidence_cutoff = T, fine_grained_T = T){
   if(.Platform$OS.type == "windows"){
     mc.cores = 1
+  }
+  genes_rna_counts = row.names(rna_counts)
+  if(length(grep('^ENSG', genes_rna_counts)) == 0){
+    print('internally converting to ensemblIDs')
+    annots = select(org.Hs.eg.db, keys = genes_rna_counts, columns=c( "ENSEMBL", "SYMBOL"), keytype = "ALIAS")
+    genes_rna_counts_ensemblID = c()
+    pb = txtProgressBar(min = 0, max = length(genes_rna_counts), style = 3)
+    for(i in 1:length(genes_rna_counts)){
+      index_alias = which(annots$ALIAS == genes_rna_counts[i])
+      index_gene_symbol = which(annots$SYMBOL == genes_rna_counts[i])
+
+      if(length(index_alias)==1 & length(index_gene_symbol)==1){
+        ensemblID = annots$ENSEMBL[index_alias]
+
+      } else if(length(index_alias)>1 & length(index_gene_symbol)==1){
+        ensemblID = annots$ENSEMBL[index_gene_symbol]
+
+      } else if(length(index_gene_symbol) > 1){
+        ensemblID = annots$ENSEMBL[index_gene_symbol[1]]
+      } else if(length(index_gene_symbol) ==0 & length(index_alias) == 1){
+        ensemblID = annots$ENSEMBL[index_alias]
+      } else if(length(index_alias) > 1 & length(index_gene_symbol) == 0){
+        ensemblID = annots$ENSEMBL[index_alias[1]]
+      } else{
+        print(paste0('check ',genes_rna_counts[i]))
+      }
+      if(!is.na(ensemblID)){
+        genes_rna_counts_ensemblID[i] = ensemblID
+      } else{
+        genes_rna_counts_ensemblID[i] = NA
+      }
+      names(genes_rna_counts_ensemblID)[i] = genes_rna_counts[i]
+      setTxtProgressBar(pb, i)
+    }
+    ensembl_IDs_rows = genes_rna_counts_ensemblID[genes_rna_counts]
+    index_na = which(is.na(ensembl_IDs_rows))
+    if(length(index_na)>0){
+      rna_counts = rna_counts[-index_na,]
+    }
+    ensembl_IDs_rows = genes_rna_counts_ensemblID[row.names(rna_counts)]
+    index_dup = which(duplicated(ensembl_IDs_rows))
+    #check for duplicates
+    if(length(index_dup)>0){
+      rna_counts = rna_counts[-index_dup,]
+      ensembl_IDs_rows = ensembl_IDs_rows[-index_dup]
+    }
+    row.names(rna_counts) = ensembl_IDs_rows
   }
   if(confidence_cutoff == T){
     prediction_list <- list()
@@ -35,7 +81,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
     normalized_counts <- t(sqrt(normalized_counts))
     prediction_list[["layer_1"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = colnames(rna_counts),
                                                                        layer = "layer_1", imputation = imputation, genes_in_model = top_genes_unlisted_layer_1,
-                                                                       model = model_layer_1, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                       model = model_layer_1,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                        bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
     print("Done Layer 1")
@@ -53,7 +99,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
       print("Starting Layer 2 Non Blood")
       prediction_list[["layer_2_non_blood"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = normal_tissue_cancer_predicted,
                                                                                    layer = "layer_2_non_blood", imputation = imputation, genes_in_model = top_genes_unlisted_layer_2_normal_tissue_cancer,
-                                                                                   model = model_layer_2_normal_tissue_cancer, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                   model = model_layer_2_normal_tissue_cancer,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
       print("Done Layer 2 Non Blood")
       non_stromal_predicted <- row.names(prediction_list[["layer_2_non_blood"]])[which(prediction_list[["layer_2_non_blood"]]$predicted_tissue_with_cutoff %in% c(
@@ -72,7 +118,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
         print("Starting Layer 3 Non Stromal")
         prediction_list[["layer_3_non_stromal"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = non_stromal_predicted,
                                                                                        layer = "layer_3_non_stromal", imputation = imputation, genes_in_model = top_genes_unlisted_layer_3_non_stromal,
-                                                                                       model = model_layer_3_non_stromal, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                       model = model_layer_3_non_stromal,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                        bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
         print("Done Layer 3 Non Stromal")
         non_GI_predicted <- row.names(prediction_list[["layer_3_non_stromal"]])[
@@ -93,7 +139,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
           print("Starting Layer 4 Non GI")
           prediction_list[["layer_4_non_GI"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = non_GI_predicted,
                                                                                     layer = "layer_4_non_GI", imputation = imputation, genes_in_model = top_genes_unlisted_layer_4_non_GI,
-                                                                                    model = model_layer_4_non_GI, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                    model = model_layer_4_non_GI,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                     bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
           print("Done Layer 4 Non GI")
           breast_lung_prostate_predicted <- row.names(prediction_list[["layer_4_non_GI"]] )[
@@ -109,7 +155,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                     layer = "layer_5_breast_lung_prostate", imputation = imputation,
                                                                                                     genes_in_model = top_genes_unlisted_layer_5_breast_lung_prostate,
                                                                                                     model = model_layer_5_breast_lung_prostate,
-                                                                                                    ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                     mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                     bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
             print("Done Layer 5 Breast Lung Prostate")
             if(breast_mode == T){
@@ -120,7 +166,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                           layer = "layer_6_breast", imputation = imputation,
                                                                                           genes_in_model = top_genes_unlisted_layer_6_breast,
                                                                                           model = model_layer_6_breast,
-                                                                                          ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                           mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                           bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
                 print("Done Layer 6 Breast")
               }
@@ -133,7 +179,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                            layer = "layer_5_ov_endo_kid", imputation = imputation,
                                                                                            genes_in_model = top_genes_unlisted_layer_5_ov_endo_kid,
                                                                                            model = model_layer_5_ov_endo_kid,
-                                                                                           ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                            mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                            bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
             print("Done Layer 5 Ovarian Endometrial Kidney")
           }
@@ -143,7 +189,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
           print("Starting Layer 4 GI")
           prediction_list[["layer_4_GI"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = GI_predicted,
                                                                                 layer = "layer_4_GI", imputation = imputation, genes_in_model = top_genes_unlisted_layer_4_GI,
-                                                                                model = model_layer_4_GI, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                model = model_layer_4_GI,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                 bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
           print("Done Layer 4 GI")
           digestive_predicted <- row.names(prediction_list[["layer_4_GI"]])[
@@ -160,7 +206,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                          layer = "layer_5_digestive", imputation = imputation,
                                                                                          genes_in_model = top_genes_unlisted_layer_5_digestive,
                                                                                          model = model_layer_5_digestive,
-                                                                                         ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                          mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                          bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
             print("Done Layer 5 Digestive")
           }
@@ -170,7 +216,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                        layer = "layer_5_biliary", imputation = imputation,
                                                                                        genes_in_model = top_genes_unlisted_layer_5_biliary,
                                                                                        model = model_layer_5_biliary,
-                                                                                       ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                        mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                        bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
             print("Done Layer 5 Biliary")
           }
@@ -181,7 +227,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                layer = "layer_4_soft_tissue_neuro", imputation = imputation,
                                                                                                genes_in_model = top_genes_unlisted_layer_4_soft_neuro_cancer,
                                                                                                model = model_layer_4_soft_neuro_cancer,
-                                                                                               ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
           print("Done Layer 4 Soft Tissue Neuro")
           soft_tissue_neuro_cancer_no_lung_skin_predicted <- row.names(prediction_list[["layer_4_soft_tissue_neuro"]])[
@@ -194,7 +240,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                  layer = "layer_5_soft_tissue_neuro", imputation = imputation,
                                                                                                  genes_in_model = top_genes_unlisted_layer_5_soft_neuro_cancer_no_lung_skin,
                                                                                                  model = model_layer_5_soft_neuro_cancer_no_lung_skin,
-                                                                                                 ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                  bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
             print("Done Layer 5 Soft Tissue Neuro")
             brain_nbm_predicted <- row.names(prediction_list[["layer_5_soft_tissue_neuro"]])[
@@ -208,7 +254,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                            layer = "layer_6_brain_nbm", imputation = imputation,
                                                                                            genes_in_model = top_genes_unlisted_layer_6_brain_nbm,
                                                                                            model = model_layer_6_brain_nbm,
-                                                                                           ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                            mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                            bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
               print("Done Layer 6 Brain NBM")
             }
@@ -218,7 +264,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                              layer = "layer_6_soft_tissue", imputation = imputation,
                                                                                              genes_in_model = top_genes_unlisted_layer_6_soft_tissue,
                                                                                              model = model_layer_6_soft_tissue,
-                                                                                             ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                              mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                              bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
               print("Done Layer 6 Soft Tissue")
             }
@@ -230,7 +276,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
         print("Starting Layer 3 Normal Stromal")
         prediction_list[["layer_3_stromal"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = normal_stromal_predicted,
                                                                                    layer = "layer_3_stromal", imputation = imputation, genes_in_model = top_genes_unlisted_layer_3_stromal,
-                                                                                   model = model_layer_3_stromal, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                   model = model_layer_3_stromal,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
         print("Done Layer 3 Normal Stromal")
         CAF_predicted <- row.names(prediction_list[["layer_3_stromal"]])[
@@ -241,7 +287,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                   layer = "layer_4_CAF", imputation = F,
                                                                                   genes_in_model = top_genes_unlisted_layer_4_CAFs,
                                                                                   model = model_layer_4_CAFs,
-                                                                                  ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                   mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                   bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 CAFs")
@@ -252,7 +298,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
       print("Starting Layer 2 Blood")
       prediction_list[["layer_2_blood"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = blood_cells_predicted,
                                                                                layer = "layer_2_blood", imputation = imputation, genes_in_model = top_genes_unlisted_layer_2_blood,
-                                                                               model = model_layer_2_blood, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                               model = model_layer_2_blood,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
       print("Done Layer 2 Blood")
@@ -266,7 +312,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
         print("Starting Layer 3 TNK")
         prediction_list[["layer_3_TNK"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = TNK_cells_predicted,
                                                                                layer = "layer_3_TNK", imputation = F, genes_in_model = top_genes_unlisted_layer_3_TNK,
-                                                                               model = model_layer_3_TNK, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                               model = model_layer_3_TNK,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
         print("Done Layer 3 TNK")
@@ -281,7 +327,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                      layer = "layer_4_CD4_CD8", imputation = F,
                                                                                      genes_in_model = top_genes_unlisted_layer_4_CD4_CD8,
                                                                                      model = model_layer_4_CD4_CD8,
-                                                                                     ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                      mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                      bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 CD4 CD8")
@@ -292,7 +338,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                     layer = "layer_4_CD8_NK", imputation = F,
                                                                                     genes_in_model = top_genes_unlisted_layer_4_CD8_NK,
                                                                                     model = model_layer_4_CD8_NK,
-                                                                                    ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                     mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                     bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 CD8 NK")
@@ -309,7 +355,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                    layer = "layer_5_CD4", imputation = F,
                                                                                    genes_in_model = top_genes_unlisted_layer_5_CD4,
                                                                                    model = model_layer_5_CD4,
-                                                                                   ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                    mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
             print("Done Layer 5 CD4")
@@ -320,7 +366,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                    layer = "layer_5_CD8", imputation = F,
                                                                                    genes_in_model = top_genes_unlisted_layer_5_CD8,
                                                                                    model = model_layer_5_CD8,
-                                                                                   ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                    mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
             print("Done Layer 5 CD8")
@@ -339,7 +385,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
         print("Starting Layer 3 Myeloid")
         prediction_list[["layer_3_myeloid"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = MDC_cells_predicted,
                                                                                    layer = "layer_3_MDC", imputation = imputation, genes_in_model = top_genes_unlisted_layer_3_MDC,
-                                                                                   model = model_layer_3_MDC, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                   model = model_layer_3_MDC,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
         print("Done Layer 3 Myeloid")
@@ -353,7 +399,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                        layer = "layer_4_dendritic", imputation = imputation,
                                                                                        genes_in_model = top_genes_unlisted_layer_4_DC_cell,
                                                                                        model = model_layer_4_DC_cell,
-                                                                                       ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                        mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                        bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 Dendritic")
@@ -365,7 +411,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                    layer = "layer_5_cDC", imputation = F,
                                                                                    genes_in_model = top_genes_unlisted_layer_5_cDC,
                                                                                    model = model_layer_5_cDC,
-                                                                                   ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                    mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
             print("Done Layer 5 cDC")
@@ -378,7 +424,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                         layer = "layer_4_macrophage", imputation = imputation,
                                                                                         genes_in_model = top_genes_unlisted_layer_4_macrophage_monocyte,
                                                                                         model = model_layer_4_macrophage_monocyte,
-                                                                                        ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                         mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                         bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 Macrophage Monocyte")
@@ -392,7 +438,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                              layer = "layer_5_macrophage", imputation = F,
                                                                              genes_in_model = top_genes_unlisted_layer_5_macrophage,
                                                                              model = model_layer_5_macrophage,
-                                                                             ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                              mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                              bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
             print("Done Layer 5 Macrophage")
@@ -403,7 +449,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                     layer = "layer_5_monocyte", imputation = F,
                                                                                     genes_in_model = top_genes_unlisted_layer_5_monocyte,
                                                                                     model = model_layer_5_monocyte,
-                                                                                    ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                     mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                     bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
             print("Done Layer 5 Monocyte")
@@ -415,7 +461,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
         print("Starting Layer 3 B Cell")
         prediction_list[["layer_3_BCell"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = B_cells_predicted,
                                                                                  layer = "layer_3_BCell", imputation = imputation, genes_in_model = top_genes_unlisted_layer_3_BCell,
-                                                                                 model = model_layer_3_BCell, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                 model = model_layer_3_BCell,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                  bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
         print("Done Layer 3 B Cell")
@@ -429,7 +475,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
     normalized_counts <- t(sqrt(normalized_counts))
     prediction_list[["layer_1"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = colnames(rna_counts),
                                                                                  layer = "layer_1", imputation = imputation, genes_in_model = top_genes_unlisted_layer_1,
-                                                                                 model = model_layer_1, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                 model = model_layer_1,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                  bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
     print("Done Layer 1")
@@ -447,7 +493,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
       print("Starting Layer 2 Non Blood")
       prediction_list[["layer_2_non_blood"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = normal_tissue_cancer_predicted,
                                                                                              layer = "layer_2_non_blood", imputation = imputation, genes_in_model = top_genes_unlisted_layer_2_normal_tissue_cancer,
-                                                                                             model = model_layer_2_normal_tissue_cancer, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                             model = model_layer_2_normal_tissue_cancer,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                              bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
       print("Done Layer 2 Non Blood")
       non_stromal_predicted <- row.names(prediction_list[["layer_2_non_blood"]])[which(prediction_list[["layer_2_non_blood"]]$predicted_class %in% c(
@@ -466,7 +512,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
         print("Starting Layer 3 Non Stromal")
         prediction_list[["layer_3_non_stromal"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = non_stromal_predicted,
                                                                                                  layer = "layer_3_non_stromal", imputation = imputation, genes_in_model = top_genes_unlisted_layer_3_non_stromal,
-                                                                                                 model = model_layer_3_non_stromal, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                 model = model_layer_3_non_stromal,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                  bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
         print("Done Layer 3 Non Stromal")
         non_GI_predicted <- row.names(prediction_list[["layer_3_non_stromal"]])[
@@ -487,7 +533,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
           print("Starting Layer 4 Non GI")
           prediction_list[["layer_4_non_GI"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = non_GI_predicted,
                                                                                               layer = "layer_4_non_GI", imputation = imputation, genes_in_model = top_genes_unlisted_layer_4_non_GI,
-                                                                                              model = model_layer_4_non_GI, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                              model = model_layer_4_non_GI,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                               bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
           print("Done Layer 4 Non GI")
           breast_lung_prostate_predicted <- row.names(prediction_list[["layer_4_non_GI"]] )[
@@ -503,7 +549,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                               layer = "layer_5_breast_lung_prostate", imputation = imputation,
                                                                                                               genes_in_model = top_genes_unlisted_layer_5_breast_lung_prostate,
                                                                                                               model = model_layer_5_breast_lung_prostate,
-                                                                                                              ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                               mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                               bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
             print("Done Layer 5 Breast Lung Prostate")
             if(breast_mode == T){
@@ -514,7 +560,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                           layer = "layer_6_breast", imputation = imputation,
                                                                                           genes_in_model = top_genes_unlisted_layer_6_breast,
                                                                                           model = model_layer_6_breast,
-                                                                                          ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                           mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                           bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
                 print("Done Layer 6 Breast")
               }
@@ -526,7 +572,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                      layer = "layer_5_ov_endo_kid", imputation = imputation,
                                                                                                      genes_in_model = top_genes_unlisted_layer_5_ov_endo_kid,
                                                                                                      model = model_layer_5_ov_endo_kid,
-                                                                                                     ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                      mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                      bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
             print("Done Layer 5 Ovarian Endometrial Kidney")
           }
@@ -535,7 +581,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
           print("Starting Layer 4 GI")
           prediction_list[["layer_4_GI"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = GI_predicted,
                                                                                           layer = "layer_4_GI", imputation = imputation, genes_in_model = top_genes_unlisted_layer_4_GI,
-                                                                                          model = model_layer_4_GI, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                          model = model_layer_4_GI,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                           bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
           print("Done Layer 4 GI")
           digestive_predicted <- row.names(prediction_list[["layer_4_GI"]])[
@@ -552,7 +598,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                    layer = "layer_5_digestive", imputation = imputation,
                                                                                                    genes_in_model = top_genes_unlisted_layer_5_digestive,
                                                                                                    model = model_layer_5_digestive,
-                                                                                                   ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                    mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
             print("Done Layer 5 Digestive")
           }
@@ -562,7 +608,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                  layer = "layer_5_biliary", imputation = imputation,
                                                                                                  genes_in_model = top_genes_unlisted_layer_5_biliary,
                                                                                                  model = model_layer_5_biliary,
-                                                                                                 ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                  bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
             print("Done Layer 5 Biliary")
           }
@@ -573,7 +619,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                          layer = "layer_4_soft_tissue_neuro", imputation = imputation,
                                                                                                          genes_in_model = top_genes_unlisted_layer_4_soft_neuro_cancer,
                                                                                                          model = model_layer_4_soft_neuro_cancer,
-                                                                                                         ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                          mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                          bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
           print("Done Layer 4 Soft Tissue Neuro")
           soft_tissue_neuro_cancer_no_lung_skin_predicted <- row.names(prediction_list[["layer_4_soft_tissue_neuro"]])[
@@ -586,7 +632,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                            layer = "layer_5_soft_tissue_neuro", imputation = imputation,
                                                                                                            genes_in_model = top_genes_unlisted_layer_5_soft_neuro_cancer_no_lung_skin,
                                                                                                            model = model_layer_5_soft_neuro_cancer_no_lung_skin,
-                                                                                                           ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                            mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                            bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
             print("Done Layer 5 Soft Tissue Neuro")
             brain_nbm_predicted <- row.names(prediction_list[["layer_5_soft_tissue_neuro"]])[
@@ -600,7 +646,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                      layer = "layer_6_brain_nbm", imputation = imputation,
                                                                                                      genes_in_model = top_genes_unlisted_layer_6_brain_nbm,
                                                                                                      model = model_layer_6_brain_nbm,
-                                                                                                     ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                      mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                      bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
               print("Done Layer 6 Brain NBM")
             }
@@ -610,7 +656,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                        layer = "layer_6_soft_tissue", imputation = imputation,
                                                                                                        genes_in_model = top_genes_unlisted_layer_6_soft_tissue,
                                                                                                        model = model_layer_6_soft_tissue,
-                                                                                                       ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                        mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                        bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
               print("Done Layer 6 Soft Tissue")
             }
@@ -621,7 +667,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
         print("Starting Layer 3 Normal Stromal")
         prediction_list[["layer_3_stromal"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = normal_stromal_predicted,
                                                                                              layer = "layer_3_stromal", imputation = imputation, genes_in_model = top_genes_unlisted_layer_3_stromal,
-                                                                                             model = model_layer_3_stromal, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                             model = model_layer_3_stromal,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                              bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
         print("Done Layer 3 Normal Stromal")
         CAF_predicted <- row.names(prediction_list[["layer_3_stromal"]])[
@@ -632,7 +678,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                            layer = "layer_4_CAF", imputation = F,
                                                                            genes_in_model = top_genes_unlisted_layer_4_CAFs,
                                                                            model = model_layer_4_CAFs,
-                                                                           ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                            mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                            bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 CAFs")
@@ -643,7 +689,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
       print("Starting Layer 2 Blood")
       prediction_list[["layer_2_blood"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = blood_cells_predicted,
                                                                                          layer = "layer_2_blood", imputation = imputation, genes_in_model = top_genes_unlisted_layer_2_blood,
-                                                                                         model = model_layer_2_blood, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                         model = model_layer_2_blood,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                          bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
       print("Done Layer 2 Blood")
@@ -658,7 +704,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
         print("Starting Layer 3 TNK")
         prediction_list[["layer_3_TNK"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = TNK_cells_predicted,
                                                                                          layer = "layer_3_TNK", imputation = F, genes_in_model = top_genes_unlisted_layer_3_TNK,
-                                                                                         model = model_layer_3_TNK, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                         model = model_layer_3_TNK,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                          bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
         print("Done Layer 3 TNK")
@@ -673,7 +719,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                layer = "layer_4_CD4_CD8", imputation = F,
                                                                                                genes_in_model = top_genes_unlisted_layer_4_CD4_CD8,
                                                                                                model = model_layer_4_CD4_CD8,
-                                                                                               ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 CD4 CD8")
@@ -684,7 +730,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                               layer = "layer_4_CD8_NK", imputation = F,
                                                                                               genes_in_model = top_genes_unlisted_layer_4_CD8_NK,
                                                                                               model = model_layer_4_CD8_NK,
-                                                                                              ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                               mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                               bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 CD8 NK")
@@ -701,7 +747,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                              layer = "layer_5_CD4", imputation = F,
                                                                                              genes_in_model = top_genes_unlisted_layer_5_CD4,
                                                                                              model = model_layer_5_CD4,
-                                                                                             ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                              mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                              bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
             print("Done Layer 5 CD4")
@@ -712,7 +758,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                              layer = "layer_5_CD8", imputation = F,
                                                                                              genes_in_model = top_genes_unlisted_layer_5_CD8,
                                                                                              model = model_layer_5_CD8,
-                                                                                             ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                              mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                              bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
             print("Done Layer 5 CD8")
@@ -733,7 +779,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
         print("Starting Layer 3 Myeloid")
         prediction_list[["layer_3_myeloid"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = MDC_cells_predicted,
                                                                                              layer = "layer_3_MDC", imputation = imputation, genes_in_model = top_genes_unlisted_layer_3_MDC,
-                                                                                             model = model_layer_3_MDC, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                             model = model_layer_3_MDC,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                              bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
         print("Done Layer 3 Myeloid")
@@ -747,7 +793,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                  layer = "layer_4_dendritic", imputation = imputation,
                                                                                                  genes_in_model = top_genes_unlisted_layer_4_DC_cell,
                                                                                                  model = model_layer_4_DC_cell,
-                                                                                                 ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                  bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 Dendritic")
@@ -759,7 +805,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                              layer = "layer_5_cDC", imputation = F,
                                                                              genes_in_model = top_genes_unlisted_layer_5_cDC,
                                                                              model = model_layer_5_cDC,
-                                                                             ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                              mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                              bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
             print("Done Layer 5 cDC")
@@ -771,7 +817,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                                   layer = "layer_4_macrophage", imputation = imputation,
                                                                                                   genes_in_model = top_genes_unlisted_layer_4_macrophage_monocyte,
                                                                                                   model = model_layer_4_macrophage_monocyte,
-                                                                                                  ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                                   mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                                   bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 Macrophage Monocyte")
@@ -785,7 +831,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                     layer = "layer_5_macrophage", imputation = F,
                                                                                     genes_in_model = top_genes_unlisted_layer_5_macrophage,
                                                                                     model = model_layer_5_macrophage,
-                                                                                    ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                     mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                     bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
             print("Done Layer 5 Macrophage")
@@ -796,7 +842,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
                                                                                   layer = "layer_5_monocyte", imputation = F,
                                                                                   genes_in_model = top_genes_unlisted_layer_5_monocyte,
                                                                                   model = model_layer_5_monocyte,
-                                                                                  ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                   mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                   bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
             print("Done Layer 5 Monocyte")
@@ -808,7 +854,7 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, ref_based = F, mc.cores 
         print("Starting Layer 3 B Cell")
         prediction_list[["layer_3_BCell"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = B_cells_predicted,
                                                                                            layer = "layer_3_BCell", imputation = imputation, genes_in_model = top_genes_unlisted_layer_3_BCell,
-                                                                                           model = model_layer_3_BCell, ref_based = ref_based, mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                           model = model_layer_3_BCell,  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                            bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
         print("Done Layer 3 B Cell")
