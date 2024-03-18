@@ -358,17 +358,32 @@ usethis::use_data(model_layer_5_cDC, overwrite = TRUE)
 rm(list = ls())
 
 load(paste0("~/Documents/classifier_outputs_ensembl/","layer_5_macrophage.RData"))
-top_genes_unlisted_layer_5_macrophage <- top_genes_unlisted
-model_layer_5_macrophage <- rf_classifier_cell_lines
-usethis::use_data(top_genes_unlisted_layer_5_macrophage, overwrite = TRUE)
-usethis::use_data(model_layer_5_macrophage, overwrite = TRUE)
+top_genes_unlisted_layer_6_macrophage <- top_genes_unlisted
+model_layer_6_macrophage <- rf_classifier_cell_lines
+usethis::use_data(top_genes_unlisted_layer_6_macrophage, overwrite = TRUE)
+usethis::use_data(model_layer_6_macrophage, overwrite = TRUE)
 rm(list = ls())
 
 load(paste0("~/Documents/classifier_outputs_ensembl/","layer_5_monocyte.RData"))
-top_genes_unlisted_layer_5_monocyte <- top_genes_unlisted
-model_layer_5_monocyte <- rf_classifier_cell_lines
-usethis::use_data(top_genes_unlisted_layer_5_monocyte, overwrite = TRUE)
-usethis::use_data(model_layer_5_monocyte, overwrite = TRUE)
+top_genes_unlisted_layer_6_monocyte <- top_genes_unlisted
+model_layer_6_monocyte <- rf_classifier_cell_lines
+usethis::use_data(top_genes_unlisted_layer_6_monocyte, overwrite = TRUE)
+usethis::use_data(model_layer_6_monocyte, overwrite = TRUE)
+rm(list = ls())
+
+
+load(paste0("~/Documents/neutrophil_classifier/outs/ensembl_classifier_layer_5_macrophage_neutrophil.RData"))
+top_genes_unlisted_layer_5_macrophage_neutrophil <- top_genes_unlisted
+model_layer_5_macrophage_neutrophil <- rf_classifier_cell_lines
+usethis::use_data(top_genes_unlisted_layer_5_macrophage_neutrophil, overwrite = TRUE)
+usethis::use_data(model_layer_5_macrophage_neutrophil, overwrite = TRUE)
+rm(list = ls())
+
+load(paste0("~/Documents/neutrophil_classifier/outs/ensembl_classifier_layer_5_monocyte_neutrophil.RData"))
+top_genes_unlisted_layer_5_monocyte_neutrophil <- top_genes_unlisted
+model_layer_5_monocyte_neutrophil <- rf_classifier_cell_lines
+usethis::use_data(top_genes_unlisted_layer_5_monocyte_neutrophil, overwrite = TRUE)
+usethis::use_data(model_layer_5_monocyte_neutrophil, overwrite = TRUE)
 rm(list = ls())
 
 

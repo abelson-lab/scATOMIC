@@ -443,7 +443,7 @@ add_unclassified_automatic_threshold <- function(cell_name, predictions, layer, 
         predicted_with_cutoff <- "Macrophage or Monocyte"
       }
     }}
-  if(layer == "layer_5_macrophage"){
+  if(layer == "layer_5_macrophage_neutrophil"){
     if ((layer_predictions["predicted_class"]) == "Cell low quality"){
       predicted_with_cutoff <- "Cell low quality"
     } else {
@@ -460,7 +460,43 @@ add_unclassified_automatic_threshold <- function(cell_name, predictions, layer, 
         predicted_with_cutoff <- "Macrophage"
       }
     }}
-  if(layer == "layer_5_monocyte"){
+  if(layer == "layer_5_monocyte_neutrophil"){
+    if ((layer_predictions["predicted_class"]) == "Cell low quality"){
+      predicted_with_cutoff <- "Cell low quality"
+    } else {
+      scores <- which(lapply(layer_predictions, class) == "numeric")
+      max_score <- max(layer_predictions[which(lapply(layer_predictions, class) == "numeric")])
+      max_score_class <- colnames(layer_predictions)[which(layer_predictions == max_score)]
+      if(length(max_score_class) > 1){
+        max_score_class <- max_score_class[length(max_score_class)]
+      }
+      if(max_score > threshold_use[[max_score_class]]){
+        predicted_with_cutoff <- as.character(layer_predictions["predicted_class"])
+      }
+      else {
+        predicted_with_cutoff <- "Monocyte"
+      }
+    }}
+
+
+  if(layer == "layer_6_macrophage"){
+    if ((layer_predictions["predicted_class"]) == "Cell low quality"){
+      predicted_with_cutoff <- "Cell low quality"
+    } else {
+      scores <- which(lapply(layer_predictions, class) == "numeric")
+      max_score <- max(layer_predictions[which(lapply(layer_predictions, class) == "numeric")])
+      max_score_class <- colnames(layer_predictions)[which(layer_predictions == max_score)]
+      if(length(max_score_class) > 1){
+        max_score_class <- max_score_class[length(max_score_class)]
+      }
+      if(max_score > threshold_use[[max_score_class]]){
+        predicted_with_cutoff <- as.character(layer_predictions["predicted_class"])
+      }
+      else {
+        predicted_with_cutoff <- "Macrophage"
+      }
+    }}
+  if(layer == "layer_6_monocyte"){
     if ((layer_predictions["predicted_class"]) == "Cell low quality"){
       predicted_with_cutoff <- "Cell low quality"
     } else {

@@ -256,12 +256,12 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_dendritic"]][which(prediction_list[["layer_4_dendritic"]]$predicted_tissue_with_cutoff %in% c("cDC")),"cDC"]))
 
       } else if(summary_master[i, "layer_4"] %in% c("Macrophage")){
-        layer_5[i] <- as.character(prediction_list[["layer_5_macrophage"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+        layer_5[i] <- as.character(prediction_list[["layer_5_macrophage_neutrophil"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
 
         median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_macrophage"]][which(prediction_list[["layer_4_macrophage"]]$predicted_tissue_with_cutoff %in% c("Macrophage")),"Macrophage"]))
 
       } else if(summary_master[i, "layer_4"] %in% c("Monocyte")){
-        layer_5[i] <- as.character(prediction_list[["layer_5_monocyte"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+        layer_5[i] <- as.character(prediction_list[["layer_5_monocyte_neutrophil"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
 
         median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_macrophage"]][which(prediction_list[["layer_4_macrophage"]]$predicted_tissue_with_cutoff %in% c("Monocyte")),"Monocyte"]))
 
@@ -343,7 +343,17 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
                                                                                                                                                                                                    "Sarcoma", "Soft Tissue Cancer Cell")),"soft_tissue_score"]))
 
 
-      } else if(summary_master[i, "layer_5"] %in% c("Breast Cancer Cell")){
+      } else if(summary_master[i, "layer_5"] %in% c("Macrophage")){
+        layer_6[i] <- as.character(prediction_list[["layer_6_macrophage"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+
+        median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_5_macrophage_neutrophil"]][which(prediction_list[["layer_5_macrophage_neutrophil"]]$predicted_tissue_with_cutoff %in% c("Macrophage")),"Macrophage"]))
+
+      } else if(summary_master[i, "layer_5"] %in% c("Monocyte")){
+        layer_6[i] <- as.character(prediction_list[["layer_6_monocyte"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+
+        median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_5_monocyte_neutrophil"]][which(prediction_list[["layer_5_monocyte_neutrophil"]]$predicted_tissue_with_cutoff %in% c("Monocyte")),"Monocyte"]))
+
+      }else if(summary_master[i, "layer_5"] %in% c("Breast Cancer Cell")){
         if(breast_mode == T){
           layer_6[i] <- as.character(prediction_list[["layer_6_breast"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
 
@@ -385,6 +395,10 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
           median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_5_digestive"]][which(prediction_list[["layer_5_digestive"]]$predicted_tissue_with_cutoff %in% c("Esophageal Cancer")),"Esophageal Cancer"]))
         } else if(layer_5[i] == "Gastric Cancer" ){
           median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_5_digestive"]][which(prediction_list[["layer_5_digestive"]]$predicted_tissue_with_cutoff %in% c("Gastric Cancer")),"Gastric Cancer"]))
+        } else if(layer_5[i] %in% c("Neutrophil") & layer_4[i] == "Macrophage"){
+          median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_5_macrophage_neutrophil"]][which(prediction_list[["layer_5_macrophage_neutrophil"]]$predicted_tissue_with_cutoff %in% c("Neutrophil")),"Neutrophil"]))
+        } else if(layer_5[i] %in% c("Neutrophil") & layer_4[i] == "Monocyte"){
+          median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_5_monocyte_neutrophil"]][which(prediction_list[["layer_5_monocyte_neutrophil"]]$predicted_tissue_with_cutoff %in% c("Neutrophil")),"Neutrophil"]))
         } else{
           median_score_class_layer_5[i] <- median_score_class_layer_4[i]
         }
@@ -1282,12 +1296,12 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_dendritic"]][which(prediction_list[["layer_4_dendritic"]]$predicted_tissue_with_cutoff %in% c("cDC")),"cDC"]))
 
       } else if(summary_master[i, "layer_4"] %in% c("Macrophage")){
-        layer_5[i] <- as.character(prediction_list[["layer_5_macrophage"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+        layer_5[i] <- as.character(prediction_list[["layer_5_macrophage_neutrophil"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
 
         median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_macrophage"]][which(prediction_list[["layer_4_macrophage"]]$predicted_tissue_with_cutoff %in% c("Macrophage")),"Macrophage"]))
 
       } else if(summary_master[i, "layer_4"] %in% c("Monocyte")){
-        layer_5[i] <- as.character(prediction_list[["layer_5_monocyte"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+        layer_5[i] <- as.character(prediction_list[["layer_5_monocyte_neutrophil"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
 
         median_score_class_layer_4[i] <- median(as.numeric(prediction_list[["layer_4_macrophage"]][which(prediction_list[["layer_4_macrophage"]]$predicted_tissue_with_cutoff %in% c("Monocyte")),"Monocyte"]))
 
@@ -1369,6 +1383,16 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
                                                                                                                                                                                                    "Sarcoma", "Soft Tissue Cancer Cell")),"soft_tissue_score"]))
 
 
+      } else if(summary_master[i, "layer_5"] %in% c("Macrophage")){
+        layer_6[i] <- as.character(prediction_list[["layer_6_macrophage"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+
+        median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_5_macrophage_neutrophil"]][which(prediction_list[["layer_5_macrophage_neutrophil"]]$predicted_tissue_with_cutoff %in% c("Macrophage")),"Macrophage"]))
+
+      } else if(summary_master[i, "layer_5"] %in% c("Monocyte")){
+        layer_6[i] <- as.character(prediction_list[["layer_6_monocyte"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
+
+        median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_5_monocyte_neutrophil"]][which(prediction_list[["layer_5_monocyte_neutrophil"]]$predicted_tissue_with_cutoff %in% c("Monocyte")),"Monocyte"]))
+
       } else if(summary_master[i, "layer_5"] %in% c("Breast Cancer Cell")){
         if(breast_mode == T){
           layer_6[i] <- as.character(prediction_list[["layer_6_breast"]][summary_master$cell_names[i],"predicted_tissue_with_cutoff"])
@@ -1411,6 +1435,10 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
           median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_5_digestive"]][which(prediction_list[["layer_5_digestive"]]$predicted_tissue_with_cutoff %in% c("Esophageal Cancer")),"Esophageal Cancer"]))
         } else if(layer_5[i] == "Gastric Cancer" ){
           median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_5_digestive"]][which(prediction_list[["layer_5_digestive"]]$predicted_tissue_with_cutoff %in% c("Gastric Cancer")),"Gastric Cancer"]))
+        } else if(layer_5[i] %in% c("Neutrophil") & layer_4[i] == "Macrophage"){
+          median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_5_macrophage_neutrophil"]][which(prediction_list[["layer_5_macrophage_neutrophil"]]$predicted_tissue_with_cutoff %in% c("Neutrophil")),"Neutrophil"]))
+        } else if(layer_5[i] %in% c("Neutrophil") & layer_4[i] == "Monocyte"){
+          median_score_class_layer_5[i] <- median(as.numeric(prediction_list[["layer_5_monocyte_neutrophil"]][which(prediction_list[["layer_5_monocyte_neutrophil"]]$predicted_tissue_with_cutoff %in% c("Neutrophil")),"Neutrophil"]))
         } else{
           median_score_class_layer_5[i] <- median_score_class_layer_4[i]
         }

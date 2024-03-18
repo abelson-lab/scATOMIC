@@ -428,32 +428,62 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, mc.cores = 1, unimodal_n
                                                                                         bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 Macrophage Monocyte")
-          macrophage_predicted <- row.names(prediction_list[["layer_4_macrophage"]])[
+          macrophage_neutrophil_predicted <- row.names(prediction_list[["layer_4_macrophage"]])[
             which(prediction_list[["layer_4_macrophage"]]$predicted_tissue_with_cutoff == "Macrophage")]
-          monocyte_predicted <- row.names(prediction_list[["layer_4_macrophage"]])[
+          monocyte_neutrophil_predicted <- row.names(prediction_list[["layer_4_macrophage"]])[
             which(prediction_list[["layer_4_macrophage"]]$predicted_tissue_with_cutoff == "Monocyte")]
-          if (length(macrophage_predicted) > 0){
-            print("Starting Layer 5 Macrophage")
-            prediction_list[["layer_5_macrophage"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = macrophage_predicted,
-                                                                             layer = "layer_5_macrophage", imputation = F,
-                                                                             genes_in_model = top_genes_unlisted_layer_5_macrophage,
-                                                                             model = model_layer_5_macrophage,
-                                                                              mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
-                                                                             bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+          if (length(macrophage_neutrophil_predicted) > 0){
+            print("Starting Layer 5 Macrophage Neutrophil")
+            prediction_list[["layer_5_macrophage_neutrophil"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = macrophage_neutrophil_predicted,
+                                                                                layer = "layer_5_macrophage_neutrophil", imputation = imputation,
+                                                                                genes_in_model = top_genes_unlisted_layer_5_macrophage_neutrophil,
+                                                                                model = model_layer_5_macrophage_neutrophil,
+                                                                                mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
-            print("Done Layer 5 Macrophage")
-          }
-          if (length(monocyte_predicted) > 0){
-            print("Starting Layer 5 Monocyte")
-            prediction_list[["layer_5_monocyte"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = monocyte_predicted,
-                                                                                    layer = "layer_5_monocyte", imputation = F,
-                                                                                    genes_in_model = top_genes_unlisted_layer_5_monocyte,
-                                                                                    model = model_layer_5_monocyte,
-                                                                                     mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
-                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+            print("Done Layer 5 Macrophage Neutrophil")
+            macrophage_predicted <- row.names(prediction_list[["layer_5_macrophage_neutrophil"]])[
+              which(prediction_list[["layer_5_macrophage_neutrophil"]]$predicted_tissue_with_cutoff == "Macrophage")]
+            if (length(macrophage_predicted) > 0){
+              print("Starting Layer 6 Macrophage")
+              prediction_list[["layer_6_macrophage"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = macrophage_predicted,
+                                                                                  layer = "layer_6_macrophage", imputation = F,
+                                                                                  genes_in_model = top_genes_unlisted_layer_6_macrophage,
+                                                                                  model = model_layer_6_macrophage,
+                                                                                  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                  bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
-            print("Done Layer 5 Monocyte")
+              print("Done Layer 6 Macrophage")
+            }
+
           }
+          if (length(monocyte_neutrophil_predicted) > 0){
+            print("Starting Layer 5 Macrophage Neutrophil")
+            prediction_list[["layer_5_monocyte_neutrophil"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = monocyte_neutrophil_predicted,
+                                                                                layer = "layer_5_monocyte_neutrophil", imputation = imputation,
+                                                                                genes_in_model = top_genes_unlisted_layer_5_monocyte_neutrophil,
+                                                                                model = model_layer_5_monocyte_neutrophil,
+                                                                                mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+
+            print("Done Layer 5 Macrophage Neutrophil")
+            monocyte_predicted <- row.names(prediction_list[["layer_5_monocyte_neutrophil"]])[
+              which(prediction_list[["layer_5_monocyte_neutrophil"]]$predicted_tissue_with_cutoff == "Monocyte")]
+            if (length(monocyte_predicted) > 0){
+              print("Starting Layer 6 Monocyte")
+              prediction_list[["layer_6_monocyte"]] <- scATOMIC::classify_layer(rna_counts = rna_counts, cells_to_use = monocyte_predicted,
+                                                                                  layer = "layer_6_monocyte", imputation = F,
+                                                                                  genes_in_model = top_genes_unlisted_layer_6_monocyte,
+                                                                                  model = model_layer_6_monocyte,
+                                                                                  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                  bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+
+              print("Done Layer 6 Monocyte")
+            }
+
+          }
+
+
         }
 
       }
@@ -814,39 +844,69 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, mc.cores = 1, unimodal_n
         if (length(macrophage_monocyte_predicted) > 0){
           print("Starting Layer 4 Macrophage Monocyte")
           prediction_list[["layer_4_macrophage"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = macrophage_monocyte_predicted,
-                                                                                                  layer = "layer_4_macrophage", imputation = imputation,
-                                                                                                  genes_in_model = top_genes_unlisted_layer_4_macrophage_monocyte,
-                                                                                                  model = model_layer_4_macrophage_monocyte,
-                                                                                                   mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
-                                                                                                  bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+                                                                              layer = "layer_4_macrophage", imputation = imputation,
+                                                                              genes_in_model = top_genes_unlisted_layer_4_macrophage_monocyte,
+                                                                              model = model_layer_4_macrophage_monocyte,
+                                                                              mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                              bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
           print("Done Layer 4 Macrophage Monocyte")
-          macrophage_predicted <- row.names(prediction_list[["layer_4_macrophage"]])[
+          macrophage_neutrophil_predicted <- row.names(prediction_list[["layer_4_macrophage"]])[
             which(prediction_list[["layer_4_macrophage"]]$predicted_class == "Macrophage")]
-          monocyte_predicted <- row.names(prediction_list[["layer_4_macrophage"]])[
+          monocyte_neutrophil_predicted <- row.names(prediction_list[["layer_4_macrophage"]])[
             which(prediction_list[["layer_4_macrophage"]]$predicted_class == "Monocyte")]
-          if (length(macrophage_predicted) > 0){
-            print("Starting Layer 5 Macrophage")
-            prediction_list[["layer_5_macrophage"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = macrophage_predicted,
-                                                                                    layer = "layer_5_macrophage", imputation = F,
-                                                                                    genes_in_model = top_genes_unlisted_layer_5_macrophage,
-                                                                                    model = model_layer_5_macrophage,
-                                                                                     mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
-                                                                                    bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+          if (length(macrophage_neutrophil_predicted) > 0){
+            print("Starting Layer 5 Macrophage Neutrophil")
+            prediction_list[["layer_5_macrophage_neutrophil"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = macrophage_neutrophil_predicted,
+                                                                                           layer = "layer_5_macrophage_neutrophil", imputation = imputation,
+                                                                                           genes_in_model = top_genes_unlisted_layer_5_macrophage_neutrophil,
+                                                                                           model = model_layer_5_macrophage_neutrophil,
+                                                                                           mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                           bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
-            print("Done Layer 5 Macrophage")
-          }
-          if (length(monocyte_predicted) > 0){
-            print("Starting Layer 5 Monocyte")
-            prediction_list[["layer_5_monocyte"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = monocyte_predicted,
-                                                                                  layer = "layer_5_monocyte", imputation = F,
-                                                                                  genes_in_model = top_genes_unlisted_layer_5_monocyte,
-                                                                                  model = model_layer_5_monocyte,
-                                                                                   mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+            print("Done Layer 5 Macrophage Neutrophil")
+            macrophage_predicted <- row.names(prediction_list[["layer_5_macrophage_neutrophil"]])[
+              which(prediction_list[["layer_5_macrophage_neutrophil"]]$predicted_class == "Macrophage")]
+            if (length(macrophage_predicted) > 0){
+              print("Starting Layer 6 Macrophage")
+              prediction_list[["layer_6_macrophage"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = macrophage_predicted,
+                                                                                  layer = "layer_6_macrophage", imputation = F,
+                                                                                  genes_in_model = top_genes_unlisted_layer_6_macrophage,
+                                                                                  model = model_layer_6_macrophage,
+                                                                                  mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
                                                                                   bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
 
-            print("Done Layer 5 Monocyte")
+              print("Done Layer 6 Macrophage")
+            }
+
           }
+          if (length(monocyte_neutrophil_predicted) > 0){
+            print("Starting Layer 5 Macrophage Neutrophil")
+            prediction_list[["layer_5_monocyte_neutrophil"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = monocyte_neutrophil_predicted,
+                                                                                         layer = "layer_5_monocyte_neutrophil", imputation = imputation,
+                                                                                         genes_in_model = top_genes_unlisted_layer_5_monocyte_neutrophil,
+                                                                                         model = model_layer_5_monocyte_neutrophil,
+                                                                                         mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                         bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+
+            print("Done Layer 5 Macrophage Neutrophil")
+            monocyte_predicted <- row.names(prediction_list[["layer_5_monocyte_neutrophil"]])[
+              which(prediction_list[["layer_5_monocyte_neutrophil"]]$predicted_class == "Monocyte")]
+            if (length(monocyte_predicted) > 0){
+              print("Starting Layer 6 Monocyte")
+              prediction_list[["layer_6_monocyte"]] <- scATOMIC::classify_layer_no_cutoff(rna_counts = rna_counts, cells_to_use = monocyte_predicted,
+                                                                                layer = "layer_6_monocyte", imputation = F,
+                                                                                genes_in_model = top_genes_unlisted_layer_6_monocyte,
+                                                                                model = model_layer_6_monocyte,
+                                                                                mc.cores = mc.cores, unimodal_nsd = unimodal_nsd,
+                                                                                bimodal_nsd = bimodal_nsd, normalized_counts =normalized_counts)
+
+              print("Done Layer 6 Monocyte")
+            }
+
+          }
+
+
         }
 
       }

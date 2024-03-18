@@ -113,11 +113,11 @@ add_class_per_layer <- function(layer_predictions, layer){
 
     layer_classes <- cbind(layer_predictions,cancer_associated_fibroblast_score)
   }
-  if(layer %in% c("layer_4_macrophage","layer_4_dendritic","layer_5_biliary",
+  if(layer %in% c("layer_4_macrophage","layer_4_dendritic","layer_5_biliary","layer_5_macrophage_neutrophil","layer_5_monocyte_neutrophil",
                   "layer_6_soft_tissue", "layer_6_brain_nbm",
                   "layer_5_digestive", "layer_5_breast_lung_prostate",
                   "layer_5_ov_endo_kid", "layer_4_CD4_CD8","layer_4_CD8_NK",
-                  "layer_6_breast", "layer_5_CD4", "layer_5_CD8", "layer_4_CAF", "layer_5_cDC", "layer_5_macrophage", "layer_5_monocyte")){
+                  "layer_6_breast", "layer_5_CD4", "layer_5_CD8", "layer_4_CAF", "layer_5_cDC", "layer_6_macrophage", "layer_6_monocyte")){
     print("nothing to score in this layer")
     layer_classes <- layer_predictions
   }
