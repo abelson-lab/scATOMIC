@@ -28,52 +28,48 @@ run_scATOMIC <- function(rna_counts, imputation = TRUE, mc.cores = 1, unimodal_n
     mc.cores = 1
   }
   genes_rna_counts = row.names(rna_counts)
-  if(length(grep('^ENSG', genes_rna_counts)) == 0){
-    print('internally converting to ensemblIDs')
-    annots = select(org.Hs.eg.db, keys = genes_rna_counts, columns=c( "ENSEMBL", "SYMBOL"), keytype = "ALIAS")
-    genes_rna_counts_ensemblID = c()
-    pb = txtProgressBar(min = 0, max = length(genes_rna_counts), style = 3)
-    for(i in 1:length(genes_rna_counts)){
-      index_alias = which(annots$ALIAS == genes_rna_counts[i])
-      index_gene_symbol = which(annots$SYMBOL == genes_rna_counts[i])
+  print('internally converting to ensemblIDs')
+  annots = select(org.Hs.eg.db, keys = genes_rna_counts, columns=c( "ENSEMBL", "SYMBOL"), keytype = "ALIAS")
+  genes_rna_counts_ensemblID = c()
+  pb = txtProgressBar(min = 0, max = length(genes_rna_counts), style = 3)
+  for(i in 1:length(genes_rna_counts)){
+    index_alias = which(annots$ALIAS == genes_rna_counts[i])
+    index_gene_symbol = which(annots$SYMBOL == genes_rna_counts[i])
 
-      if(length(index_alias)==1 & length(index_gene_symbol)==1){
-        ensemblID = annots$ENSEMBL[index_alias]
-
-      } else if(length(index_alias)>1 & length(index_gene_symbol)==1){
-        ensemblID = annots$ENSEMBL[index_gene_symbol]
-
-      } else if(length(index_gene_symbol) > 1){
-        ensemblID = annots$ENSEMBL[index_gene_symbol[1]]
-      } else if(length(index_gene_symbol) ==0 & length(index_alias) == 1){
-        ensemblID = annots$ENSEMBL[index_alias]
-      } else if(length(index_alias) > 1 & length(index_gene_symbol) == 0){
-        ensemblID = annots$ENSEMBL[index_alias[1]]
-      } else{
-        print(paste0('check ',genes_rna_counts[i]))
-      }
-      if(!is.na(ensemblID)){
-        genes_rna_counts_ensemblID[i] = ensemblID
-      } else{
-        genes_rna_counts_ensemblID[i] = NA
-      }
-      names(genes_rna_counts_ensemblID)[i] = genes_rna_counts[i]
-      setTxtProgressBar(pb, i)
+    if(length(index_alias)==1 & length(index_gene_symbol)==1){
+      ensemblID = annots$ENSEMBL[index_alias]
+    } else if(length(index_alias)>1 & length(index_gene_symbol)==1){
+      ensemblID = annots$ENSEMBL[index_gene_symbol]
+    } else if(length(index_gene_symbol) > 1){
+      ensemblID = annots$ENSEMBL[index_gene_symbol[1]]
+    } else if(length(index_gene_symbol) ==0 & length(index_alias) == 1){
+      ensemblID = annots$ENSEMBL[index_alias]
+    } else if(length(index_alias) > 1 & length(index_gene_symbol) == 0){
+      ensemblID = annots$ENSEMBL[index_alias[1]]
+    } else{
+      print(paste0('check ',genes_rna_counts[i]))
     }
-    ensembl_IDs_rows = genes_rna_counts_ensemblID[genes_rna_counts]
-    index_na = which(is.na(ensembl_IDs_rows))
-    if(length(index_na)>0){
-      rna_counts = rna_counts[-index_na,]
+    if(!is.na(ensemblID)){
+      genes_rna_counts_ensemblID[i] = ensemblID
+    } else{
+      genes_rna_counts_ensemblID[i] = NA
     }
-    ensembl_IDs_rows = genes_rna_counts_ensemblID[row.names(rna_counts)]
-    index_dup = which(duplicated(ensembl_IDs_rows))
-    #check for duplicates
-    if(length(index_dup)>0){
-      rna_counts = rna_counts[-index_dup,]
-      ensembl_IDs_rows = ensembl_IDs_rows[-index_dup]
-    }
-    row.names(rna_counts) = ensembl_IDs_rows
+    names(genes_rna_counts_ensemblID)[i] = genes_rna_counts[i]
+    setTxtProgressBar(pb, i)
   }
+  ensembl_IDs_rows = genes_rna_counts_ensemblID[genes_rna_counts]
+  index_na = which(is.na(ensembl_IDs_rows))
+  if(length(index_na)>0){
+    rna_counts = rna_counts[-index_na,]
+  }
+  ensembl_IDs_rows = genes_rna_counts_ensemblID[row.names(rna_counts)]
+  index_dup = which(duplicated(ensembl_IDs_rows))
+  #check for duplicates
+  if(length(index_dup)>0){
+    rna_counts = rna_counts[-index_dup,]
+    ensembl_IDs_rows = ensembl_IDs_rows[-index_dup]
+  }
+  row.names(rna_counts) = ensembl_IDs_rows
   if(confidence_cutoff == T){
     prediction_list <- list()
     print("Starting Layer 1")

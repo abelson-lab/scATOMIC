@@ -575,7 +575,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         #convert to ensembl...
 
         genes_rna_counts = row.names(seurat_object)
-        if(length(grep('^ENSG', genes_rna_counts)) == 0){
+
           print('internally converting to ensemblIDs')
           annots = select(org.Hs.eg.db, keys = genes_rna_counts, columns=c( "ENSEMBL", "SYMBOL"), keytype = "ALIAS")
           genes_rna_counts_ensemblID = c()
@@ -627,7 +627,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
 
 
 
-        }
+
         raw_counts =raw_counts[names(ensembl_IDs_rows),]
         row.names(raw_counts) = ensembl_IDs_rows
 
@@ -1611,7 +1611,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
         }
 
         genes_rna_counts = row.names(seurat_object)
-        if(length(grep('^ENSG', genes_rna_counts)) == 0){
+
           print('internally converting to ensemblIDs')
           annots = select(org.Hs.eg.db, keys = genes_rna_counts, columns=c( "ENSEMBL", "SYMBOL"), keytype = "ALIAS")
           genes_rna_counts_ensemblID = c()
@@ -1663,7 +1663,7 @@ create_summary_matrix <- function(raw_counts, prediction_list, use_CNVs = FALSE,
 
 
 
-        }
+
         raw_counts =raw_counts[names(ensembl_IDs_rows),]
         row.names(raw_counts) = ensembl_IDs_rows
 
